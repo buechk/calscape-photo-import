@@ -1,6 +1,6 @@
 <?php
-die('Not Authorized');
-	include_once(dirname(dirname(__FILE__)).'/includes/common.inc.php');
+/*die('Not Authorized');
+	include_once(dirname(dirname(__FILE__)).'/includes/common.inc.php'); */
 
 ?>
 <html>

@@ -8,26 +8,18 @@ html {
 
 body {
     text-align: center;
-    /* Center-align text */
 }
 
 #title {
     font-size: 20px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-/* Reduce vertical space between form elements */
-#selection-form {
-    margin: 0;
-    padding: 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 #file-input,
 #url-input {
     margin: 0;
     padding: 5px 0;
-    /* Adjust the top and bottom padding */
 }
 
 #properties-container {
@@ -52,13 +44,6 @@ body {
     font-size: 14px;
     float: left;
     width: 50%;
-}
-
-#file-upload {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    border: none
 }
 
 /* Clear floats after the columns */

@@ -9,13 +9,11 @@
     <h1 id="title">Calscape Photo Contribution</h1>
     <h2>Select photos</h2>
     <div>
-        <form id="selection-form">
-            <!-- File input for choosing files from the file system -->
-            <input type="file" id="file-input" multiple>
-            <p align="left" padding="0">or</p>
-            <!-- URL input for entering a file source URL -->
-            <input type="url" id="url-input" placeholder="Enter Flickr URL">
-        </form>
+        <!-- File input for choosing files from the file system -->
+        <input type="file" id="file-input" multiple>
+        <p align="left" padding="0">or</p>
+        <!-- URL input for entering a file source URL -->
+        <input type="url" id="url-input" placeholder="Enter Flickr URL">
     </div>
 
     <!-- Display uploaded file thumbnails or URL previews here -->
@@ -27,7 +25,6 @@
             <!-- Thumbnails will be loaded here -->
         </div>
     </div>
-
 
     <h2>Set photo properties</h2>
     <div id="properties-container">
@@ -47,6 +44,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="../assets/js/thumbnails.js"></script>
     <script src="../assets/js/properties.js"></script>
+    <script src="../assets/js/photo-selection.js"></script>
 
 </body>
 

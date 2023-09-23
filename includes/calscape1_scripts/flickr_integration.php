@@ -1,8 +1,4 @@
 <?php
-// Key:
-// 7941c01c49eb07af15d032e0731e9790
-// Secret
-// 81506c5f22e3f329
 
 // Check if the request method is POST (you can also use GET)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

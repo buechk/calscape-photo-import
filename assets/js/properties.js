@@ -1,5 +1,10 @@
-// Display properties of source photos and apply properties to Calscape photos. 
+/**
+ * 
+ * @file
+ *  Display properties of source photos and apply properties to Calscape photos. 
+ * 
 /*
+
 function handlePhotoSelection(event) {
     const selectedFile = event.target.files[0];
 

@@ -1,52 +1,24 @@
-// Handle photo source input, load thumbnails and manage drag-and-drop functionality. 
+/**
+ *  @file
+ * Loads thumbnails from photo source input and manages thumbnail selection and drag-and-drop functionality.
+ *  
+**/
 
 // Initialize an array to keep track of selected thumbnails
 const selectedThumbnails = [];
 
-// Function to display thumbnails from files or URLs
-function displayThumbnails(input) {
-    const thumbnailGrid = document.getElementById('thumbnail-grid');
-
-    // Enable drag-and-drop reordering of thumbnails
-    const sortable = new Sortable(thumbnailGrid, {
-        animation: 150,
-        ghostClass: 'sortable-ghost',
-        chosenClass: 'sortable-chosen',
-        dragClass: 'sortable-drag',
-        multiDrag: true,
-        selectedClass: 'selected'
-    });
-
-    thumbnailGrid.innerHTML = ''; // Clear previous thumbnails
-
-    if (input instanceof FileList) {
-        // Clear URL to avoid confusing the user
-        document.getElementById(
-            'url-input').value = '';
-        // Handle files from file input
-        displayImagesFromFilesystem(input);
-
-    } else if (typeof input === 'string' && input.trim() !== '') {
-        // Clear URL to avoid confusing the user
-        document.getElementById(
-            'file-input').value = '';
-        // Handle URLs
-        // Check if the input is a Flickr URL
-        if (input.includes('flickr.com')) {
-            // Extract image URLs from Flickr page and display thumbnails
-            displayImagesFromFlickr(input)
-        } else {
-            alert("The URL must be a flickr.com URL");
-        }
-    }
-}
-
-function displayImagesFromFilesystem(input) {
+/**
+ * 
+ * Displays the thumbnails given in the file list
+ * 
+ * @param {*} filelist 
+ */
+function displayImagesFromFilesystem(filelist) {
     // Handle files from file input
     const thumbnailGrid = document.getElementById('thumbnail-grid');
 
-    for (let i = 0; i < input.length; i++) {
-        const file = input[i];
+    for (let i = 0; i < filelist.length; i++) {
+        const file = filelist[i];
         const thumbnail = document.createElement('div');
         thumbnail.classList.add('thumbnail');
 
@@ -63,12 +35,17 @@ function displayImagesFromFilesystem(input) {
     }
 }
 
-function displayImagesFromFlickr(input) {
+/**
+ * Calls the Flickr API using the given url to get photos
+ * 
+ * @param {*} url 
+ */
+function displayImagesFromFlickr(url) {
     var parameters = {
         "async": true,
         "crossDomain": true,
-        "url": input,
-        "method": "POST",   
+        "url": url,
+        "method": "POST",
         "headers": {}
     }
     // Currently, we're calling the Flickr REST service URL that the user directly input.
@@ -106,6 +83,12 @@ function displayImagesFromFlickr(input) {
         });
 }
 
+/**
+ * 
+ * Displays the given thumbnail URL in the thumbnail grid
+ * 
+ * @param {*} t_url 
+ */
 function loadThumbnailImage(t_url) {
     const image = new Image();
     image.src = t_url;
@@ -128,36 +111,8 @@ function loadThumbnailImage(t_url) {
     };
 }
 
-
 /*
 function handlePhotoSelection(event) {
     // pass selected photos to properties code
 }
-*/
-
-/*
-EVENT LISTENERS
-*/
-// Get references to the file input and URL input elements
-const fileInput = document.getElementById('file-input');
-const urlInput = document.getElementById('url-input');
-
-// Add an event listener for the "change" event on the file input
-fileInput.addEventListener('change', function (event) {
-    // Handle the selected files from the file input here
-    displayThumbnails(event.target.files);
-});
-
-// Add event listener to the URL input for 'change' event
-urlInput.addEventListener('change', function (event) {
-    displayThumbnails(event.target.value);
-});
-
-/*
-urlInput.addEventListener('keyup', function (event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Prevent default form submission
-        displayThumbnails(event.target.value);
-    }
-});
 */
