@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="../assets/css/styles.css" />
+</head>
+
+<body>
+    <h1 id="title">Calscape Photo Contribution</h1>
+    <h2>Select photos</h2>
+    <div>
+        <form id="selection-form">
+            <!-- File input for choosing files from the file system -->
+            <input type="file" id="file-input" multiple>
+            <p align="left" padding="0">or</p>
+            <!-- URL input for entering a file source URL -->
+            <input type="url" id="url-input" placeholder="Enter Flickr URL">
+        </form>
+    </div>
+
+    <!-- Display uploaded file thumbnails or URL previews here -->
+    <div>
+        <h2>Reorder photos</h2>
+    </div>
+    <div id="thumbnail-scroll-container">
+        <div id="thumbnail-grid">
+            <!-- Thumbnails will be loaded here -->
+        </div>
+    </div>
+
+
+    <h2>Set photo properties</h2>
+    <div id="properties-container">
+        <!-- Properties will be loaded here -->
+        <div class="properties">
+            <div class="column">Source properties</div>
+            <div class="column">Calscape properties</div>
+        </div>
+    </div>
+
+    <form id="submission-form">
+        <!-- Metadata fields will be populated here -->
+        <button type="button" class="button-3" id="submit-button">Submit</button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../assets/js/thumbnails.js"></script>
+    <script src="../assets/js/properties.js"></script>
+
+</body>
+
+</html>

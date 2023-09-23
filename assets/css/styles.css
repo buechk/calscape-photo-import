@@ -1,0 +1,227 @@
+html {
+    margin: 0;
+    height: 100%;
+    padding: 3px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+body {
+    text-align: center;
+    /* Center-align text */
+}
+
+#title {
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Reduce vertical space between form elements */
+#selection-form {
+    margin: 0;
+    padding: 0;
+}
+
+#file-input,
+#url-input {
+    margin: 0;
+    padding: 5px 0;
+    /* Adjust the top and bottom padding */
+}
+
+#properties-container {
+    text-align: center;
+}
+
+.properties {
+    display: flex;
+    /* Use flexbox to create a row layout */
+    justify-content: space-between;
+    /* Space items evenly */
+    align-items: flex-start;
+    /* Align items to the top */
+    text-align: left;
+    font-weight: bold;
+}
+
+.column {
+    /* Remove flex: 1; to allow content to determine column width */
+    border: 1px solid #000;
+    padding: 1rem;
+    font-size: 14px;
+    float: left;
+    width: 50%;
+}
+
+#file-upload {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: none
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+h2 {
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: block;
+    text-align: left;
+    /* Add this property to ensure left alignment */
+}
+
+/* Define styles for the outer container */
+#thumbnail-scroll-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 270px;
+}
+
+/* Define styles for the grid */
+#thumbnail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 20px;
+    background-color: #eee;
+}
+
+/* Define styles for selected thumbnails */
+.thumbnail.selected {
+    border: 3px solid #007bff;
+    /* Highlight the selected thumbnails */
+}
+
+.thumbnail {
+    width: 150px;
+    height: 150px;
+    border: 1px solid #ccc;
+    background-size: cover;
+    background-position: center;
+    cursor: move;
+}
+
+
+.hr {
+    margin: 0px 5em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid grey;
+    border-radius: 1em;
+    background-color: gray;
+}
+
+* {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+label {
+    display: block;
+}
+
+input {
+    display: block;
+    width: 100%;
+    padding: 8px 5px;
+    border: 1px solid #CCC;
+}
+
+:root {
+    color-scheme: dark light;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 1rem;
+    font-family: system-ui, sans-serif;
+}
+
+button {
+    margin: 1rem;
+}
+
+/* CSS */
+.button-3 {
+    appearance: none;
+    background-color: #2ea44f;
+    border: 1px solid rgba(27, 31, 35, .15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 6px 16px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+    float: left
+}
+
+.button-3:focus:not(:focus-visible):not(.focus-visible) {
+    box-shadow: none;
+    outline: none;
+}
+
+.button-3:hover {
+    background-color: #2c974b;
+}
+
+.button-3:focus {
+    box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+    outline: none;
+}
+
+.button-3:disabled {
+    background-color: #94d3a2;
+    border-color: rgba(27, 31, 35, .1);
+    color: rgba(255, 255, 255, .8);
+    cursor: default;
+}
+
+.button-3:active {
+    background-color: #298e46;
+    box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+}
+
+textarea {
+    width: 100%;
+    height: 100%;
+}
+
+#top {
+    height: 180px;
+    position: relative;
+}
+
+#bottom {
+    height: 100%;
+    margin-top: -180px;
+    padding-top: 180px;
+}
