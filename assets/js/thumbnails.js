@@ -8,6 +8,42 @@
 const selectedThumbnails = [];
 
 /**
+ *  Display thumbnails from files or URLs
+ * 
+ * @param input is either a File
+ */
+function displayThumbnails(input) {
+    const thumbnailGrid = document.getElementById('thumbnail-grid');
+
+    // Enable drag-and-drop reordering of thumbnails
+    const sortable = new Sortable(thumbnailGrid, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        multiDrag: true,
+        selectedClass: 'selected'
+    });
+
+    thumbnailGrid.innerHTML = ''; // Clear previous thumbnails
+
+    if (input instanceof FileList) {
+        // Handle files from file input
+        displayImagesFromFilesystem(input);
+
+    } else if (typeof input === 'string' && input.trim() !== '') {
+        // Handle URLs
+        // Check if the input is a Flickr URL
+        if (input.includes('flickr.com')) {
+            // Extract image URLs from Flickr page and display thumbnails
+            displayImagesFromFlickr(input)
+        } else {
+            alert("The URL must be a flickr.com URL");
+        }
+    }
+}
+
+/**
  * 
  * Displays the thumbnails given in the file list
  * 

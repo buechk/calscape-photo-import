@@ -5,18 +5,24 @@
     <link rel="stylesheet" type="text/css" href="../assets/css/styles.css" />
 </head>
 
-<body>
+<header>
     <h1 id="title">Calscape Photo Contribution</h1>
-    <h2>Select photos</h2>
-    <div>
-        <!-- File input for choosing files from the file system -->
-        <input type="file" id="file-input" multiple>
-        <p align="left" padding="0">or</p>
-        <!-- URL input for entering a file source URL -->
-        <input type="url" id="url-input" placeholder="Enter Flickr URL">
-    </div>
+</header>
 
-    <!-- Display uploaded file thumbnails or URL previews here -->
+<nav id="menu">
+    <ul>
+        <li><a href="#">Select photos</a>
+            <ul class="submenu">
+                <li><a href="#" id="selectFilesLink">Select files...</a></li>
+                <li><a href="#" id="selectFromFlickrLink">Select from Flickr...</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+<body>
+
+    <!-- Display selected file thumbnails or URL previews here -->
     <div>
         <h2>Reorder photos</h2>
     </div>
@@ -39,6 +45,25 @@
         <!-- Metadata fields will be populated here -->
         <button type="button" class="button-3" id="submit-button">Submit</button>
     </form>
+
+    <!-- Modal for Importing Files -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fileModalClose">&times;</span>
+            <h2>Select Files</h2>
+            <input type="file" id="fileInput" multiple>
+        </div>
+    </div>
+
+    <!-- Modal for Importing from Flickr -->
+    <div id="flickrModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="flickrModalClose">&times;</span>
+            <h2>Enter a Flickr URL:</h2>
+            <input type="text" id="flickrUrl">
+            <button id="importFromFlickr">Select</button>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
