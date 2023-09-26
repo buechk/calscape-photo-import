@@ -55,8 +55,14 @@ function displayImagesFromFilesystem(filelist) {
 
     for (let i = 0; i < filelist.length; i++) {
         const file = filelist[i];
+        // create a container for the thumbnail and its caption
+        const tcontainer = document.createElement('div');
         const thumbnail = document.createElement('div');
         thumbnail.classList.add('thumbnail');
+        tcontainer.appendChild(thumbnail);
+        const caption = document.createElement('div')
+        caption.innerText = file.name;
+        tcontainer.appendChild(caption);
 
         // Create a FileReader to read the file as a data URL
         const reader = new FileReader();
@@ -67,7 +73,7 @@ function displayImagesFromFilesystem(filelist) {
         // Read the file as a data URL
         reader.readAsDataURL(file);
 
-        thumbnailGrid.appendChild(thumbnail);
+        thumbnailGrid.appendChild(tcontainer);
     }
 }
 
@@ -101,10 +107,11 @@ function displayImagesFromFlickr(url) {
                         var serverId = photo.server;
                         var id = photo.id;
                         var secret = photo.secret;
+                        var title = photo.title;
 
                         // Construct the thumbnail URL
                         var t_url = "https://farm" + farmId + ".staticflickr.com/" + serverId + "/" + id + "_" + secret + "_" + "q.jpg";
-                        loadThumbnailImage(t_url);
+                        loadThumbnailImage(t_url, title);
                     }
                 }
             } else {
@@ -125,11 +132,18 @@ function displayImagesFromFlickr(url) {
  * 
  * @param {*} t_url 
  */
-function loadThumbnailImage(t_url) {
+function loadThumbnailImage(t_url, title) {
     const image = new Image();
     image.src = t_url;
     const thumbnail = document.createElement('div');
     thumbnail.classList.add('thumbnail');
+
+    // create a container for the thumbnail and its caption
+    const tcontainer = document.createElement('div');
+    const caption = document.createElement('div')
+    caption.innerText = title;
+    tcontainer.appendChild(thumbnail);
+    tcontainer.appendChild(caption);
 
     image.onload = function () {
         // Once the image is loaded, set it as the background image for the thumbnail
@@ -137,7 +151,7 @@ function loadThumbnailImage(t_url) {
 
         // Add the thumbnail to the grid
         const thumbnailGrid = document.getElementById('thumbnail-grid');
-        thumbnailGrid.appendChild(thumbnail);
+        thumbnailGrid.appendChild(tcontainer);
     };
 
     image.onerror = function () {
