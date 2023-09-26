@@ -14,10 +14,23 @@ const selectedThumbnails = [];
  */
 function displayThumbnails(input) {
     const thumbnailGrid = document.getElementById('thumbnail-grid');
+    const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 
     // Enable drag-and-drop reordering of thumbnails
     const sortable = new Sortable(thumbnailGrid, {
         animation: 150,
+        group: 'shared-group',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        multiDrag: true,
+        selectedClass: 'selected'
+    });
+
+    // Enable drag-and-drop reordering of thumbnails
+    const sortablegroup = new Sortable(thumbnailGroupGrid, {
+        animation: 150,
+        group: 'shared-group',
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
         dragClass: 'sortable-drag',
@@ -26,6 +39,7 @@ function displayThumbnails(input) {
     });
 
     thumbnailGrid.innerHTML = ''; // Clear previous thumbnails
+    thumbnailGroupGrid.innerHTML = ''; // Clear previous thumbnails
 
     if (input instanceof FileList) {
         // Handle files from file input
@@ -62,6 +76,7 @@ function displayImagesFromFilesystem(filelist) {
         thumbnail.classList.add('thumbnail');
         tcontainer.appendChild(thumbnail);
         const caption = document.createElement('div')
+        caption.classList.add('caption');
         caption.innerText = file.name;
         tcontainer.appendChild(caption);
 
@@ -143,6 +158,7 @@ function loadThumbnailImage(t_url, title) {
     const tcontainer = document.createElement('div');
     tcontainer.classList.add('tcontainer');
     const caption = document.createElement('div')
+    caption.classList.add('caption');
     caption.innerText = title;
     tcontainer.appendChild(thumbnail);
     tcontainer.appendChild(caption);

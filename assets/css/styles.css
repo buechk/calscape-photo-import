@@ -1,7 +1,7 @@
 html {
     margin: 0;
     height: 100%;
-    padding: 3px;
+    padding: 0px;
     font-family: Arial, sans-serif;
     font-size: 16px;
 }
@@ -11,19 +11,12 @@ body {
 }
 
 #title {
-    padding-top: 20px;
+    padding-top: 10px;
     color: #fff;
     font-size: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
 }
-
-#file-input,
-#url-input {
-    margin: 0;
-    padding: 5px 0;
-}
-
 
 h2 {
     font-size: 16px;
@@ -31,59 +24,65 @@ h2 {
     margin-bottom: 10px;
     display: block;
     text-align: left;
-    /* Add this property to ensure left alignment */
 }
 
 .main-container {
-    /* This container holds both divs */
-    display: flex; /* Use flexbox to achieve full width and side-by-side layout */
+    display: flex;
 }
 
 .source-photos-container,
+.right-container {
+    flex: 1;
+    padding: 10px;
+}
+
+.thumbnail-scroll-container {
+    max-height: 600px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px;
+}
+
+.group-thumbnail-scroll-container {
+    max-width: 800px; 
+    overflow-x: auto; /* Enable horizontal scrolling */
+    padding: 10px;
+}
+
 .selected-properties-container {
-    flex: 1; /* Distribute available space evenly */
-    padding: 10px; 
-}
-
-/* Define styles for the outer container */
-.source-photos-container {
-    max-height: 600px; /* Set a maximum height */
-    overflow-y: auto; /* Add vertical scrollbar if content overflows */
-}
-
-/* Define styles for the outer container */
-#thumbnail-scroll-container {
-    overflow-x: hidden;
-}
-
-.tcontainer {
-    text-align: center;
-    border: 1px solid #ccc;
-    background-size: cover;
-    background-position: center;
-    cursor: move;
-}
-
-.tcontainer.selected {
-    border: 3px solid #007bff;
+    max-height: 400px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px;
 }
 
 /* Define styles for the grid */
-#thumbnail-grid {
+#thumbnail-grid,
+#thumbnail-group-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
     padding: 20px;
     background-color: #eee;
+    min-height: 250px;
 }
 
-.thumbnail {
+.tcontainer .thumbnail {
     width: 150px;
     height: 150px;
     border: 1px solid #ccc;
     background-size: cover;
     background-position: center;
-    cursor: move;
+}
+
+.tcontainer.selected {
+    width: 156px;
+    border: 3px solid #007bff;
+}
+
+.caption {
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px; /* Adjust the margin as needed */
+    text-align: center; /* Center the text */
 }
 
 #properties-container {
@@ -159,19 +158,19 @@ header {
 
 #menu ul {
     list-style-type: none;
-    padding: 10px;
+    padding: 5px;
     margin: 0; 
 }
 
 #menu ul li {
-    padding: 10px;
+    padding: 5px;
 }
 
 #menu ul li a {
     text-decoration: none;
     color: white; 
     display: block;
-    padding: 5px 10px; /* Adjusted padding */
+    padding: 5px 5px; /* Adjusted padding */
 }
 
 #menu ul li ul.submenu {
