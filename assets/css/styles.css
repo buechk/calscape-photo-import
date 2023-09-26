@@ -64,6 +64,17 @@ h2 {
     /* Add this property to ensure left alignment */
 }
 
+.main-container {
+    /* This container holds both divs */
+    display: flex; /* Use flexbox to achieve full width and side-by-side layout */
+}
+
+.source-photos-container,
+.selected-properties-container {
+    flex: 1; /* Distribute available space evenly */
+    padding: 10px; 
+}
+
 /* Define styles for the outer container */
 #thumbnail-scroll-container {
     overflow-x: hidden;
@@ -80,10 +91,8 @@ h2 {
     background-color: #eee;
 }
 
-/* Define styles for selected thumbnails */
 .thumbnail.selected {
     border: 3px solid #007bff;
-    /* Highlight the selected thumbnails */
 }
 
 .thumbnail {
@@ -93,6 +102,18 @@ h2 {
     background-size: cover;
     background-position: center;
     cursor: move;
+}
+
+.tcontainer {
+    text-align: center;
+    border: 1px solid #ccc;
+    background-size: cover;
+    background-position: center;
+    cursor: move;
+}
+
+.tcontainer.selected {
+    border: 3px solid #007bff;
 }
 
 

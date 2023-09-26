@@ -58,6 +58,7 @@ function displayImagesFromFilesystem(filelist) {
         // create a container for the thumbnail and its caption
         const tcontainer = document.createElement('div');
         const thumbnail = document.createElement('div');
+        tcontainer.classList.add('tcontainer');
         thumbnail.classList.add('thumbnail');
         tcontainer.appendChild(thumbnail);
         const caption = document.createElement('div')
@@ -140,6 +141,7 @@ function loadThumbnailImage(t_url, title) {
 
     // create a container for the thumbnail and its caption
     const tcontainer = document.createElement('div');
+    tcontainer.classList.add('tcontainer');
     const caption = document.createElement('div')
     caption.innerText = title;
     tcontainer.appendChild(thumbnail);
