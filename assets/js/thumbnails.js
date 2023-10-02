@@ -4,31 +4,35 @@
  *  
 **/
 
+import { getFileData } from "./photo-selection.js";
+import { setSelectedProperties } from './properties.js';
+
 // Initialize an array to keep track of selected thumbnails
 const selectedThumbnails = [];
+
+export const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+
+// Enable drag-and-drop reordering of thumbnails
+export const sortablegroup = new Sortable(thumbnailGroupGrid, {
+    animation: 150,
+    group: 'shared-group',
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    dragClass: 'sortable-drag',
+    multiDrag: true,
+    selectedClass: 'selected'
+});
 
 /**
  *  Display thumbnails from files or URLs
  * 
- * @param input is either a File
+ * @param input is either a file list or a url
  */
-function displayThumbnails(input) {
+export function displayThumbnails(input) {
     const thumbnailGrid = document.getElementById('thumbnail-grid');
-    const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 
     // Enable drag-and-drop reordering of thumbnails
     const sortable = new Sortable(thumbnailGrid, {
-        animation: 150,
-        group: 'shared-group',
-        ghostClass: 'sortable-ghost',
-        chosenClass: 'sortable-chosen',
-        dragClass: 'sortable-drag',
-        multiDrag: true,
-        selectedClass: 'selected'
-    });
-
-    // Enable drag-and-drop reordering of thumbnails
-    const sortablegroup = new Sortable(thumbnailGroupGrid, {
         animation: 150,
         group: 'shared-group',
         ghostClass: 'sortable-ghost',
@@ -43,7 +47,7 @@ function displayThumbnails(input) {
 
     if (input instanceof FileList) {
         // Handle files from file input
-        displayImagesFromFilesystem(input);
+        displayImagesFromFilesystem();
 
     } else if (typeof input === 'string' && input.trim() !== '') {
         // Handle URLs
@@ -63,33 +67,44 @@ function displayThumbnails(input) {
  * 
  * @param {*} filelist 
  */
-function displayImagesFromFilesystem(filelist) {
+function displayImagesFromFilesystem() {
     // Handle files from file input
     const thumbnailGrid = document.getElementById('thumbnail-grid');
 
-    for (let i = 0; i < filelist.length; i++) {
-        const file = filelist[i];
-        // create a container for the thumbnail and its caption
-        const tcontainer = document.createElement('div');
-        const thumbnail = document.createElement('div');
-        tcontainer.classList.add('tcontainer');
-        thumbnail.classList.add('thumbnail');
-        tcontainer.appendChild(thumbnail);
-        const caption = document.createElement('div')
-        caption.classList.add('caption');
-        caption.innerText = file.name;
-        tcontainer.appendChild(caption);
+    const fileData = getFileData();
+    for (const uniqueIdentifier in fileData) {
+        const file = fileData[uniqueIdentifier];
+        if (fileData.hasOwnProperty(uniqueIdentifier)) {
+            // create a container for the thumbnail and its caption and id
+            const tcontainer = document.createElement('div');
+            const thumbnail = document.createElement('div');
+            tcontainer.classList.add('tcontainer');
+            thumbnail.classList.add('thumbnail');
+            tcontainer.appendChild(thumbnail);
+            const caption = document.createElement('div');
+            caption.classList.add('caption');
+            caption.innerText = file.name;
+            tcontainer.appendChild(caption);
+            const id = document.createElement('div');
+            tcontainer.id = uniqueIdentifier;
 
-        // Create a FileReader to read the file as a data URL
-        const reader = new FileReader();
-        reader.onload = function () {
-            thumbnail.style.backgroundImage = `url(${reader.result})`;
-        };
+            // listen for when a thumbnail is selected so properties can be updated
+            tcontainer.addEventListener('click', setSelectedProperties);
 
-        // Read the file as a data URL
-        reader.readAsDataURL(file);
+            // Create a FileReader to read the file as a data URL
+            const reader = new FileReader();
+            reader.onload = function () {
+                thumbnail.style.backgroundImage = `url(${reader.result})`;
+            };
 
-        thumbnailGrid.appendChild(tcontainer);
+            // Read the file as a data URL
+            reader.readAsDataURL(file);
+
+            thumbnailGrid.appendChild(tcontainer);
+        }
+        else {
+            console.error("Error: Unexpected value in fileData ${fileData}", fileData);
+        }
     }
 }
 
@@ -99,6 +114,8 @@ function displayImagesFromFilesystem(filelist) {
  * @param {*} url 
  */
 function displayImagesFromFlickr(url) {
+    // Instead of directly issuing URL that user input. Let user input their home page URL
+    // and parse the user_id out and construct the REST URL
     var parameters = {
         "async": true,
         "crossDomain": true,
@@ -143,25 +160,32 @@ function displayImagesFromFlickr(url) {
 }
 
 /**
- * 
  * Displays the given thumbnail URL in the thumbnail grid
  * 
- * @param {*} t_url 
+ * @param {string} t_url - URL of the thumbnail image
+ * @param {string} title - Title for the thumbnail
  */
 function loadThumbnailImage(t_url, title) {
+    // create a container for the thumbnail and its caption
+    const tcontainer = document.createElement('div');
+    tcontainer.classList.add('tcontainer');
+
     const image = new Image();
     image.src = t_url;
     const thumbnail = document.createElement('div');
     thumbnail.classList.add('thumbnail');
+    tcontainer.appendChild(thumbnail);
 
-    // create a container for the thumbnail and its caption
-    const tcontainer = document.createElement('div');
-    tcontainer.classList.add('tcontainer');
+    // add a visible caption
     const caption = document.createElement('div')
     caption.classList.add('caption');
     caption.innerText = title;
-    tcontainer.appendChild(thumbnail);
     tcontainer.appendChild(caption);
+
+    // set tcontainer id to unique identifier
+    const idElement = document.createElement('div');
+    var imageid = extractIdFromUrl(t_url);
+    tcontainer.id = imageid;
 
     image.onload = function () {
         // Once the image is loaded, set it as the background image for the thumbnail
@@ -179,8 +203,73 @@ function loadThumbnailImage(t_url, title) {
     };
 }
 
-/*
-function handlePhotoSelection(event) {
-    // pass selected photos to properties code
+/**
+ *  create a container for the thumbnail and its caption
+ */
+function createThumbnailContainer(t_url) {
+    // create a container for the thumbnail and its caption
+    const tcontainer = document.createElement('div');
+    tcontainer.classList.add('tcontainer');
+
+    const image = new Image();
+    image.src = t_url;
+    const thumbnail = document.createElement('div');
+    thumbnail.classList.add('thumbnail');
+    tcontainer.appendChild(thumbnail);
+
+    // add a visible caption
+    const caption = document.createElement('div')
+    caption.classList.add('caption');
+    caption.innerText = title;
+    tcontainer.appendChild(caption);
+
+    // set tcontainer id to unique identifier
+    var imageid = extractIdFromUrl(t_url);
+    tcontainer.id = imageid;
+
+    return tcontainer;
 }
+
+function extractIdFromUrl(t_url) {
+    // Split the URL by underscores
+    var urlParts = t_url.split('_');
+
+    // Extract the third-to-last part as the 'id'
+    var extractedId = urlParts[urlParts.length - 3];
+
+    return extractedId;
+}
+
+/*
+/** 
+ * Store the selected thumbnails
+//
+// Function to toggle selection state
+function toggleSelection(event) {
+    if (event.target !== thumbnailGroupGrid) {
+        // The clicked element is a child of the parent <div>
+        var tcontainer = event.target;
+
+        if (selectedThumbnails.includes(tcontainer)) {
+            // Deselect if already selected
+            tcontainer.classList.remove('selected');
+            const index = selectedThumbnails.indexOf(tcontainer);
+            if (index > -1) {
+                selectedThumbnails.splice(index, 1);
+            }
+        } else {
+            // Select if not already selected
+            tcontainer.classList.add('selected');
+            selectedThumbnails.push(tcontainer);
+        }
+
+        selectedThumbnails = sortablegroup.selected;
+    }
+}
+
+// EVENT LISTENERS
+
+// Add a click event listener to toggle selection
+thumbnailGroupGrid.addEventListener('click', toggleSelection);
+
 */
