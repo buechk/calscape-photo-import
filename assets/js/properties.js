@@ -277,7 +277,8 @@ export function showSelectedProperties(event) {
         for (let i = 0; i < propertiesContainer.children.length; i++) {
             const formgroup = propertiesContainer.children[i];
             const input = formgroup.querySelector('.input');
-            input.value = imageData[input.id];
+            const property = input.id;
+            input.value = imageObj[tcontainerId][property];
         }
     }
 }
