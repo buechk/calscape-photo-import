@@ -5,7 +5,7 @@
 **/
 
 import { getFileData } from "./photo-selection.js";
-import { setSelectedProperties } from './properties.js';
+import { showSelectedProperties } from './properties.js';
 
 // Initialize an array to keep track of selected thumbnails
 const selectedThumbnails = [];
@@ -89,7 +89,7 @@ function displayImagesFromFilesystem() {
             tcontainer.id = uniqueIdentifier;
 
             // listen for when a thumbnail is selected so properties can be updated
-            tcontainer.addEventListener('click', setSelectedProperties);
+            tcontainer.addEventListener('click', showSelectedProperties);
 
             // Create a FileReader to read the file as a data URL
             const reader = new FileReader();

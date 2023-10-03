@@ -7,6 +7,7 @@ import { sortablegroup } from './thumbnails.js';
 import { getFileData } from "./photo-selection.js";
 
 const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+const propertiesContainer = document.getElementById('properties-container');
 const ROLE = "contributor"; // or "reviewer"
 
 const importconfig = {
@@ -43,10 +44,10 @@ const importconfig = {
                         "name": "ImageDescription",
                         "datasources": {
                             "flickr": "photo.description",
-                            "jpeg": "EXIF.DateTimeOriginal"
+                            "jpeg": "EXIF.ImageDescription"
                         },
                         "userinterface": {
-                            "label": "Photo description",
+                            "label": "Image description",
                             "default": "",
                             "roles": {
                                 "contributor": {
@@ -67,7 +68,7 @@ const importconfig = {
                         "name": "Artist",
                         "datasources": {
                             "flickr": "photo.owner.realname",
-                            "jpeg": "EXIF.MWG.Creator"
+                            "jpeg": "EXIF.Artist"
                         },
                         "userinterface": {
                             "label": "Artist",
@@ -90,7 +91,7 @@ const importconfig = {
                         "name": "CopyrightNotice",
                         "datasources": {
                             "flickr": "flickr.photos.getExif.Copyright",
-                            "jpeg": "EXIF.MWG.Copyright"
+                            "jpeg": "EXIF.Copyright"
                         },
                         "userinterface": {
                             "label": "Copyright Notice",
@@ -140,91 +141,150 @@ const importconfig = {
     }
 }
 
-let imageData = {}; // Data for each image will be stored here
+// Data for selected image will be stored here
+let imageData = {};
+/* example data
+{
+    "000": {
+        "DateTmeOriginal": "2023-9-27",
+        "ImageDescription": "Pathway with sedges",
+        "Artist": "Kristy",
+        "CopyrightNotice": "Creative Commons"
+    },
+    "001": {
+        "DateTmeOriginal": "2023-9-21",
+        "ImageDescription": "Buckwheat cascading over wall",
+        "Artist": "Ed",
+        "CopyrightNotice": "Public"
+    }
+    // More entries
+}
+*/
 
-export function setSelectedProperties(event) {
-    // To get the selected items
-    const id = event.target.parentElement.id;
+// Create a new MutationObserver instance to detect changes in the thumbnail group
+const observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+            // Loop through the added nodes
+            mutation.addedNodes.forEach(function (addedNode) {
+                // Do something with each added node
+                console.log('Child element added to thumbnail-group-grid:', addedNode);
+                populateThumbnailProperties(addedNode.id);
+            });
+        }
+    });
+});
+
+// Configure the observer to watch for changes to the child nodes
+const config = { childList: true };
+
+// Start observing the thumbnail-group-grid div for changes
+observer.observe(thumbnailGroupGrid, config);
+
+/**
+ * populate properties from the configured datasource for the given thumbnail
+ * @param {*} id thumbnail-group-grid id
+ */
+export async function populateThumbnailProperties(id) {
     const fileData = getFileData();
     const photo = fileData[id];
 
-    // check if imageData exists
     if (imageData === null || !imageData.hasOwnProperty(id)) {
-        // if not, create it
         const imageObj = {};
-        imageObj.id = id;
+        imageObj[id] = {};
+
+        // Read the photo file and parse EXIF data once
+        const exifData = await readAndParseExifData(photo);
+
         for (const table of importconfig.photoimportconfig.tables) {
             for (const column of table.columns) {
-                imageObj[column.name] = getDataSource(column.name, column.datasources, photo);
-                console.log(column.name + ": " + imageObj[column.name]);
+                // Use the parsed EXIF data for each column
+                imageObj[id][column.name] = getDataSource(column.name, column.datasources, exifData);
+                console.log(column.name + ": " + imageObj[id][column.name]);
             }
         }
+        imageData[id] = imageObj;
     } else {
-        console.log("Selected item is " + parent.id);
+        console.log("Selected item is " + id);
+    }
+    for (const key in imageData) {
+        if (imageData.hasOwnProperty(key)) {
+            const value = imageData[key];
+            console.log(`Key: ${key}, Value:`, value);
+        }
     }
 }
 
-function getDataSource(column, datasources, photo) {
+async function readAndParseExifData(photo) {
+    return new Promise((resolve, reject) => {
+        if (photo instanceof File && photo.type === 'image/jpeg') {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const imageData = event.target.result;
+
+                // Use the exif-js library to get EXIF data
+                try {
+                    const exifData = EXIF.readFromBinaryFile(imageData);
+                    resolve(exifData);
+                } catch (exifError) {
+                    console.error('Error parsing EXIF data:', exifError);
+                    reject('Error parsing EXIF data');
+                }
+            };
+
+            reader.onerror = function (event) {
+                console.error('Error occurred while reading the file', event);
+                reject('Error occurred while reading the file');
+            };
+
+            reader.readAsArrayBuffer(photo);
+        } else {
+            console.error("Photo is not a jpeg file");
+            reject('Photo is not a jpeg file');
+        }
+    });
+}
+
+function getDataSource(column, datasources, exifData) {
     let data = '';
-    if (photo instanceof File) {
-        getDataSourceforFile(column, photo, function (propertyvalue, error) {
-            if (error) {
-                console.error(error);
-            } else {
-                console.log(propertyvalue);
-                data = propertyvalue;
-            }
-        });
-    }
-    else {
-        data = getDataSourceforFlickr(datasources, photo);
+    if (exifData) {
+        const source = datasources && datasources.jpeg;
+        if (source) {
+            const propertyvalue = exifData[source.slice(source.indexOf('.') + 1)];
+            console.log('getDataSource: ' + column + ': ' + propertyvalue);
+            data = propertyvalue;
+        }
+    } else {
+        console.error('Exif data is not available');
     }
     return data;
 }
-
-function getDataSourceforFile(source, photo, callback) {
-    const property = source.slice(source.indexOf('.') + 1);
-
-    if (photo instanceof File && photo.type === 'image/jpeg') {
-        const reader = new FileReader();
-
-        reader.onload = function (event) {
-            const imageData = event.target.result;
-
-            // Use the exif-js library to parse EXIF data
-            try {
-                const exifData = EXIF.readFromBinaryFile(imageData);
-                console.log('EXIF : ' + exifData);
-                const propertyvalue = exifData[property];
-                // Call the callback with the property value
-                callback(propertyvalue);
-            } catch (exifError) {
-                console.error('Error parsing EXIF data:', exifError);
-                // Call the callback with an error
-                callback(null, 'Error parsing EXIF data');
-            }
-        };
-
-        reader.onerror = function (event) {
-            console.error('Error occurred while reading the file', event);
-            // Call the callback with an error if needed
-            callback(null, 'Error occurred while reading the file');
-        };
-
-        reader.readAsArrayBuffer(photo);
-    } else {
-        console.error("Photo is not a jpeg file");
-        // Call the callback with an error if needed
-        callback(null, 'Photo is not a jpeg file');
-    }
-}
-
 
 function getDataSourceforFlickr(column) {
     return '';
 }
 
-// Function to create text fields
+/**
+ * Function to display the properties of the selected thumbnail
+ */
+export function showSelectedProperties(event) {
+    if (event.target.parentNode.parentNode == thumbnailGroupGrid) {
+        // get the saved image data for the selected thumbnail container
+        const tcontainerId = event.target.parentNode.id;
+        const imageObj = imageData[tcontainerId];
+
+        // Iterate through the children elements of propertiesContainer
+        for (let i = 0; i < propertiesContainer.children.length; i++) {
+            const formgroup = propertiesContainer.children[i];
+            const input = formgroup.querySelector('.input');
+            input.value = imageData[input.id];
+        }
+    }
+}
+
+/**
+* Function to create text fields
+*/
 function createPropertiesFields() {
 
     const form = document.createElement('form');
@@ -234,9 +294,6 @@ function createPropertiesFields() {
 
         // Loop through columns within the current table
         for (const column of table.columns) {
-            console.log(`Column Name: ${column.name}`);
-
-            const datasources = column.datasources;
             const uiconfig = column.userinterface.roles[ROLE];
 
             // Create form-group
@@ -267,7 +324,7 @@ function createPropertiesFields() {
         }
     }
 
-    document.getElementById('properties-container').appendChild(form);
+    propertiesContainer.appendChild(form);
 }
 
 document.addEventListener('DOMContentLoaded', createPropertiesFields);
