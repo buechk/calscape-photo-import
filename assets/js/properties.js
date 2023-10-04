@@ -3,12 +3,12 @@
  *  Display properties of source photos and apply properties to Calscape photos. 
  * 
 */
-import { sortablegroup } from './thumbnails.js';
-import { getFileData } from "./photo-selection.js";
+import { getSourcePhotos } from "./source-photo-data.js";
 
 const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 const propertiesContainer = document.getElementById('properties-container');
 const ROLE = "contributor"; // or "reviewer"
+const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
 const importconfig = {
     "photoimportconfig": {
@@ -43,7 +43,7 @@ const importconfig = {
 
                         "name": "ImageDescription",
                         "datasources": {
-                            "flickr": "photo.description",
+                            "flickr": "photo.description._content",
                             "jpeg": "EXIF.ImageDescription"
                         },
                         "userinterface": {
@@ -186,26 +186,42 @@ observer.observe(thumbnailGroupGrid, config);
  * @param {*} id thumbnail-group-grid id
  */
 export async function populateThumbnailProperties(id) {
-    const fileData = getFileData();
-    const photo = fileData[id];
+    const photoData = getSourcePhotos();
 
+    // If we have not already stored data for this image then store it now
     if (imageData === null || !imageData.hasOwnProperty(id)) {
         const imageObj = {};
         imageObj[id] = {};
 
-        // Read the photo file and parse EXIF data once
-        const exifData = await readAndParseExifData(photo);
+        const photo = photoData[id];
 
-        for (const table of importconfig.photoimportconfig.tables) {
-            for (const column of table.columns) {
-                // Use the parsed EXIF data for each column
-                imageObj[id][column.name] = getDataSource(column.name, column.datasources, exifData);
-                console.log(column.name + ": " + imageObj[id][column.name]);
+        if (photo instanceof File) {
+            // Read the photo file and parse EXIF data once
+            const exifData = await readAndParseExifData(photo);
+
+            for (const table of importconfig.photoimportconfig.tables) {
+                for (const column of table.columns) {
+                    // Use the parsed EXIF data for each Calscape table column
+                    imageObj[id][column.name] = getExifPropertyValue(column.name, column.datasources, exifData);
+                    console.log(column.name + ": " + imageObj[id][column.name]);
+                }
             }
         }
+        else {
+            console.log(`photo ${id} is from Flickr`);
+            const flickrData = await getFlickrPhotoInfo(id);
+            for (const table of importconfig.photoimportconfig.tables) {
+                for (const column of table.columns) {
+                    // Use the parsed Flickr info data for each Calscape table column
+                    imageObj[id][column.name] = getFlickrPropertyValue(column.name, column.datasources, flickrData);
+                    console.log(column.name + ": " + imageObj[id][column.name]);
+                }
+            } 
+        }
+
         imageData[id] = imageObj;
     } else {
-        console.log("Selected item is " + id);
+        console.log(`Photo data for selected item ${id} already exists`);
     }
     for (const key in imageData) {
         if (imageData.hasOwnProperty(key)) {
@@ -239,13 +255,13 @@ async function readAndParseExifData(photo) {
 
             reader.readAsArrayBuffer(photo);
         } else {
-            console.error("Photo is not a jpeg file");
+            console.error('Photo is not a jpeg file');
             reject('Photo is not a jpeg file');
         }
     });
 }
 
-function getDataSource(column, datasources, exifData) {
+function getExifPropertyValue(column, datasources, exifData) {
     let data = '';
     if (exifData) {
         const source = datasources && datasources.jpeg;
@@ -260,8 +276,70 @@ function getDataSource(column, datasources, exifData) {
     return data;
 }
 
-function getDataSourceforFlickr(column) {
-    return '';
+async function getFlickrPhotoInfo(id) {
+    return new Promise((resolve, reject) => {
+    const apiKey = FLICKR_APIKEY;
+    const photoId = id; // Replace with your photo ID
+
+    // Construct the API URL
+    const apiUrl = 'https://www.flickr.com/services/rest/';
+
+    // Make an AJAX request to the Flickr API
+    $.ajax({
+        url: apiUrl,
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            method: 'flickr.photos.getInfo',
+            api_key: apiKey,
+            photo_id: photoId,
+            format: 'json',
+            nojsoncallback: 1,
+        },
+        success: function (flickrInfo) {
+            // Handle the API response here
+            console.log(flickrInfo);
+            resolve(flickrInfo);
+        },
+        error: function (error) {
+            // Handle errors here
+            console.error(error);
+        },
+    });
+});
+}
+
+function navigateBracketNotation(obj, path, defaultValue = undefined) {
+  const pathArray = path.split('.');
+  let notation = obj;
+
+  try {
+    for (const prop of pathArray) {
+      if (!notation.hasOwnProperty(prop)) {
+        throw new Error(`Property '${prop}' not found in path '${path}'`);
+      }
+      notation = notation[prop];
+    }
+    return notation;
+  } catch (error) {
+    console.error(error.message);
+    return defaultValue;
+  }
+}
+
+function getFlickrPropertyValue(column, datasources, flickrData) {
+    let data = '';
+    if (flickrData) {
+        const source = datasources && datasources.flickr;
+        if (source) {
+            const propertyvalue = navigateBracketNotation(flickrData, source);
+            console.log('getDataSource: ' + column + ': ' + propertyvalue);
+            data = propertyvalue;
+        }
+    } else {
+        console.error('Exif data is not available');
+    }
+    return data;
 }
 
 /**
@@ -274,11 +352,20 @@ export function showSelectedProperties(event) {
         const imageObj = imageData[tcontainerId];
 
         // Iterate through the children elements of propertiesContainer
-        for (let i = 0; i < propertiesContainer.children.length; i++) {
-            const formgroup = propertiesContainer.children[i];
-            const input = formgroup.querySelector('.input');
-            const property = input.id;
-            input.value = imageObj[tcontainerId][property];
+        for (const property in imageObj[tcontainerId]) {
+            const input = document.getElementById(property);
+            if (input !== null && input !== undefined) {
+                const value = imageObj[tcontainerId][property];
+                if (value !== undefined) {
+                    input.value = imageObj[tcontainerId][property];
+                }
+                else {
+                    input.value = '';
+                }
+            } else {
+                console.log('Input element not found for property:', property);
+            }
+
         }
     }
 }
@@ -289,6 +376,7 @@ export function showSelectedProperties(event) {
 function createPropertiesFields() {
 
     const form = document.createElement('form');
+    form.id = ('properties-form');
 
     for (const table of importconfig.photoimportconfig.tables) {
         console.log(`Table: ${table.table}`);
@@ -331,58 +419,6 @@ function createPropertiesFields() {
 document.addEventListener('DOMContentLoaded', createPropertiesFields);
 
 /*
-const 
-function handlePhotoSelection(event) {
-    const selectedFile = event.target.files[0];
-
-    if (selectedFile) {
-        const filename = selectedFile.name;
-        const author = 'John Doe'; // Replace with actual author data if available
-        const keywords = ['file', 'example', 'data']; // Replace with actual keywords if available
-        const creationDate = selectedFile.lastModified; // Timestamp of file creation date
-        const modificationDate = selectedFile.lastModifiedDate; // Date object of file modification date
-
-        const fileInfo = {
-            filename,
-            author,
-            keywords,
-            creationDate,
-            modificationDate,
-        };
-
-        displayFileProperties(fileInfo);
-    } else {
-        // Clear properties if no file is selected
-        propertiesContainer.innerHTML = '';
-    }
-}
-
-function displayFileProperties(fileInfo) {
-    // Clear previous properties
-    propertiesContainer.innerHTML = '';
-
-    const filenameElement = document.createElement('p');
-    filenameElement.textContent = `Filename: ${fileInfo.filename}`;
-
-    const authorElement = document.createElement('p');
-    authorElement.textContent = `Author: ${fileInfo.author}`;
-
-    const keywordsElement = document.createElement('p');
-    keywordsElement.textContent = `Keywords: ${fileInfo.keywords.join(', ')}`;
-
-    const creationDateElement = document.createElement('p');
-    creationDateElement.textContent = `Creation Date: ${new Date(fileInfo.creationDate)}`;
-
-    const modificationDateElement = document.createElement('p');
-    modificationDateElement.textContent = `Modification Date: ${fileInfo.modificationDate}`;
-
-    propertiesContainer.appendChild(filenameElement);
-    propertiesContainer.appendChild(authorElement);
-    propertiesContainer.appendChild(keywordsElement);
-    propertiesContainer.appendChild(creationDateElement);
-    propertiesContainer.appendChild(modificationDateElement);
-}
-
 String.prototype.hashCode = function () {
     var hash = 0,
         i, chr;

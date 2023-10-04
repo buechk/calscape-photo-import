@@ -4,11 +4,8 @@
  *  
 **/
 
-import { getFileData } from "./photo-selection.js";
+import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
 import { showSelectedProperties } from './properties.js';
-
-// Initialize an array to keep track of selected thumbnails
-const selectedThumbnails = [];
 
 export const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 
@@ -47,7 +44,7 @@ export function displayThumbnails(input) {
 
     if (input instanceof FileList) {
         // Handle files from file input
-        displayImagesFromFilesystem();
+        displayImagesFromFilesystem(input);
 
     } else if (typeof input === 'string' && input.trim() !== '') {
         // Handle URLs
@@ -64,47 +61,47 @@ export function displayThumbnails(input) {
 /**
  * 
  * Displays the thumbnails given in the file list
- * 
- * @param {*} filelist 
+ *  @param {*} filelist 
  */
-function displayImagesFromFilesystem() {
+function displayImagesFromFilesystem(filelist) {
     // Handle files from file input
     const thumbnailGrid = document.getElementById('thumbnail-grid');
 
-    const fileData = getFileData();
-    for (const uniqueIdentifier in fileData) {
-        const file = fileData[uniqueIdentifier];
-        if (fileData.hasOwnProperty(uniqueIdentifier)) {
-            // create a container for the thumbnail and its caption and id
-            const tcontainer = document.createElement('div');
-            const thumbnail = document.createElement('div');
-            tcontainer.classList.add('tcontainer');
-            thumbnail.classList.add('thumbnail');
-            tcontainer.appendChild(thumbnail);
-            const caption = document.createElement('div');
-            caption.classList.add('caption');
-            caption.innerText = file.name;
-            tcontainer.appendChild(caption);
-            const id = document.createElement('div');
-            tcontainer.id = uniqueIdentifier;
+    // 
+    clearSourcePhotos();
+    for (let i = 0; i < filelist.length; i++) {
+        const file = filelist[i];
+        storeSourcePhoto(file);
+    }
 
-            // listen for when a thumbnail is selected so properties can be updated
-            tcontainer.addEventListener('click', showSelectedProperties);
+    const sourcePhotos = getSourcePhotos();
+    for (const uniqueIdentifier in sourcePhotos) {
+        const file = sourcePhotos[uniqueIdentifier];
+        // create a container for the thumbnail and its caption and id
+        const tcontainer = document.createElement('div');
+        const thumbnail = document.createElement('div');
+        tcontainer.classList.add('tcontainer');
+        thumbnail.classList.add('thumbnail');
+        tcontainer.appendChild(thumbnail);
+        const caption = document.createElement('div');
+        caption.classList.add('caption');
+        caption.innerText = file.name;
+        tcontainer.appendChild(caption);
+        tcontainer.id = uniqueIdentifier;
 
-            // Create a FileReader to read the file as a data URL
-            const reader = new FileReader();
-            reader.onload = function () {
-                thumbnail.style.backgroundImage = `url(${reader.result})`;
-            };
+        // listen for when a thumbnail is selected so properties can be updated
+        tcontainer.addEventListener('click', showSelectedProperties);
 
-            // Read the file as a data URL
-            reader.readAsDataURL(file);
+        // Create a FileReader to read the file as a data URL
+        const reader = new FileReader();
+        reader.onload = function () {
+            thumbnail.style.backgroundImage = `url(${reader.result})`;
+        };
 
-            thumbnailGrid.appendChild(tcontainer);
-        }
-        else {
-            console.error("Error: Unexpected value in fileData ${fileData}", fileData);
-        }
+        // Read the file as a data URL
+        reader.readAsDataURL(file);
+
+        thumbnailGrid.appendChild(tcontainer);
     }
 }
 
@@ -114,6 +111,8 @@ function displayImagesFromFilesystem() {
  * @param {*} url 
  */
 function displayImagesFromFlickr(url) {
+    clearSourcePhotos();
+
     // Instead of directly issuing URL that user input. Let user input their home page URL
     // and parse the user_id out and construct the REST URL
     var parameters = {
@@ -134,7 +133,7 @@ function displayImagesFromFlickr(url) {
             // Check if 'photos' property exists and 'total' property exists within 'photos'
             if (data && data.photos) {
                 for (var i = 0; i < data.photos.total; i++) {
-                    var photo = data.photos.photo[i]; // Declare photo variable here
+                    var photo = data.photos.photo[i];
                     if (photo) {
                         var farmId = photo.farm;
                         var serverId = photo.server;
@@ -144,7 +143,10 @@ function displayImagesFromFlickr(url) {
 
                         // Construct the thumbnail URL
                         var t_url = "https://farm" + farmId + ".staticflickr.com/" + serverId + "/" + id + "_" + secret + "_" + "q.jpg";
-                        loadThumbnailImage(t_url, title);
+                        loadThumbnailImage(t_url, id, title);
+
+                        // Store photo information
+                        storeSourcePhoto(photo);
                     }
                 }
             } else {
@@ -165,7 +167,7 @@ function displayImagesFromFlickr(url) {
  * @param {string} t_url - URL of the thumbnail image
  * @param {string} title - Title for the thumbnail
  */
-function loadThumbnailImage(t_url, title) {
+function loadThumbnailImage(t_url, imageid, title) {
     // create a container for the thumbnail and its caption
     const tcontainer = document.createElement('div');
     tcontainer.classList.add('tcontainer');
@@ -183,9 +185,10 @@ function loadThumbnailImage(t_url, title) {
     tcontainer.appendChild(caption);
 
     // set tcontainer id to unique identifier
-    const idElement = document.createElement('div');
-    var imageid = extractIdFromUrl(t_url);
     tcontainer.id = imageid;
+
+    // listen for when a thumbnail is selected so properties can be updated
+    tcontainer.addEventListener('click', showSelectedProperties);
 
     image.onload = function () {
         // Once the image is loaded, set it as the background image for the thumbnail
@@ -201,43 +204,6 @@ function loadThumbnailImage(t_url, title) {
         console.error(`Error loading image: ${t_url}`);
         // You can display a placeholder image or take other actions.
     };
-}
-
-/**
- *  create a container for the thumbnail and its caption
- */
-function createThumbnailContainer(t_url) {
-    // create a container for the thumbnail and its caption
-    const tcontainer = document.createElement('div');
-    tcontainer.classList.add('tcontainer');
-
-    const image = new Image();
-    image.src = t_url;
-    const thumbnail = document.createElement('div');
-    thumbnail.classList.add('thumbnail');
-    tcontainer.appendChild(thumbnail);
-
-    // add a visible caption
-    const caption = document.createElement('div')
-    caption.classList.add('caption');
-    caption.innerText = title;
-    tcontainer.appendChild(caption);
-
-    // set tcontainer id to unique identifier
-    var imageid = extractIdFromUrl(t_url);
-    tcontainer.id = imageid;
-
-    return tcontainer;
-}
-
-function extractIdFromUrl(t_url) {
-    // Split the URL by underscores
-    var urlParts = t_url.split('_');
-
-    // Extract the third-to-last part as the 'id'
-    var extractedId = urlParts[urlParts.length - 3];
-
-    return extractedId;
 }
 
 /*

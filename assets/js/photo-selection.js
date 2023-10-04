@@ -21,32 +21,6 @@ const selectFromFlickrLink = document.getElementById('selectFromFlickrLink');
 const fileInput = document.getElementById('fileInput');
 const flickrUrl = document.getElementById('flickrUrl');
 
-let fileData = {}; // Object to store file data with unique identifiers
-
-function generateUniqueIdentifier() {
-    // Generate a unique identifier using a timestamp and a random number
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000); // Adjust the range as needed
-    return `${timestamp}-${random}`;
-}
-
-function storeFileData(file) {
-    const uniqueIdentifier = generateUniqueIdentifier();
-    fileData[uniqueIdentifier] = file;
-}
-
-/**
- * 
- * @param {*} file 
- */
-export function getFileData(file) {
-    return fileData;
-}
-
-function clearFileData() {
-    fileData = {};
-}
-
 /**
  * Upload files to Calscape. This will be moved to another file.
  */
@@ -82,15 +56,8 @@ fileModalClose.addEventListener('click', () => {
 fileInput.addEventListener('change', function (event) {
     // Handle the selected files from the file input here
     // store files with a unique identifier for later upload
-    clearFileData();
-    const selectedFiles = fileInput.files;
-    for (let i = 0; i < selectedFiles.length; i++) {
-        const file = selectedFiles[i];
-        storeFileData(file);
-        console.log(`Stored file with unique identifier: ${generateUniqueIdentifier()}, File Name: ${file.name}`);
-    }
     // Display thumbnails
-    displayThumbnails(selectedFiles);
+    displayThumbnails(fileInput.files);
     fileInput.value = '';
     fileModal.style.display = 'none';
 });
