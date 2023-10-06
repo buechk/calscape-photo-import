@@ -7,7 +7,24 @@
 import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
 import { showSelectedProperties } from './properties.js';
 
+const thumbnailGrid = document.getElementById('thumbnail-grid');
 export const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+
+// variables for implementing standard click, shift-click, cmd-click, ctrl-click selection behavior on thumbnails
+let selectedThumbnails = [];
+let firstSelectedThumbnailThumbnailGrid = null; // Added variable for 'thumbnail-grid'
+let firstSelectedThumbnailThumbnailGroupGrid = null; // Added variable for 'thumbnail-group-grid'
+
+// Enable drag-and-drop reordering of thumbnails
+const sortable = new Sortable(thumbnailGrid, {
+    animation: 150,
+    group: 'shared-group',
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    dragClass: 'sortable-drag',
+    multiDrag: true,
+    selectedClass: 'selected'
+});
 
 // Enable drag-and-drop reordering of thumbnails
 export const sortablegroup = new Sortable(thumbnailGroupGrid, {
@@ -26,19 +43,6 @@ export const sortablegroup = new Sortable(thumbnailGroupGrid, {
  * @param input is either a file list or a url
  */
 export function displayThumbnails(input) {
-    const thumbnailGrid = document.getElementById('thumbnail-grid');
-
-    // Enable drag-and-drop reordering of thumbnails
-    const sortable = new Sortable(thumbnailGrid, {
-        animation: 150,
-        group: 'shared-group',
-        ghostClass: 'sortable-ghost',
-        chosenClass: 'sortable-chosen',
-        dragClass: 'sortable-drag',
-        multiDrag: true,
-        selectedClass: 'selected'
-    });
-
     thumbnailGrid.innerHTML = ''; // Clear previous thumbnails
     thumbnailGroupGrid.innerHTML = ''; // Clear previous thumbnails
 
@@ -206,36 +210,114 @@ function loadThumbnailImage(t_url, imageid, title) {
     };
 }
 
-/*
 /** 
- * Store the selected thumbnails
-//
-// Function to toggle selection state
-function toggleSelection(event) {
-    if (event.target !== thumbnailGroupGrid) {
-        // The clicked element is a child of the parent <div>
-        var tcontainer = event.target;
+ *  Function to toggle selection state
+*/
 
-        if (selectedThumbnails.includes(tcontainer)) {
-            // Deselect if already selected
-            tcontainer.classList.remove('selected');
-            const index = selectedThumbnails.indexOf(tcontainer);
-            if (index > -1) {
-                selectedThumbnails.splice(index, 1);
-            }
+function toggleSelection(event) {
+    if (event.target !== thumbnailGroupGrid && event.target !== thumbnailGrid) {
+        // The clicked element is a child of the parent <div>
+        const clickedElement = event.target;
+
+        let tcontainer;
+        // Check if the clicked element is a thumbnail
+        if (clickedElement.classList.contains('thumbnail')) {
+            // Find the parent tcontainer
+            tcontainer = clickedElement.parentNode;
+        } else if (clickedElement.classList.contains('thumbnail-container')) {
+            // The clicked element is already a tcontainer
+            tcontainer = clickedElement;
         } else {
-            // Select if not already selected
-            tcontainer.classList.add('selected');
-            selectedThumbnails.push(tcontainer);
+            console.error('Unexpected element selected: ' + clickedElement);
+            return; // Abort further processing for unexpected elements
         }
 
-        selectedThumbnails = sortablegroup.selected;
+        if (tcontainer !== undefined) {
+            if (event.ctrlKey || event.metaKey) {
+                // Ctrl or Cmd key is pressed, toggle selection without clearing others
+                if (selectedThumbnails.includes(tcontainer)) {
+                    // Deselect if already selected
+                    tcontainer.classList.remove('selected');
+                    const index = selectedThumbnails.indexOf(tcontainer);
+                    if (index > -1) {
+                        selectedThumbnails.splice(index, 1);
+                    }
+                } else {
+                    // Select if not already selected
+                    tcontainer.classList.add('selected');
+                    selectedThumbnails.push(tcontainer);
+                }
+            } else if (event.shiftKey) {
+                // Shift key is pressed, implement contiguous multi-select
+                const gridName = tcontainer.parentNode === thumbnailGroupGrid ? 'group' : 'normal';
+
+                if (gridName === 'normal') {
+                    if (firstSelectedThumbnailThumbnailGrid === null) {
+                        firstSelectedThumbnailThumbnailGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-grid'
+                    }
+                } else if (gridName === 'group') {
+                    if (firstSelectedThumbnailThumbnailGroupGrid === null) {
+                        firstSelectedThumbnailThumbnailGroupGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-group-grid'
+                    }
+                }
+
+                const firstSelectedThumbnail = gridName === 'normal' ? firstSelectedThumbnailThumbnailGrid : firstSelectedThumbnailThumbnailGroupGrid;
+
+                if (firstSelectedThumbnail === null) {
+                    // No previous first selected thumbnail, set the first one
+                    firstSelectedThumbnail = tcontainer;
+                } else {
+                    // Determine the range between the first selected and the current one
+                    const firstSelectedIndex = [...(gridName === 'normal' ? thumbnailGrid : thumbnailGroupGrid).children].indexOf(firstSelectedThumbnail);
+                    const currentIndex = [...(gridName === 'normal' ? thumbnailGrid : thumbnailGroupGrid).children].indexOf(tcontainer);
+
+                    // Determine the start and end indexes for the range
+                    const startIndex = Math.min(firstSelectedIndex, currentIndex);
+                    const endIndex = Math.max(firstSelectedIndex, currentIndex);
+
+                    // Clear previous selections
+                    for (let i = 0; i < selectedThumbnails.length; i++) {
+                        const tc = selectedThumbnails[i];
+                        tc.classList.remove('selected');
+                    }
+                    selectedThumbnails.length = 0; // Clear the array
+
+                    // Select the thumbnails in the determined range
+                    for (let i = startIndex; i <= endIndex; i++) {
+                        const tc = [...(gridName === 'normal' ? thumbnailGrid : thumbnailGroupGrid).children][i];
+                        tc.classList.add('selected');
+                        selectedThumbnails.push(tc);
+                    }
+                }
+            } else {
+                // No modifier key is pressed, clear previous selections and select the current one
+                for (let i = 0; i < selectedThumbnails.length; i++) {
+                    const tc = selectedThumbnails[i];
+                    tc.classList.remove('selected');
+                }
+                selectedThumbnails.length = 0; // Clear the array
+
+                const gridName = tcontainer.parentNode === thumbnailGroupGrid ? 'group' : 'normal';
+
+                if (gridName === 'normal') {
+                    firstSelectedThumbnailThumbnailGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-grid'
+                } else if (gridName === 'group') {
+                    firstSelectedThumbnailThumbnailGroupGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-group-grid'
+                }
+
+                tcontainer.classList.add('selected');
+                selectedThumbnails.push(tcontainer);
+            }
+        }
     }
 }
+
+
 
 // EVENT LISTENERS
 
 // Add a click event listener to toggle selection
-thumbnailGroupGrid.addEventListener('click', toggleSelection);
+thumbnailGrid.addEventListener('click', toggleSelection);
 
-*/
+// Add a click event listener to toggle selection
+thumbnailGroupGrid.addEventListener('click', toggleSelection);

@@ -370,6 +370,10 @@ export function showSelectedProperties(event) {
     }
 }
 
+export function clearSelectedProperties(event) {
+    
+}
+
 /**
 * Function to create text fields
 */
