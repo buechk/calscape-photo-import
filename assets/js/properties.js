@@ -9,6 +9,17 @@ const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 const propertiesContainer = document.getElementById('properties-container');
 const ROLE = "contributor"; // or "reviewer"
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
+const LICENSE_ENUM = {
+    0: "All Rights Reserved (ARR)",
+    1: "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+    2: "Attribution-NonCommercial (CC BY-NC)",
+    3: "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
+    4: "Attribution (CC BY)",
+    5: "Attribution-ShareAlike (CC BY-SA)",
+    6: "Attribution-NoDerivs (CC BY-ND)",
+    7: "Public Domain Dedication (CC0)",
+    8: "GNU Free Documentation License (GFDL)"
+}
 
 const importconfig = {
     "photoimportconfig": {
@@ -67,7 +78,7 @@ const importconfig = {
                     {
                         "name": "Artist",
                         "datasources": {
-                            "flickr": "photo.owner.realname",
+                            "flickr": ["photo.exif.[tag='Artist'].raw._content", "photo.owner.realname"],
                             "jpeg": "EXIF.Artist"
                         },
                         "userinterface": {
@@ -90,7 +101,7 @@ const importconfig = {
                     {
                         "name": "CopyrightNotice",
                         "datasources": {
-                            "flickr": "flickr.photos.getExif.Copyright",
+                            "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
                             "jpeg": "EXIF.Copyright"
                         },
                         "userinterface": {
@@ -104,6 +115,30 @@ const importconfig = {
                                 },
                                 "reviewer": {
                                     "readonly": true,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Keywords",
+                        "datasources": {
+                            "flickr": "photo.tags.tag.raw",
+                            "jpeg": "EXIF.Copyright"
+                        },
+                        "userinterface": {
+                            "label": "Keywords",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true,
+                                    "multivalue": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
                                     "required": false,
                                     "visible": true
                                 }
@@ -141,6 +176,7 @@ const importconfig = {
     }
 }
 
+
 // Data for selected image will be stored here
 let imageData = {};
 /* example data
@@ -160,6 +196,80 @@ let imageData = {};
     // More entries
 }
 */
+
+// Auto Expand textarea according to length of text
+let autoExpand = (selector, direction) => {
+
+    let styles = ''
+    let count = 0
+
+    let autoWidth = tag => {
+
+        let computed = getComputedStyle(tag)
+
+        tag.style.width = 'inherit'
+
+        let width = parseInt(computed.getPropertyValue('border-left-width'), 10)
+            + parseInt(computed.getPropertyValue('padding-left'), 10)
+            + tag.scrollWidth
+            + parseInt(computed.getPropertyValue('padding-right'), 10)
+            + parseInt(computed.getPropertyValue('border-right-width'), 10)
+
+        tag.style.width = ''
+
+        return `width: ${width}px;`
+
+    }
+
+    let autoHeight = tag => {
+
+        let computed = getComputedStyle(tag)
+
+        tag.style.height = 'inherit'
+
+        let height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+            + parseInt(computed.getPropertyValue('padding-top'), 10)
+            + tag.scrollHeight
+            + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+            + parseInt(computed.getPropertyValue('border-bottom-width'), 10)
+
+        tag.style.height = ''
+
+        return `height: ${height}px;`
+
+    }
+
+    document.querySelectorAll(selector).forEach(tag => {
+        if (tag.classList.contains('auto-expand-input')) {
+            let attr = selector.replace(/\W/g, '')
+            let rule = ''
+
+            tag.setAttribute(`data-${attr}`, count)
+
+            switch (direction) {
+
+                case 'width':
+                    rule += autoWidth(tag)
+                    break
+
+                case 'height':
+                    rule += autoHeight(tag)
+                    break
+
+                case 'both':
+                    rule += autoWidth(tag) + autoHeight(tag)
+                    break
+
+            }
+
+            styles += `${selector}[data-${attr}="${count}"] { ${rule} }\n`
+            count++
+        }
+
+    })
+
+    return styles
+}
 
 // Create a new MutationObserver instance to detect changes in the thumbnail group
 const observer = new MutationObserver(function (mutations) {
@@ -209,20 +319,21 @@ export async function populateThumbnailProperties(id) {
         }
         else {
             console.log(`photo ${id} is from Flickr`);
-            const flickrData = await getFlickrPhotoInfo(id);
+            const flickrData = await getFlickrPhotoInfo(id, 'flickr.photos.getInfo');
+            const flickrExifData = await getFlickrPhotoInfo(id, 'flickr.photos.getExif');
             for (const table of importconfig.photoimportconfig.tables) {
                 for (const column of table.columns) {
                     // Use the parsed Flickr info data for each Calscape table column
-                    imageObj[id][column.name] = getFlickrPropertyValue(column.name, column.datasources, flickrData);
-                    console.log(column.name + ": " + imageObj[id][column.name]);
+                    imageObj[id][column.name] = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
                 }
-            } 
+            }
         }
 
         imageData[id] = imageObj;
     } else {
         console.log(`Photo data for selected item ${id} already exists`);
     }
+    console.log('Populated image data: ');
     for (const key in imageData) {
         if (imageData.hasOwnProperty(key)) {
             const value = imageData[key];
@@ -276,70 +387,76 @@ function getExifPropertyValue(column, datasources, exifData) {
     return data;
 }
 
-async function getFlickrPhotoInfo(id) {
+async function getFlickrPhotoInfo(id, method) {
     return new Promise((resolve, reject) => {
-    const apiKey = FLICKR_APIKEY;
-    const photoId = id; // Replace with your photo ID
+        const apiKey = FLICKR_APIKEY;
+        const photoId = id;
 
-    // Construct the API URL
-    const apiUrl = 'https://www.flickr.com/services/rest/';
+        // Construct the API URL
+        const apiUrl = 'https://www.flickr.com/services/rest/';
 
-    // Make an AJAX request to the Flickr API
-    $.ajax({
-        url: apiUrl,
-        type: 'GET',
-        dataType: 'json',
-        data: {
-            method: 'flickr.photos.getInfo',
-            api_key: apiKey,
-            photo_id: photoId,
-            format: 'json',
-            nojsoncallback: 1,
-        },
-        success: function (flickrInfo) {
-            // Handle the API response here
-            console.log(flickrInfo);
-            resolve(flickrInfo);
-        },
-        error: function (error) {
-            // Handle errors here
-            console.error(error);
-        },
+        // Make an AJAX request to the Flickr API to getInfo
+        $.ajax({
+            url: apiUrl,
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                method: method,
+                api_key: apiKey,
+                photo_id: photoId,
+                format: 'json',
+                nojsoncallback: 1,
+            },
+            success: function (flickrInfo) {
+                // Handle the API response here
+                console.log(`Flicker ${method} call return data: ${flickrInfo}`);
+                resolve(flickrInfo);
+            },
+            error: function (error) {
+                // Handle errors here
+                console.error(error);
+            },
+        });
     });
-});
 }
 
-function navigateBracketNotation(obj, path, defaultValue = undefined) {
-  const pathArray = path.split('.');
-  let notation = obj;
+async function getFlickrPropertyValue(column, datasources, flickrData, flickrExifData) {
+    const sources = datasources && datasources.flickr;
+    let propertyvalue = '';
 
-  try {
-    for (const prop of pathArray) {
-      if (!notation.hasOwnProperty(prop)) {
-        throw new Error(`Property '${prop}' not found in path '${path}'`);
-      }
-      notation = notation[prop];
-    }
-    return notation;
-  } catch (error) {
-    console.error(error.message);
-    return defaultValue;
-  }
-}
-
-function getFlickrPropertyValue(column, datasources, flickrData) {
-    let data = '';
-    if (flickrData) {
-        const source = datasources && datasources.flickr;
-        if (source) {
-            const propertyvalue = navigateBracketNotation(flickrData, source);
-            console.log('getDataSource: ' + column + ': ' + propertyvalue);
-            data = propertyvalue;
+    if (Array.isArray(sources)) {
+        // If sources is an array of queries, evaluate each query until a non-empty result is found
+        for (const source of sources) {
+            const expression = jsonata(source);
+            try {
+                if (source.includes('exif')) {
+                    propertyvalue = await expression.evaluate(flickrExifData);
+                } else {
+                    propertyvalue = await expression.evaluate(flickrData);
+                }
+                if (propertyvalue !== undefined && propertyvalue !== '') {
+                    break; // Exit the loop if a valid propertyvalue is found
+                }
+            } catch (error) {
+                console.error('Error evaluating expression:', error);
+            }
         }
-    } else {
-        console.error('Exif data is not available');
+    } else if (sources !== undefined) {
+        // If sources is a single query, evaluate it
+        const expression = jsonata(sources);
+        try {
+            if (sources.includes('exif')) {
+                propertyvalue = await expression.evaluate(flickrExifData);
+            } else {
+                propertyvalue = await expression.evaluate(flickrData);
+            }
+        } catch (error) {
+            console.error('Error evaluating expression:', error);
+        }
     }
-    return data;
+
+    console.log('getDataSource: ' + column + ': ' + propertyvalue);
+    return propertyvalue;
 }
 
 /**
@@ -355,9 +472,23 @@ export function showSelectedProperties(event) {
         for (const property in imageObj[tcontainerId]) {
             const input = document.getElementById(property);
             if (input !== null && input !== undefined) {
-                const value = imageObj[tcontainerId][property];
-                if (value !== undefined) {
-                    input.value = imageObj[tcontainerId][property];
+                const propertyvalue = imageObj[tcontainerId][property];
+                if (propertyvalue !== undefined) {
+                    if (Array.isArray(propertyvalue)) {
+                        // create new controls to show all array values
+                        propertyvalue.map((value) => {
+                            if (value != undefined) {
+                                // Create a text input element
+                                const inputField = document.createElement('input');
+                                inputField.classList.add('input');
+                                inputField.value = value;
+                                input.appendChild(inputField);
+                            }
+                        });
+                    }
+                    else {
+                        input.value = propertyvalue;
+                    }
                 }
                 else {
                     input.value = '';
@@ -370,8 +501,21 @@ export function showSelectedProperties(event) {
     }
 }
 
-export function clearSelectedProperties(event) {
-    
+/**
+ * Function to clear property text fields
+ */
+export function clearPropertiesFields() {
+    const form = document.getElementById('properties-form');
+
+    // Iterate through all child elements of the form
+    form.querySelectorAll('textarea').forEach(input => {
+        input.value = ''; // Clear the input field
+    });
+
+    // Iterate through all child elements of the form
+    form.querySelectorAll('input').forEach(input => {
+        input.value = ''; // Clear the input field
+    });
 }
 
 /**
@@ -399,15 +543,26 @@ function createPropertiesFields() {
             label.textContent = column.userinterface.label;
             formgroup.appendChild(label);
 
-            // Create a text input element
-            const textField = document.createElement('input');
-            textField.classList.add('input');
-            textField.type = 'text';
-            textField.id = column.name;
-            textField.required = uiconfig.required;
-            textField.readOnly = uiconfig.readonly;
+            if (uiconfig.multivalue == true) {
+                // Clone the template element
+                const template = document.getElementById('multivalue-input-container');
+                const clone = template.cloneNode(true); // Pass true to clone its children
+                clone.style.display = 'block';
+                const multiinput = clone.querySelector('.multivalue-input-inner');
+                multiinput.id = column.name;
 
-            formgroup.appendChild(textField);
+                formgroup.appendChild(clone);
+            }
+            else {
+                // Create a text input element
+                const textField = document.createElement('textarea');
+                textField.classList.add('auto-expand-input');
+                textField.id = column.name;
+                textField.required = uiconfig.required;
+                textField.readOnly = uiconfig.readonly;
+
+                formgroup.appendChild(textField);
+            }
 
             // Create a line break element for spacing
             const lineBreak = document.createElement('br');
@@ -418,6 +573,15 @@ function createPropertiesFields() {
     }
 
     propertiesContainer.appendChild(form);
+    // Call autoExpand and get the generated styles
+    const styles = autoExpand('textarea', 'height');
+
+    // Create a <style> element and set its content to the generated styles
+    const styleElement = document.createElement('style');
+    styleElement.textContent = styles;
+
+    // Append the <style> element to the <head> of your document
+    document.head.appendChild(styleElement);
 }
 
 document.addEventListener('DOMContentLoaded', createPropertiesFields);

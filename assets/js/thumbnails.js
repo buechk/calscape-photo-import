@@ -6,6 +6,7 @@
 
 import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
 import { showSelectedProperties } from './properties.js';
+import { clearPropertiesFields } from "./properties.js";
 
 const thumbnailGrid = document.getElementById('thumbnail-grid');
 export const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
@@ -210,6 +211,18 @@ function loadThumbnailImage(t_url, imageid, title) {
     };
 }
 
+/**
+ * Clear all selections
+ */
+function clearSelections() {
+    // Clear previous selections
+    for (let i = 0; i < selectedThumbnails.length; i++) {
+        const tc = selectedThumbnails[i];
+        tc.classList.remove('selected');
+    }
+    selectedThumbnails.length = 0; // Clear the array
+}
+
 /** 
  *  Function to toggle selection state
 */
@@ -227,9 +240,9 @@ function toggleSelection(event) {
         } else if (clickedElement.classList.contains('thumbnail-container')) {
             // The clicked element is already a tcontainer
             tcontainer = clickedElement;
-        } else {
-            console.error('Unexpected element selected: ' + clickedElement);
-            return; // Abort further processing for unexpected elements
+        } else { // background clicked
+            // Clear previous selections
+//            clearPropertiesFields;
         }
 
         if (tcontainer !== undefined) {
@@ -249,8 +262,9 @@ function toggleSelection(event) {
                 }
             } else if (event.shiftKey) {
                 // Shift key is pressed, implement contiguous multi-select
-                const gridName = tcontainer.parentNode === thumbnailGroupGrid ? 'group' : 'normal';
 
+                // Remember first selected thumbnail for future shift-click 
+                const gridName = tcontainer.parentNode === thumbnailGroupGrid ? 'group' : 'normal';
                 if (gridName === 'normal') {
                     if (firstSelectedThumbnailThumbnailGrid === null) {
                         firstSelectedThumbnailThumbnailGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-grid'
@@ -276,11 +290,7 @@ function toggleSelection(event) {
                     const endIndex = Math.max(firstSelectedIndex, currentIndex);
 
                     // Clear previous selections
-                    for (let i = 0; i < selectedThumbnails.length; i++) {
-                        const tc = selectedThumbnails[i];
-                        tc.classList.remove('selected');
-                    }
-                    selectedThumbnails.length = 0; // Clear the array
+                    clearSelections();
 
                     // Select the thumbnails in the determined range
                     for (let i = startIndex; i <= endIndex; i++) {
@@ -291,20 +301,17 @@ function toggleSelection(event) {
                 }
             } else {
                 // No modifier key is pressed, clear previous selections and select the current one
-                for (let i = 0; i < selectedThumbnails.length; i++) {
-                    const tc = selectedThumbnails[i];
-                    tc.classList.remove('selected');
-                }
-                selectedThumbnails.length = 0; // Clear the array
+                clearSelections();
 
+                // Remember first selected thumbnail for future shift-click 
                 const gridName = tcontainer.parentNode === thumbnailGroupGrid ? 'group' : 'normal';
-
                 if (gridName === 'normal') {
                     firstSelectedThumbnailThumbnailGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-grid'
                 } else if (gridName === 'group') {
                     firstSelectedThumbnailThumbnailGroupGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-group-grid'
                 }
 
+                // Add new selection
                 tcontainer.classList.add('selected');
                 selectedThumbnails.push(tcontainer);
             }

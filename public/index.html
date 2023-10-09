@@ -44,13 +44,23 @@
                 <h2>Properties</h2>
                 <div class="properties-scroll-container">
                     <div id="properties-container" class="properties-container">
-                        <!-- Properties will be loaded here -->                   
+                        <!-- Properties will be loaded here -->
                     </div>
                 </div>
             </div>
         </div>
-    </div>     
-    
+    </div>
+
+    <!-- Template for multivalue properties -->
+    <div id ="multivalue-input-container" class="multivalue-input-container" style="display: none;">
+        <div class="multivalue-input-inner">
+        </div>
+        <div class="input-button-container">
+            <input type="text" class="input new-multivalue-input" placeholder="Add new value"></input>
+            <button id="add-btn" class="add-btn">Add</button>
+        </div>
+    </div>
+
     <form id="submission-form">
         <!-- Metadata fields will be populated here -->
         <button type="button" class="button-3" id="submit-button">Submit</button>
@@ -75,6 +85,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/jsonata/jsonata.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
