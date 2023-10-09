@@ -30,6 +30,7 @@
                 </div>
             </div>
         </div>
+        <div class="divider" id="divider"></div>
         <div class="right-container">
             <div class="photo-group-container">
                 <h2>Photo group</h2>
@@ -51,20 +52,19 @@
         </div>
     </div>
 
+    <div id="submit-button-container>
+        <button type=" button" class="button-3" id="submit-button">Submit</button>
+    </div>
+
     <!-- Template for multivalue properties -->
-    <div id ="multivalue-input-container" class="multivalue-input-container" style="display: none;">
+    <div id="multivalue-input-container" class="multivalue-input-container" style="display: none;">
         <div class="multivalue-input-inner">
         </div>
         <div class="input-button-container">
-            <input type="text" class="input new-multivalue-input" placeholder="Add new value"></input>
+            <input type="text" class="new-multivalue-input" placeholder="Add new value"></input>
             <button id="add-btn" class="add-btn">Add</button>
         </div>
     </div>
-
-    <form id="submission-form">
-        <!-- Metadata fields will be populated here -->
-        <button type="button" class="button-3" id="submit-button">Submit</button>
-    </form>
 
     <!-- Modal for Importing Files -->
     <div id="fileModal" class="modal">
@@ -85,6 +85,7 @@
         </div>
     </div>
 
+
     <script src="https://cdn.jsdelivr.net/npm/jsonata/jsonata.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
@@ -92,6 +93,7 @@
     <script type="module" src="../assets/js/thumbnails.js"></script>
     <script type="module" src="../assets/js/properties.js"></script>
     <script type="module" src="../assets/js/photo-selection.js"></script>
+    <script type="module" src="../assets/js/resizer.js"></script>
 
 
 </body>

@@ -7,6 +7,7 @@ import { getSourcePhotos } from "./source-photo-data.js";
 
 const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 const propertiesContainer = document.getElementById('properties-container');
+
 const ROLE = "contributor"; // or "reviewer"
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 const LICENSE_ENUM = {
@@ -460,6 +461,30 @@ async function getFlickrPropertyValue(column, datasources, flickrData, flickrExi
 }
 
 /**
+ * Create new input field for multivalue property
+ */
+function createInputField(value) {
+    // Create container for text input and delete button
+    const inputContainer = document.createElement('div');
+    inputContainer.classList.add('input-container');
+
+    // Create a text input element
+    const inputField = document.createElement('input');
+    inputField.classList.add('input');
+    inputField.value = value;
+    inputContainer.appendChild(inputField);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.classList.add('delete-btn');
+    deleteBtn.innerText = 'X';
+    deleteBtn.addEventListener('click', (event) => {
+        event.target.parentNode.innerHTML = '';
+    });
+    inputContainer.appendChild(deleteBtn);
+    return inputContainer;
+}
+
+/**
  * Function to display the properties of the selected thumbnail
  */
 export function showSelectedProperties(event) {
@@ -478,11 +503,8 @@ export function showSelectedProperties(event) {
                         // create new controls to show all array values
                         propertyvalue.map((value) => {
                             if (value != undefined) {
-                                // Create a text input element
-                                const inputField = document.createElement('input');
-                                inputField.classList.add('input');
-                                inputField.value = value;
-                                input.appendChild(inputField);
+                                const inputContainer = createInputField(value);
+                                input.appendChild(inputContainer);
                             }
                         });
                     }
@@ -550,6 +572,20 @@ function createPropertiesFields() {
                 clone.style.display = 'block';
                 const multiinput = clone.querySelector('.multivalue-input-inner');
                 multiinput.id = column.name;
+
+                const addBtn = clone.querySelector('.add-btn');
+                // Add a click event handler to the addBtn
+                addBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const userInput = clone.querySelector('.new-multivalue-input');
+                    // Create a new input element
+                    const inputContainer = createInputField(userInput.value);
+
+                    userInput.value = '';
+                    // Append the new input element to multivalue-input-inner
+                    multiinput.appendChild(inputContainer);
+                    multiinput.scrollTop = multiinput.scrollHeight;
+                });
 
                 formgroup.appendChild(clone);
             }

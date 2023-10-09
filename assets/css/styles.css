@@ -4,6 +4,7 @@ html {
     padding: 0px;
     font-family: Arial, sans-serif;
     font-size: 16px;
+    border: none;
 }
 
 body {
@@ -28,16 +29,27 @@ h2 {
 
 .main-container {
     display: flex;
+    border: none;
 }
 
-.source-photos-container {
-    width: 160;
-    padding: 10px;
+.divider {
+    width: 5px; /* Width of the divider */
+    cursor: col-resize; /* Use a resizable cursor */
+    background-color: #ccc;
 }
 
+.source-photos-container, 
 .right-container {
-    flex: auto;
+    border: 1px solid #ccc;
     padding: 10px;
+    min-width: 200px; /* Set initial width for panels */
+    /* Optionally, you can set the initial widths here */
+    width: calc(50% - 5px); /* Initial width for both containers */
+}
+
+/* Add this CSS to disable user selection while resizing */
+.user-select-none {
+    user-select: none;
 }
 
 .thumbnail-scroll-container {
@@ -108,18 +120,12 @@ h2 {
     text-align: right;
     border: none;
     outline: none;
-    flex: 1; 
+    flex: 1;
     align-self: flex-start;
 }
 
 .label:after {
     content: ": ";
-}
-
-.multivalue-container {
-    display: flex;
-    align-items: flex-start; /* Align items to the left */
-    margin-bottom: 10px;
 }
 
 .multivalue-input-container {
@@ -128,21 +134,35 @@ h2 {
     border: 1px solid #ccc;
     border-radius: 3px;
     background-color: #e7e7e7;
-    width: 100%; /* This should make it take the full available horizontal space */
+    width: 100%;
+    /* This should make it take the full available horizontal space */
     padding: 10px;
 }
 
 .multivalue-input-inner {
-    /* Enable vertical scrolling */
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* This should make it take the full available horizontal space */
+    flex-grow: 1;
+    max-height: 220px;
+    /* Set your desired max height here */
+    overflow-y: auto;
+    /* Add a vertical scrollbar when content overflows */
+}
+
+.input-container {
+    display: flex;
+    align-items: center; /* Vertically center the input and delete button */
 }
 
 .input {
     font-size: 100%;
     border: 1px solid #ccc;
     border-radius: 3px;
+    flex: 1;
+    margin: 10px;
+}
+
+.new-multivalue-input {
     flex: 1;
     margin: 10px;
 }
@@ -155,13 +175,8 @@ h2 {
     flex: 1;
 }
 
-.new-multivalue-input {
-    flex: 1;
-    margin-right: 10px;
-    margin: 10px;
-}
-
-.add-btn {
+.add-btn, 
+.delete-btn  {
     background-color: #e7e7e7;
     color: black;
     font-size: 12px;
@@ -170,22 +185,26 @@ h2 {
     margin-right: 10px;
 }
 
-
-.add-btn:focus:not(:focus-visible):not(.focus-visible) {
+.add-btn:focus:not(:focus-visible):not(.focus-visible),
+.delete-btn:focus:not(:focus-visible):not(.focus-visible)
+ {
     box-shadow: none;
     outline: none;
 }
 
-.add-btn:hover {
+.add-btn:hover,
+.delete-btn:hover {
     background-color: #979494;
 }
 
-.add-btn:focus {
+.add-btn:focus,
+.delete-btn:focus {
     box-shadow: rgba(156, 157, 156, 0.4) 0 0 0 3px;
     outline: none;
 }
 
-.add-btn:disabled {
+.add-btn:disabled,
+.delete-btn:disabled {
     background-color: #979494;
     border-color: rgba(27, 31, 35, .1);
     color: rgba(255, 255, 255, .8);
@@ -279,6 +298,13 @@ header {
 body {
     margin: 1rem;
     font-family: system-ui, sans-serif;
+}
+
+/* Style for the container of the Submit button */
+#submit-button-container {
+    position: absolute;
+    top: 10px; /* Adjust the top position as needed */
+    right: 10px; /* Adjust the right position as needed */
 }
 
 /* CSS */
