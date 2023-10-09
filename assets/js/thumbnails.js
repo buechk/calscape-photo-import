@@ -7,6 +7,8 @@
 import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
 import { showSelectedProperties } from './properties.js';
 import { clearPropertiesFields } from "./properties.js";
+import { extractUsernameFromFlickrUrl, searchPhotosByUsername} from './flickr-API.js';
+const flickrUrl = document.getElementById('flickrUrl');
 
 const thumbnailGrid = document.getElementById('thumbnail-grid');
 export const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
@@ -113,58 +115,106 @@ function displayImagesFromFilesystem(filelist) {
 /**
  * Calls the Flickr API using the given url to get photos
  * 
- * @param {*} url 
+ * @param {*} photosApiUrl 
  */
-function displayImagesFromFlickr(url) {
+
+async function displayImagesFromFlickr(photosApiUrl) {
     clearSourcePhotos();
 
-    // Instead of directly issuing URL that user input. Let user input their home page URL
-    // and parse the user_id out and construct the REST URL
-    var parameters = {
-        "async": true,
-        "crossDomain": true,
-        "url": url,
-        "method": "POST",
-        "headers": {}
-    }
-    // Currently, we're calling the Flickr REST service URL that the user directly input.
-    // but later, we will allow the user more user friendly input and construct
-    // the url from the user's input
+    try {
+        // extract the user ID from the Flickr URL
+        const userId = await extractUsernameFromFlickrUrl(flickrUrl.value);
 
-    $.ajax(parameters)
-        .done(function (data) {
-            console.log(data);
+        if (userId !== null) {
+            const photos = await searchPhotosByUsername(userId);
 
-            // Check if 'photos' property exists and 'total' property exists within 'photos'
-            if (data && data.photos) {
-                for (var i = 0; i < data.photos.total; i++) {
-                    var photo = data.photos.photo[i];
-                    if (photo) {
-                        var farmId = photo.farm;
-                        var serverId = photo.server;
-                        var id = photo.id;
-                        var secret = photo.secret;
-                        var title = photo.title;
+            if (photos && photos.length > 0) {
+                for (const photo of photos) {
+                    const farmId = photo.farm;
+                    const serverId = photo.server;
+                    const id = photo.id;
+                    const secret = photo.secret;
+                    const title = photo.title;
 
-                        // Construct the thumbnail URL
-                        var t_url = "https://farm" + farmId + ".staticflickr.com/" + serverId + "/" + id + "_" + secret + "_" + "q.jpg";
-                        loadThumbnailImage(t_url, id, title);
+                    const t_url = `https://farm${farmId}.staticflickr.com/${serverId}/${id}_${secret}_q.jpg`;
+                    console.log("Photo title:", title);
+                    console.log("Image URL:", t_url);
 
-                        // Store photo information
-                        storeSourcePhoto(photo);
-                    }
+                    loadThumbnailImage(t_url, photo.id, title);
+
+                    // Store photo information
+                    storeSourcePhoto(photo);
                 }
             } else {
-                // Handle the case where 'photos' or 'total' is missing or not of the expected type
-                alert("Flickr return data does not include photos. Message from Flickr is: " + data.message);
+                // Handle the case where no photos were found
+                console.warn("No photos found for the given user ID.");
             }
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            // Handle the error here
-            console.error("AJAX Error: " + textStatus, errorThrown);
-            alert("AJAX Error: " + textStatus);
-        });
+        } else {
+            // Handle the case where the user ID couldn't be extracted
+            console.warn("Invalid Flickr URL or unable to extract user ID.");
+        }
+    } catch (error) {
+        // Handle any errors that occur during the process
+        console.error("Error fetching and displaying photos:", error);
+        alert("An error occurred while fetching and displaying photos. Please try again later.");
+    }
 }
+
+// /**
+//  * Calls the Flickr API using the given url to get photos
+//  * 
+//  * @param {*} url 
+//  */
+// function displayImagesFromFlickr(url) {
+//     clearSourcePhotos();
+
+//     // Instead of directly issuing URL that user input. Let user input their home page URL
+//     // and parse the user_id out and construct the REST URL
+//     var parameters = {
+//         "async": true,
+//         "crossDomain": true,
+//         "url": url,
+//         "method": "POST",
+//         "headers": {}
+//     }
+//     // Currently, we're calling the Flickr REST service URL that the user directly input.
+//     // but later, we will allow the user more user friendly input and construct
+//     // the url from the user's input
+
+//     $.ajax(parameters)
+//         .done(function (data) {
+//             console.log(data);
+
+//             // Check if 'photos' property exists and 'total' property exists within 'photos'
+//             if (data && data.photos) {
+//                 for (var i = 0; i < data.photos.total; i++) {
+//                     var photo = data.photos.photo[i];
+//                     if (photo) {
+//                         var farmId = photo.farm;
+//                         var serverId = photo.server;
+//                         var id = photo.id;
+//                         var secret = photo.secret;
+//                         var title = photo.title;
+
+//                         // Construct the thumbnail URL
+//                         var t_url = "https://farm" + farmId + ".staticflickr.com/" + serverId + "/" + id + "_" + secret + "_" + "q.jpg";
+//                         loadThumbnailImage(t_url, id, title);
+
+//                         // Store photo information
+//                         storeSourcePhoto(photo);
+//                     }
+//                 }
+//             } else {
+//                 // Handle the case where 'photos' or 'total' is missing or not of the expected type
+//                 alert("Flickr return data does not include photos. Message from Flickr is: " + data.message);
+//             }
+//         })
+//         .fail(function (jqXHR, textStatus, errorThrown) {
+//             // Handle the error here
+//             console.error("AJAX Error: " + textStatus, errorThrown);
+//             alert("AJAX Error: " + textStatus);
+//         });
+// }
 
 /**
  * Displays the given thumbnail URL in the thumbnail grid
