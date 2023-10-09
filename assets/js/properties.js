@@ -10,17 +10,6 @@ const propertiesContainer = document.getElementById('properties-container');
 
 const ROLE = "contributor"; // or "reviewer"
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
-const LICENSE_ENUM = {
-    0: "All Rights Reserved (ARR)",
-    1: "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
-    2: "Attribution-NonCommercial (CC BY-NC)",
-    3: "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
-    4: "Attribution (CC BY)",
-    5: "Attribution-ShareAlike (CC BY-SA)",
-    6: "Attribution-NoDerivs (CC BY-ND)",
-    7: "Public Domain Dedication (CC0)",
-    8: "GNU Free Documentation License (GFDL)"
-}
 
 const importconfig = {
     "photoimportconfig": {
@@ -61,6 +50,7 @@ const importconfig = {
                         "userinterface": {
                             "label": "Image description",
                             "default": "",
+                            "textarea": true,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -123,6 +113,87 @@ const importconfig = {
                         }
                     },
                     {
+                        "name": "CopyrightCategory",
+                        "datasources": {
+                            "flickr": "photo.license",
+                            "jpeg": "EXIF.Copyright"
+                        },
+                        "userinterface": {
+                            "label": "Copyright Category",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": true,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": true,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        },
+                        "valuemap": {
+                            "0": "All Rights Reserved (ARR)",
+                            "1": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+                            "2": "Attribution-NonCommercial (CC BY-NC)",
+                            "3": "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
+                            "4": "Attribution (CC BY)",
+                            "5": "Attribution-ShareAlike (CC BY-SA)",
+                            "6": "Attribution-NoDerivs (CC BY-ND)",
+                            "7": "Public Domain Dedication (CC0)",
+                            "8": "GNU Free Documentation License (GFDL)"
+                        },
+                    },
+                    {
+                        "name": "CaptionTitle",
+                        "datasources": {
+                            "flickr": "photo.title._content",
+                            "jpeg": "EXIF.ImageDescription"
+                        },
+                        "userinterface": {
+                            "label": "Caption title",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "CaptionDescription",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "userinterface": {
+                            "label": "Caption description",
+                            "default": "",
+                            "textarea": true,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
                         "name": "Keywords",
                         "datasources": {
                             "flickr": "photo.tags.tag.raw",
@@ -137,6 +208,75 @@ const importconfig = {
                                     "required": false,
                                     "visible": true,
                                     "multivalue": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Ranking",
+                        "datasources": {
+                            "flickr": "photo.exif[tag='Rating'].raw._content",
+                            "jpeg": "EXIF.xmp.Rating"
+                        },
+                        "userinterface": {
+                            "label": "Ranking",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "LandscaperName",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "userinterface": {
+                            "label": "Landscaper name",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "LandscapeDesigner",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "userinterface": {
+                            "label": "Landscaper designer",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
                                 },
                                 "reviewer": {
                                     "readonly": false,
@@ -313,7 +453,18 @@ export async function populateThumbnailProperties(id) {
             for (const table of importconfig.photoimportconfig.tables) {
                 for (const column of table.columns) {
                     // Use the parsed EXIF data for each Calscape table column
-                    imageObj[id][column.name] = getExifPropertyValue(column.name, column.datasources, exifData);
+                    if (column.hasOwnProperty("valuemap")) {
+                        const value = getExifPropertyValue(column.name, column.datasources, exifData);
+                        if (column.valuemap.hasOwnProperty(value)) {
+                            imageObj[id][column.name] = column.valuemap[value];
+                        }
+                        else {
+                            imageObj[id][column.name] = value;
+                        }
+                    }
+                    else {
+                        imageObj[id][column.name] = getExifPropertyValue(column.name, column.datasources, exifData);
+                    }
                     console.log(column.name + ": " + imageObj[id][column.name]);
                 }
             }
@@ -324,8 +475,18 @@ export async function populateThumbnailProperties(id) {
             const flickrExifData = await getFlickrPhotoInfo(id, 'flickr.photos.getExif');
             for (const table of importconfig.photoimportconfig.tables) {
                 for (const column of table.columns) {
-                    // Use the parsed Flickr info data for each Calscape table column
-                    imageObj[id][column.name] = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
+                    if (column.hasOwnProperty("valuemap")) {
+                        const value = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
+                        if (column.valuemap.hasOwnProperty(value)) {
+                            imageObj[id][column.name] = column.valuemap[value];
+                        }
+                        else {
+                            imageObj[id][column.name] = value;
+                        }
+                    }
+                    else {
+                        imageObj[id][column.name] = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
+                    }
                 }
             }
         }
@@ -442,7 +603,7 @@ async function getFlickrPropertyValue(column, datasources, flickrData, flickrExi
                 console.error('Error evaluating expression:', error);
             }
         }
-    } else if (sources !== undefined) {
+    } else if (sources !== undefined && sources !== '') {
         // If sources is a single query, evaluate it
         const expression = jsonata(sources);
         try {
@@ -559,6 +720,7 @@ function createPropertiesFields() {
         // Loop through columns within the current table
         for (const column of table.columns) {
             const uiconfig = column.userinterface.roles[ROLE];
+            const isTextArea = column.userinterface.textarea ? true  : false;
 
             // Create form-group
             const formgroup = document.createElement('div');
@@ -596,13 +758,20 @@ function createPropertiesFields() {
             }
             else {
                 // Create a text input element
-                const textField = document.createElement('textarea');
-                textField.classList.add('auto-expand-input');
-                textField.id = column.name;
-                textField.required = uiconfig.required;
-                textField.readOnly = uiconfig.readonly;
+                let field;
+                if (isTextArea) {
+                    field = document.createElement('textarea');
+                    field.classList.add('auto-expand-input');
+                }
+                else {
+                    field = document.createElement('input'); 
+                    field.classList.add('auto-expand-input');               
+                }
+                field.id = column.name;
+                field.required = uiconfig.required;
+                field.readOnly = uiconfig.readonly;
 
-                formgroup.appendChild(textField);
+                formgroup.appendChild(field);
             }
 
             // Create a line break element for spacing
