@@ -488,6 +488,7 @@ function createInputField(value) {
  * Function to display the properties of the selected thumbnail
  */
 export function showSelectedProperties(event) {
+    clearPropertiesFields();
     if (event.target.parentNode.parentNode == thumbnailGroupGrid) {
         // get the saved image data for the selected thumbnail container
         const tcontainerId = event.target.parentNode.id;
@@ -537,6 +538,10 @@ export function clearPropertiesFields() {
     // Iterate through all child elements of the form
     form.querySelectorAll('input').forEach(input => {
         input.value = ''; // Clear the input field
+    });
+
+    form.querySelectorAll('.input-container').forEach(input => {
+        input.remove(); // Clear the input field
     });
 }
 

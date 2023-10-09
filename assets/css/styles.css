@@ -27,6 +27,19 @@ h2 {
     text-align: left;
 }
 
+body {
+    margin: 1rem;
+    font-family: system-ui, sans-serif;
+}
+
+/* Style for the container of the Submit button */
+#submit-button-container {
+    position:bottom;
+    top: 10px; /* Adjust the top position as needed */
+    right: 10px; /* Adjust the right position as needed */
+}
+
+
 .main-container {
     display: flex;
     border: none;
@@ -293,18 +306,6 @@ header {
 #menu ul li a:hover {
     color: white;
     background-color: #555;
-}
-
-body {
-    margin: 1rem;
-    font-family: system-ui, sans-serif;
-}
-
-/* Style for the container of the Submit button */
-#submit-button-container {
-    position: absolute;
-    top: 10px; /* Adjust the top position as needed */
-    right: 10px; /* Adjust the right position as needed */
 }
 
 /* CSS */

@@ -317,6 +317,13 @@ function toggleSelection(event) {
             }
         }
     }
+    else {
+        // clicked in grid causing all to be unselected
+        clearSelections();
+    }
+    if (selectedThumbnails.length === 0) {
+        clearPropertiesFields();
+    }
 }
 
 
