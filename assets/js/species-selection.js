@@ -2,41 +2,84 @@
  * @file
  * Enable user to select plant species in which to assign photos
  */
-const speciesInput = document.getElementById('searchInput');
+const speciesinput = document.getElementById('speciesInput');
 const suggestions = document.getElementById('suggestions');
 
-const url = `your_php_script.php?query=${userInput}`;
-
-function suggest(userInput) {
-fetch(url)
-    .then(response => response.json())
-    .then(data => {
-        // Process the JSON data and populate the suggestion dropdown
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+let specieslist = [];
+/**
+ * @function
+ * Function to get species list from Calscape
+ */
+function fetchSpeciesList() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "calscape_query.php", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.error) {
+                document.getElementById("results").textContent = response.error;
+            } else {
+                specieslist = response.map((x) => x);
+                console.log(specieslist);
+            }
+        }
+    };
+    xhr.send();
 }
 
-function displaySuggestions(data) {
-    suggestions.innerHTML = '';
-
-    data.forEach(item => {
-        const suggestionItem = document.createElement('div');
-        suggestionItem.className = 'suggestion';
-        suggestionItem.textContent = item; // Customize this based on your JSON structure
-        suggestions.appendChild(suggestionItem);
-
-        suggestionItem.addEventListener('click', function() {
-            // Handle the click event (e.g., populate input field with suggestion)
+/**
+ * @function
+ * @param {*} data 
+ * @param {*} element 
+ * 
+ * Given an array, data, load each item in data into element
+ */
+function loadSuggestions(data, element) {
+    if (data) {
+        element.innerHTML = "";
+        let innerElement = "";
+        data.forEach(item => {
+            innerElement += `
+            <li>${item}</li>`
         });
-    });
+
+        element.innerHTML = innerElement;
+    }
 }
 
-searchInput.addEventListener('input', function() {
+/**
+ * @function
+ * 
+ * Given an array, data, and a search string, searchText, return an array
+ * of strings from data that include searchText
+ * 
+ * @param {*} data 
+ * @param {*} searchText 
+ * @returns filtered array
+ */
+function filterData(data, searchText) {
+    return data.filter((x) => x.toLowerCase().includes(searchText.toLowerCase()));
+}
+
+/* EVENT LISTENERS */
+
+speciesinput.addEventListener('input', function () {
     const userInput = this.value;
-    
-    // Send an AJAX request to your PHP script with userInput
-    // Receive and parse JSON response from PHP
-    // Populate and display the suggestion dropdown
+    console.log(userInput);
+
+    // populate suggestions
+    loadSuggestions(filterData(specieslist,userInput), suggestions);
+
 });
+
+suggestions.addEventListener('click', function (event) {
+    if (event.target.tagName === 'LI') {
+        speciesinput.value = event.target.textContent;
+        suggestions.innerHTML = ''; // Clear the suggestions
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', fetchSpeciesList);
+
+

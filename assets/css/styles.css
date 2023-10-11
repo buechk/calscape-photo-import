@@ -3,12 +3,14 @@ html {
     height: 100%;
     padding: 0px;
     font-family: Arial, sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     border: none;
+    outline: none;
 }
 
 body {
     text-align: center;
+    outline: none;
 }
 
 #title {
@@ -34,9 +36,11 @@ body {
 
 /* Style for the container of the Submit button */
 #submit-button-container {
-    position:bottom;
-    top: 10px; /* Adjust the top position as needed */
-    right: 10px; /* Adjust the right position as needed */
+    position: bottom;
+    top: 10px;
+    /* Adjust the top position as needed */
+    right: 10px;
+    /* Adjust the right position as needed */
 }
 
 
@@ -46,18 +50,26 @@ body {
 }
 
 .divider {
-    width: 5px; /* Width of the divider */
-    cursor: col-resize; /* Use a resizable cursor */
+    width: 5px;
+    /* Width of the divider */
+    cursor: col-resize;
+    /* Use a resizable cursor */
     background-color: #ccc;
 }
 
-.source-photos-container, 
+.divider:hover {
+    background-color: #aaa9a9;
+}
+
+.source-photos-container,
 .right-container {
     border: 1px solid #ccc;
     padding: 10px;
-    min-width: 200px; /* Set initial width for panels */
+    min-width: 200px;
+    /* Set initial width for panels */
     /* Optionally, you can set the initial widths here */
-    width: calc(50% - 5px); /* Initial width for both containers */
+    width: calc(50% - 5px);
+    /* Initial width for both containers */
 }
 
 /* Add this CSS to disable user selection while resizing */
@@ -66,7 +78,7 @@ body {
 }
 
 .thumbnail-scroll-container {
-    max-height: 600px;
+    max-height: 800px;
     overflow-y: auto;
     /* Enable vertical scrolling */
     padding: 10px;
@@ -98,20 +110,19 @@ body {
     background-position: center;
 }
 
+.tcontainer .caption {
+    width: 150px; /* Set the width to match the thumbnail */
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
+    text-align: center;
+}
+
 .tcontainer.selected {
-    text-wrap: wrap;
     width: 156px;
     border: 3px solid #007bff;
 }
 
-.caption {
-    font-size: 12px;
-    font-weight: bold;
-    margin-top: 5px;
-    /* Adjust the margin as needed */
-    text-align: center;
-    /* Center the text */
-}
 
 .selected-properties-container {
     max-height: 400;
@@ -119,11 +130,14 @@ body {
     /* Enable vertical scrolling */
     padding: 10px;
     width: 100%;
+    background-color: #f2f2f2
 }
 
-/* Container for the label/input pairs */
-.form-group {
+.species-container {
     display: flex;
+    position: relative;
+    margin: 10px;
+    align-items: center; /* Center vertically */
 }
 
 .label {
@@ -134,11 +148,52 @@ body {
     border: none;
     outline: none;
     flex: 1;
-    align-self: flex-start;
+    align-self: center;
+    min-width: 100px; /* Set a fixed minimum width for the label */
 }
 
 .label:after {
     content: ": ";
+}
+
+.species-input {
+    color: #48438F;
+    padding: 10px 10px;
+    border-radius: 3px;
+    outline: none;
+    background-color: #FFF;
+    border: 1px solid #ccc;
+    flex: 2;
+    margin-right: 10px;
+}
+
+.suggestions {
+    position: absolute;
+    top: calc(100% + 10px); /* Adjust the top value as needed to add some spacing */
+    left: 200px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #FFF;
+    width: 100%;
+    max-height: 100px;
+    overflow-y: auto;
+    margin-right: 10px;
+}
+
+.suggestions li {
+    color: #48438F;
+    margin: 0;
+    padding: 0;
+    width: calc(100% - 30px);
+    cursor: pointer;
+    list-style-type: none;
+    text-align: left;
+}
+
+/* Container for the label/input pairs */
+.form-group {
+    display: flex;
 }
 
 .multivalue-input-container {
@@ -164,7 +219,8 @@ body {
 
 .input-container {
     display: flex;
-    align-items: center; /* Vertically center the input and delete button */
+    align-items: center;
+    /* Vertically center the input and delete button */
 }
 
 .input {
@@ -188,8 +244,8 @@ body {
     flex: 1;
 }
 
-.add-btn, 
-.delete-btn  {
+.add-btn,
+.delete-btn {
     background-color: #e7e7e7;
     color: black;
     font-size: 12px;
@@ -199,8 +255,7 @@ body {
 }
 
 .add-btn:focus:not(:focus-visible):not(.focus-visible),
-.delete-btn:focus:not(:focus-visible):not(.focus-visible)
- {
+.delete-btn:focus:not(:focus-visible):not(.focus-visible) {
     box-shadow: none;
     outline: none;
 }
@@ -235,6 +290,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 3px;
     flex: 5;
+    padding: 10px 10px;
 }
 
 .hr {
@@ -309,7 +365,7 @@ header {
 }
 
 /* CSS */
-.button-3 {
+.submit-btn {
     appearance: none;
     background-color: #2ea44f;
     border: 1px solid rgba(27, 31, 35, .15);
@@ -324,6 +380,7 @@ header {
     font-weight: 600;
     line-height: 20px;
     padding: 6px 16px;
+    margin: 10px;
     position: relative;
     text-align: center;
     text-decoration: none;
@@ -334,28 +391,28 @@ header {
     white-space: nowrap;
 }
 
-.button-3:focus:not(:focus-visible):not(.focus-visible) {
+.submit-btn:focus:not(:focus-visible):not(.focus-visible) {
     box-shadow: none;
     outline: none;
 }
 
-.button-3:hover {
+.submit-btn:hover {
     background-color: #2c974b;
 }
 
-.button-3:focus {
+.submit-btn:focus {
     box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
     outline: none;
 }
 
-.button-3:disabled {
+.submit-btn:disabled {
     background-color: #94d3a2;
     border-color: rgba(27, 31, 35, .1);
     color: rgba(255, 255, 255, .8);
     cursor: default;
 }
 
-.button-3:active {
+.submit-btn:active {
     background-color: #298e46;
     box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }

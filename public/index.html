@@ -33,13 +33,21 @@
         <div class="divider" id="divider"></div>
         <div class="right-container">
             <div class="photo-group-container">
-                <h2>Photo group</h2>
+                <h2>Photos for contribution</h2>
                 <!-- Content for the "photo-group" element -->
             </div>
             <div class="group-thumbnail-scroll-container">
                 <div id="thumbnail-group-grid">
                     <!-- Thumbnails will be loaded here -->
                 </div>
+            </div>
+            <div class="species-container">
+                <label class="label">Species</label>
+                <input type="text" id="speciesInput" placeholder="type species name" class="species-input"
+                    autocomplete="off">
+                <ul id="suggestions" class="suggestions">
+                    <!-- Species list will be loaded as user types-->
+                </ul>
             </div>
             <div class="selected-properties-container">
                 <h2>Properties</h2>
@@ -50,7 +58,7 @@
                 </div>
             </div>
             <div id="submit-button-container">
-                <button type=" button" class="button-3" id="submit-button">Submit</button>
+                <button type=" button" class="submit-btn" id="submit-button">Submit</button>
             </div>
         </div>
     </div>
@@ -84,7 +92,6 @@
         </div>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/jsonata/jsonata.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
@@ -93,6 +100,7 @@
     <script type="module" src="../assets/js/properties.js"></script>
     <script type="module" src="../assets/js/photo-selection.js"></script>
     <script type="module" src="../assets/js/resizer.js"></script>
+    <script type="module" src="../assets/js/species-selection.js"></script>
 
 
 </body>

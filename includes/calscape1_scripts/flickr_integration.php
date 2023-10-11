@@ -13,3 +13,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Handle other types of requests or errors
     echo "Invalid request.";
 }
+
+?>

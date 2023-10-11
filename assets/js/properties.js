@@ -8,6 +8,7 @@ import { getSourcePhotos } from "./source-photo-data.js";
 const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 const propertiesContainer = document.getElementById('properties-container');
 
+
 const ROLE = "contributor"; // or "reviewer"
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
@@ -41,7 +42,6 @@ const importconfig = {
                         }
                     },
                     {
-
                         "name": "ImageDescription",
                         "datasources": {
                             "flickr": "photo.description._content",
@@ -793,6 +793,8 @@ function createPropertiesFields() {
     // Append the <style> element to the <head> of your document
     document.head.appendChild(styleElement);
 }
+
+/* EVENT LISTENERS */
 
 document.addEventListener('DOMContentLoaded', createPropertiesFields);
 
