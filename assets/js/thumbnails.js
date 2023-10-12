@@ -7,7 +7,7 @@
 import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
 import { showSelectedProperties } from './properties.js';
 import { clearPropertiesFields } from "./properties.js";
-import { extractUsernameFromFlickrUrl, searchPhotosByUsername} from './flickr-API.js';
+import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum} from './flickr-API.js';
 const flickrUrl = document.getElementById('flickrUrl');
 
 const thumbnailGrid = document.getElementById('thumbnail-grid');
@@ -122,36 +122,50 @@ async function displayImagesFromFlickr(photosApiUrl) {
     clearSourcePhotos();
 
     try {
-        // extract the user ID from the Flickr URL
+        // Extract the user ID or album ID from the Flickr URL
         const userId = await extractUsernameFromFlickrUrl(flickrUrl.value);
+        const albumId = await extractAlbumFromFlickrUrl(flickrUrl.value);
 
-        if (userId !== null) {
-            const photos = await searchPhotosByUsername(userId);
+        if (userId !== null || albumId !== null) {
+            let id;
+            let photos;
+
+            if (albumId !== null) {
+                // It's an album URL
+                id = albumId;
+                console.log("Displaying photos from album with ID:", albumId);
+                photos = await searchPhotosByAlbum(albumId);
+            } else {
+                // It's a user profile URL
+                id = userId;
+                console.log("Displaying photos from user profile with ID:", userId);
+                photos = await searchPhotosByUsername(userId);
+            }
 
             if (photos && photos.length > 0) {
                 for (const photo of photos) {
                     const farmId = photo.farm;
                     const serverId = photo.server;
-                    const id = photo.id;
+                    const photoId = photo.id;
                     const secret = photo.secret;
                     const title = photo.title;
 
-                    const t_url = `https://farm${farmId}.staticflickr.com/${serverId}/${id}_${secret}_q.jpg`;
+                    const t_url = `https://farm${farmId}.staticflickr.com/${serverId}/${photoId}_${secret}_q.jpg`;
                     console.log("Photo title:", title);
                     console.log("Image URL:", t_url);
 
-                    loadThumbnailImage(t_url, photo.id, title);
+                    loadThumbnailImage(t_url, photoId, title);
 
                     // Store photo information
                     storeSourcePhoto(photo);
                 }
             } else {
-                // Handle the case where no photos were found
-                console.warn("No photos found for the given user ID.");
+                // Handle the case where no photos were found for the given ID
+                console.warn("No photos found for the given user/album ID.");
             }
         } else {
-            // Handle the case where the user ID couldn't be extracted
-            console.warn("Invalid Flickr URL or unable to extract user ID.");
+            // Handle the case where the ID couldn't be extracted
+            console.warn("Invalid Flickr URL or unable to extract user/album ID.");
         }
     } catch (error) {
         // Handle any errors that occur during the process
@@ -159,6 +173,47 @@ async function displayImagesFromFlickr(photosApiUrl) {
         alert("An error occurred while fetching and displaying photos. Please try again later.");
     }
 }
+// async function displayImagesFromFlickr(photosApiUrl) {
+//     clearSourcePhotos();
+
+//     try {
+//         // extract the user ID from the Flickr URL
+//         const userId = await extractUsernameFromFlickrUrl(flickrUrl.value);
+
+//         if (userId !== null) {
+//             const photos = await searchPhotosByUsername(userId);
+
+//             if (photos && photos.length > 0) {
+//                 for (const photo of photos) {
+//                     const farmId = photo.farm;
+//                     const serverId = photo.server;
+//                     const id = photo.id;
+//                     const secret = photo.secret;
+//                     const title = photo.title;
+
+//                     const t_url = `https://farm${farmId}.staticflickr.com/${serverId}/${id}_${secret}_q.jpg`;
+//                     console.log("Photo title:", title);
+//                     console.log("Image URL:", t_url);
+
+//                     loadThumbnailImage(t_url, photo.id, title);
+
+//                     // Store photo information
+//                     storeSourcePhoto(photo);
+//                 }
+//             } else {
+//                 // Handle the case where no photos were found
+//                 console.warn("No photos found for the given user ID.");
+//             }
+//         } else {
+//             // Handle the case where the user ID couldn't be extracted
+//             console.warn("Invalid Flickr URL or unable to extract user ID.");
+//         }
+//     } catch (error) {
+//         // Handle any errors that occur during the process
+//         console.error("Error fetching and displaying photos:", error);
+//         alert("An error occurred while fetching and displaying photos. Please try again later.");
+//     }
+// }
 
 // /**
 //  * Calls the Flickr API using the given url to get photos
