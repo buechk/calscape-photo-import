@@ -6,7 +6,8 @@
 import { getSourcePhotos } from "./source-photo-data.js";
 
 const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-const propertiesContainer = document.getElementById('properties-container');
+const propertiesContainer = document.getElementById('selected-properties-container');
+const submitButton = document.getElementById('submit-button')
 
 
 const ROLE = "contributor"; // or "reviewer"
@@ -323,16 +324,20 @@ let imageData = {};
 /* example data
 {
     "000": {
+        "species": "Carex pansa"
         "DateTmeOriginal": "2023-9-27",
         "ImageDescription": "Pathway with sedges",
         "Artist": "Kristy",
-        "CopyrightNotice": "Creative Commons"
+        "CopyrightNotice": "Copyright 2023 Kristy Bueche"
+        "CopyrightCategory": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)"
     },
     "001": {
+        "species": "Eriogonum fasciculatum 'Warriner Lytle'"
         "DateTmeOriginal": "2023-9-21",
         "ImageDescription": "Buckwheat cascading over wall",
         "Artist": "Ed",
-        "CopyrightNotice": "Public"
+        "CopyrightNotice": ""
+        "CopyrightCategory": "Attribution (CC BY)"
     }
     // More entries
 }
@@ -416,9 +421,8 @@ let autoExpand = (selector, direction) => {
 const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-            // Loop through the added nodes
+            // Loop through the added nodes and populate the metadata for their thumbnail
             mutation.addedNodes.forEach(function (addedNode) {
-                // Do something with each added node
                 console.log('Child element added to thumbnail-group-grid:', addedNode);
                 populateThumbnailProperties(addedNode.id);
             });
@@ -436,13 +440,13 @@ observer.observe(thumbnailGroupGrid, config);
  * populate properties from the configured datasource for the given thumbnail
  * @param {*} id thumbnail-group-grid id
  */
-export async function populateThumbnailProperties(id) {
+async function populateThumbnailProperties(id) {
     const photoData = getSourcePhotos();
 
     // If we have not already stored data for this image then store it now
     if (imageData === null || !imageData.hasOwnProperty(id)) {
         const imageObj = {};
-        imageObj[id] = {};
+        imageObj["id"] = id;
 
         const photo = photoData[id];
 
@@ -456,16 +460,16 @@ export async function populateThumbnailProperties(id) {
                     if (column.hasOwnProperty("valuemap")) {
                         const value = getExifPropertyValue(column.name, column.datasources, exifData);
                         if (column.valuemap.hasOwnProperty(value)) {
-                            imageObj[id][column.name] = column.valuemap[value];
+                            imageObj[column.name] = column.valuemap[value];
                         }
                         else {
-                            imageObj[id][column.name] = value;
+                            imageObj[column.name] = value;
                         }
                     }
                     else {
-                        imageObj[id][column.name] = getExifPropertyValue(column.name, column.datasources, exifData);
+                        imageObj[column.name] = getExifPropertyValue(column.name, column.datasources, exifData);
                     }
-                    console.log(column.name + ": " + imageObj[id][column.name]);
+                    console.log(column.name + ": " + imageObj[column.name]);
                 }
             }
         }
@@ -478,14 +482,14 @@ export async function populateThumbnailProperties(id) {
                     if (column.hasOwnProperty("valuemap")) {
                         const value = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
                         if (column.valuemap.hasOwnProperty(value)) {
-                            imageObj[id][column.name] = column.valuemap[value];
+                            imageObj[column.name] = column.valuemap[value];
                         }
                         else {
-                            imageObj[id][column.name] = value;
+                            imageObj[column.name] = value;
                         }
                     }
                     else {
-                        imageObj[id][column.name] = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
+                        imageObj[column.name] = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
                     }
                 }
             }
@@ -509,11 +513,11 @@ async function readAndParseExifData(photo) {
         if (photo instanceof File && photo.type === 'image/jpeg') {
             const reader = new FileReader();
             reader.onload = function (event) {
-                const imageData = event.target.result;
+                const fileData = event.target.result;
 
                 // Use the exif-js library to get EXIF data
                 try {
-                    const exifData = EXIF.readFromBinaryFile(imageData);
+                    const exifData = EXIF.readFromBinaryFile(fileData);
                     resolve(exifData);
                 } catch (exifError) {
                     console.error('Error parsing EXIF data:', exifError);
@@ -639,10 +643,108 @@ function createInputField(value) {
     deleteBtn.classList.add('delete-btn');
     deleteBtn.innerText = 'X';
     deleteBtn.addEventListener('click', (event) => {
+        const propertyValue = event.target.previousSibling.value;
+        const tcontainerId = document.getElementById("selected-id").textContent;
+        const propertyName = event.target.parentElement.parentElement.id;
+
+        // Remove the property if it has no value
+        if (imageData[tcontainerId][propertyName]) {
+            const index = imageData[tcontainerId][propertyName].indexOf(propertyValue);
+            if (index !== -1) {
+                imageData[tcontainerId][propertyName].splice(index, 1);
+            }
+        }
+
         event.target.parentNode.innerHTML = '';
     });
     inputContainer.appendChild(deleteBtn);
     return inputContainer;
+}
+
+/**
+ * Function to save the properties from the form to the image object
+ */
+export function saveSelectedProperties() {
+    const selectedId = document.getElementById('selected-id').textContent;
+    const currentImageObj = imageData[selectedId];
+    if (currentImageObj) { // Ensure you have a selected image object
+
+        // Iterate through the children elements of propertiesContainer
+        for (const property in currentImageObj) {
+            const input = document.getElementById(property);
+            if (input !== null && input !== undefined) {
+                if (Array.isArray(currentImageObj[property])) {
+                    // If the property is an array, collect the values
+                    const propertyValues = [];
+                    const inputContainers = input.querySelectorAll(".array-value-input");
+                    inputContainers.forEach((container) => {
+                        const value = container.querySelector("input").value;
+                        if (value.trim() !== "") {
+                            propertyValues.push(value);
+                        }
+                    });
+                    currentImageObj[property] = propertyValues;
+                } else {
+                    // If it's not an array, set the value directly
+                    currentImageObj[property] = input.value;
+                }
+            } else {
+                console.log('Input element not found for property:', property);
+            }
+        }
+    } else {
+        console.log("No image object selected to save properties to.");
+    }
+}
+
+function addMultiValueProperty() {
+    if (inputElement.parentElement.parentElement.classList.contains("multivalue-input-container")) {
+        const childInputs = inputElement.parentElement.parentElement.querySelectorAll('.input');
+        childInputs.forEach((childInput) => {
+            const propertyName = childInput.id;
+            const propertyValue = childInput.value;
+
+            if (propertyValue) {
+                if (!imageData[tcontainerId][propertyName]) {
+                    imageData[tcontainerId][propertyName] = [];
+                }
+                imageData[tcontainerId][propertyName].push(propertyValue);
+            } else {
+                // Remove the property if it has no value
+                if (imageData[tcontainerId][propertyName]) {
+                    const index = imageData[tcontainerId][propertyName].indexOf(propertyValue);
+                    if (index !== -1) {
+                        imageData[tcontainerId][propertyName].splice(index, 1);
+                    }
+                }
+            }
+        });
+    }
+}
+
+
+/**
+ * Function to save properties from input element to imageObj
+ * @param {HTMLElement} inputElement - The input element to save.
+ */
+function saveProperties(inputElement) {
+    if (inputElement) {
+        const tcontainerId = document.getElementById("selected-id").textContent;
+        if (!imageData[tcontainerId]) {
+            imageData[tcontainerId] = {}; // Initialize image object if not exists
+        }
+        if (!inputElement.parentElement.parentElement.classList.contains("multivalue-input-container") &&
+            inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA") {
+            const propertyName = inputElement.id;
+            const propertyValue = inputElement.value;
+
+            if (propertyValue) {
+                imageData[tcontainerId][propertyName] = propertyValue;
+            } else {
+                delete imageData[tcontainerId][propertyName];
+            }
+        }
+    }
 }
 
 /**
@@ -655,11 +757,14 @@ export function showSelectedProperties(event) {
         const tcontainerId = event.target.parentNode.id;
         const imageObj = imageData[tcontainerId];
 
+        // set selected id
+        document.getElementById('selected-id').textContent = tcontainerId;
+
         // Iterate through the children elements of propertiesContainer
-        for (const property in imageObj[tcontainerId]) {
+        for (const property in imageObj) {
             const input = document.getElementById(property);
             if (input !== null && input !== undefined) {
-                const propertyvalue = imageObj[tcontainerId][property];
+                const propertyvalue = imageObj[property];
                 if (propertyvalue !== undefined) {
                     if (Array.isArray(propertyvalue)) {
                         // create new controls to show all array values
@@ -691,6 +796,9 @@ export function showSelectedProperties(event) {
 export function clearPropertiesFields() {
     const form = document.getElementById('properties-form');
 
+    // clear selected id
+    document.getElementById('selected-id').textContent = '';
+
     // Iterate through all child elements of the form
     form.querySelectorAll('textarea').forEach(input => {
         input.value = ''; // Clear the input field
@@ -711,8 +819,7 @@ export function clearPropertiesFields() {
 */
 function createPropertiesFields() {
 
-    const form = document.createElement('form');
-    form.id = ('properties-form');
+    const form = document.getElementById('properties-form');
 
     for (const table of importconfig.photoimportconfig.tables) {
         console.log(`Table: ${table.table}`);
@@ -720,7 +827,7 @@ function createPropertiesFields() {
         // Loop through columns within the current table
         for (const column of table.columns) {
             const uiconfig = column.userinterface.roles[ROLE];
-            const isTextArea = column.userinterface.textarea ? true  : false;
+            const isTextArea = column.userinterface.textarea ? true : false;
 
             // Create form-group
             const formgroup = document.createElement('div');
@@ -745,6 +852,16 @@ function createPropertiesFields() {
                 addBtn.addEventListener('click', (event) => {
                     event.preventDefault();
                     const userInput = clone.querySelector('.new-multivalue-input');
+
+                    // save the new value to imageData
+                    const tcontainerId = document.getElementById("selected-id").textContent;
+                    const propertyValue = userInput.value;
+                    const propertyName = multiinput.id;
+                    if (!imageData[tcontainerId][propertyName]) {
+                        imageData[tcontainerId][propertyName] = [];
+                    }
+                    imageData[tcontainerId][propertyName].push(propertyValue);
+
                     // Create a new input element
                     const inputContainer = createInputField(userInput.value);
 
@@ -764,8 +881,8 @@ function createPropertiesFields() {
                     field.classList.add('auto-expand-input');
                 }
                 else {
-                    field = document.createElement('input'); 
-                    field.classList.add('auto-expand-input');               
+                    field = document.createElement('input');
+                    field.classList.add('auto-expand-input');
                 }
                 field.id = column.name;
                 field.required = uiconfig.required;
@@ -794,10 +911,6 @@ function createPropertiesFields() {
     document.head.appendChild(styleElement);
 }
 
-/* EVENT LISTENERS */
-
-document.addEventListener('DOMContentLoaded', createPropertiesFields);
-
 /*
 String.prototype.hashCode = function () {
     var hash = 0,
@@ -811,3 +924,36 @@ String.prototype.hashCode = function () {
     return hash;
 }
 */
+
+/* EVENT LISTENERS */
+
+document.addEventListener('DOMContentLoaded', createPropertiesFields);
+
+// Delay duration in milliseconds (e.g., 500 milliseconds)
+const delayDuration = 500;
+
+$('#properties-form').on('blur', 'input, select, textarea', function (event) {
+    // Clear any previous timeouts to prevent multiple executions
+    if (this.timer) {
+        clearTimeout(this.timer);
+    }
+
+    // Set a new timeout to execute the function after the delay
+    this.timer = setTimeout(() => {
+        saveProperties(event.target);
+    }, delayDuration);
+});
+
+submitButton.addEventListener('click', function () {
+    // Convert the imageData object to a JSON string with proper indentation
+    const jsonString = JSON.stringify(imageData, null, 2);
+
+    // Display the JSON string in an alert dialog
+    window.alert(jsonString);
+});
+
+propertiesContainer.addEventListener('click', function () {
+    // make sure thumbnail appears selected
+    const tcontainerId = document.getElementById("selected-id").textContent
+    document.getElementById(tcontainerId).classList.add('selected');
+});

@@ -2,10 +2,11 @@
  * @file
  * Enable user to select plant species in which to assign photos
  */
-const speciesinput = document.getElementById('speciesInput');
+const speciesinput = document.getElementById('species');
 const suggestions = document.getElementById('suggestions');
 
 let specieslist = [];
+
 /**
  * @function
  * Function to get species list from Calscape
@@ -14,18 +15,31 @@ function fetchSpeciesList() {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "calscape_query.php", true);
     xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
-            if (response.error) {
-                document.getElementById("results").textContent = response.error;
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.error) {
+                        console.log(response.error);
+                    } else {
+                        specieslist = response.map((x) => x);
+                        console.log(specieslist);
+                    }
+                } catch (error) {
+                    // Handle JSON parsing error
+                    console.error("Error parsing JSON response:", error);
+                    console.error("Response text:",xhr.responseText);
+                }
             } else {
-                specieslist = response.map((x) => x);
-                console.log(specieslist);
+                // Handle HTTP status error
+                console.error("HTTP status error:", xhr.status);
+                console.error("Response text:",xhr.responseText);
             }
         }
     };
     xhr.send();
 }
+
 
 /**
  * @function
@@ -65,11 +79,8 @@ function filterData(data, searchText) {
 
 speciesinput.addEventListener('input', function () {
     const userInput = this.value;
-    console.log(userInput);
-
     // populate suggestions
     loadSuggestions(filterData(specieslist,userInput), suggestions);
-
 });
 
 suggestions.addEventListener('click', function (event) {
@@ -78,7 +89,6 @@ suggestions.addEventListener('click', function (event) {
         suggestions.innerHTML = ''; // Clear the suggestions
     }
 });
-
 
 document.addEventListener('DOMContentLoaded', fetchSpeciesList);
 

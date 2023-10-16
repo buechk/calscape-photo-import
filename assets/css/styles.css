@@ -34,15 +34,6 @@ body {
     font-family: system-ui, sans-serif;
 }
 
-/* Style for the container of the Submit button */
-#submit-button-container {
-    position: bottom;
-    top: 10px;
-    /* Adjust the top position as needed */
-    right: 10px;
-    /* Adjust the right position as needed */
-}
-
 
 .main-container {
     display: flex;
@@ -111,18 +102,19 @@ body {
 }
 
 .tcontainer .caption {
-    width: 150px; /* Set the width to match the thumbnail */
+    width: 150px;
+    /* Set the width to match the thumbnail */
     font-size: 12px;
     font-weight: bold;
     margin-top: 5px;
     text-align: center;
+    word-wrap: break-word;
 }
 
 .tcontainer.selected {
     width: 156px;
     border: 3px solid #007bff;
 }
-
 
 .selected-properties-container {
     max-height: 400;
@@ -131,13 +123,6 @@ body {
     padding: 10px;
     width: 100%;
     background-color: #f2f2f2
-}
-
-.species-container {
-    display: flex;
-    position: relative;
-    margin: 10px;
-    align-items: center; /* Center vertically */
 }
 
 .label {
@@ -149,51 +134,56 @@ body {
     outline: none;
     flex: 1;
     align-self: center;
-    min-width: 100px; /* Set a fixed minimum width for the label */
+    min-width: 100px;
+    /* Set a fixed minimum width for the label */
 }
 
 .label:after {
     content: ": ";
 }
 
-.species-input {
-    color: #48438F;
-    padding: 10px 10px;
-    border-radius: 3px;
-    outline: none;
-    background-color: #FFF;
-    border: 1px solid #ccc;
-    flex: 2;
-    margin-right: 10px;
-}
-
-.suggestions {
-    position: absolute;
-    top: calc(100% + 10px); /* Adjust the top value as needed to add some spacing */
-    left: 200px;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    background-color: #FFF;
-    width: 100%;
-    max-height: 100px;
-    overflow-y: auto;
-    margin-right: 10px;
-}
-
-.suggestions li {
-    color: #48438F;
-    margin: 0;
-    padding: 0;
-    width: calc(100% - 30px);
-    cursor: pointer;
-    list-style-type: none;
-    text-align: left;
-}
 
 /* Container for the label/input pairs */
 .form-group {
     display: flex;
+}
+
+.species-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Auto expanding input field styling */
+.auto-expand-input {
+    font-size: 100%;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    flex: 5;
+    padding: 10px 10px;
+}
+
+.suggestions {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #FFF;
+    max-height: 100px;
+    overflow-y: auto;
+    width: 100%;
+    /* Expand to match the input field width */
+    box-sizing: border-box;
+    /* Include padding and borders in the width */
+    margin-top: 5px;
+    /* Add some spacing between input and suggestions */
+}
+
+.suggestions li {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    list-style-type: none;
+    text-align: left;
 }
 
 .multivalue-input-container {
@@ -284,15 +274,6 @@ body {
     box-shadow: rgba(184, 186, 184, 0.2) 0 1px 0 inset;
 }
 
-/* Auto expanding input field styling */
-.auto-expand-input {
-    font-size: 100%;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    flex: 5;
-    padding: 10px 10px;
-}
-
 .hr {
     margin: 0px 5em;
     margin-top: 10px;
@@ -328,7 +309,9 @@ header {
 #menu {
     background-color: #124266;
     overflow: hidden;
-    text-align: left;
+    display: flex;
+    align-items: bottom;
+    justify-content: space-between;
 }
 
 #menu ul {
@@ -346,7 +329,7 @@ header {
     color: white;
     display: block;
     padding: 5px 5px;
-    /* Adjusted padding */
+    text-align: left;
 }
 
 #menu ul li ul.submenu {
@@ -364,8 +347,13 @@ header {
     background-color: #555;
 }
 
-/* CSS */
+#submit-button-container {
+    margin-left: auto;
+    margin-right: 10px;
+}
+
 .submit-btn {
+    float: right;
     appearance: none;
     background-color: #2ea44f;
     border: 1px solid rgba(27, 31, 35, .15);
@@ -374,7 +362,6 @@ header {
     box-sizing: border-box;
     color: #fff;
     cursor: pointer;
-    display: inline-block;
     font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 14px;
     font-weight: 600;

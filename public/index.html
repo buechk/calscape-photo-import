@@ -7,7 +7,6 @@
 
 <header>
     <h1 id="title">Calscape Photo Contribution</h1>
-
     <nav id="menu">
         <ul>
             <li><a href="#">Select photos</a>
@@ -17,6 +16,9 @@
                 </ul>
             </li>
         </ul>
+        <div id=" submit-button-container">
+            <button type=" button" class="submit-btn" id="submit-button">Submit</button>
+        </div>
     </nav>
 </header>
 
@@ -41,25 +43,28 @@
                     <!-- Thumbnails will be loaded here -->
                 </div>
             </div>
-            <div class="species-container">
-                <label class="label">Species</label>
-                <input type="text" id="speciesInput" placeholder="type species name" class="species-input"
-                    autocomplete="off">
-                <ul id="suggestions" class="suggestions">
-                    <!-- Species list will be loaded as user types-->
-                </ul>
-            </div>
-            <div class="selected-properties-container">
+            <div id="selected-properties-container" class="selected-properties-container">
                 <h2>Properties</h2>
                 <div class="properties-scroll-container">
                     <div id="properties-container" class="properties-container">
-                        <!-- Properties will be loaded here -->
+                        <form id="properties-form">
+                            <div class="form-group">
+                                <label class="label">Species</label>
+                                <div class="species-container">
+                                    <input type="text" id="species" placeholder="type species name" class="auto-expand-input" autocomplete="off">
+                                    <ul id="suggestions" class="suggestions">
+                                        <!-- Species list will be loaded as the user types -->
+                                    </ul>
+                                </div>
+                            </div>                            
+                            <br></br>
+                            <!-- Properties will be loaded here -->
+                            <!-- Hidden div to store id of selected image -->
+                            <div id="selected-id" style="display: none;"></div>
+                        </form>
                     </div>
                 </div>
-            </div>
-            <div id="submit-button-container">
-                <button type=" button" class="submit-btn" id="submit-button">Submit</button>
-            </div>
+            </div>  
         </div>
     </div>
 

@@ -11,7 +11,7 @@ import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosBy
 const flickrUrl = document.getElementById('flickrUrl');
 
 const thumbnailGrid = document.getElementById('thumbnail-grid');
-export const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 
 // variables for implementing standard click, shift-click, cmd-click, ctrl-click selection behavior on thumbnails
 let selectedThumbnails = [];
@@ -347,7 +347,7 @@ function toggleSelection(event) {
             tcontainer = clickedElement;
         } else { // background clicked
             // Clear previous selections
-//            clearPropertiesFields;
+            //            clearPropertiesFields;
         }
 
         if (tcontainer !== undefined) {
@@ -431,12 +431,23 @@ function toggleSelection(event) {
     }
 }
 
-
-
 // EVENT LISTENERS
 
-// Add a click event listener to toggle selection
 thumbnailGrid.addEventListener('click', toggleSelection);
 
-// Add a click event listener to toggle selection
 thumbnailGroupGrid.addEventListener('click', toggleSelection);
+
+// Listen for when the user clicks outside of thumbnailGroupGrid, causing
+// an unselection and save properties
+
+document.addEventListener('click', (event) => {
+    const target = event.target;
+
+    // Check if the clicked element is the div or one of its children
+    if (target !== thumbnailGroupGrid && !thumbnailGroupGrid.contains(target)) {
+        // The click occurred outside thumbnailGroupGrid
+        // Perform actions for unselection here
+        console.log('thumbnailGroupGrid unselected');
+    }
+});
+
