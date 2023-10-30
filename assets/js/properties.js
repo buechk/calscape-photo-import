@@ -3,11 +3,10 @@
  *  Display properties of source photos and apply properties to Calscape photos. 
  * 
 */
-import { getSourcePhotos } from "./source-photo-data.js";
+import { getSourcePhoto } from "./source-photo-data.js";
 
 const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 const propertiesContainer = document.getElementById('selected-properties-container');
-const submitButton = document.getElementById('submit-button')
 
 
 const ROLE = "contributor"; // or "reviewer"
@@ -203,12 +202,12 @@ const importconfig = {
                         "userinterface": {
                             "label": "Keywords",
                             "default": "",
+                            "multivalue": true,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
                                     "required": false,
                                     "visible": true,
-                                    "multivalue": true
                                 },
                                 "reviewer": {
                                     "readonly": false,
@@ -320,7 +319,7 @@ const importconfig = {
 
 
 // Data for selected image will be stored here
-let imageData = {};
+export let imageData = {};
 /* example data
 {
     "000": {
@@ -420,15 +419,25 @@ let autoExpand = (selector, direction) => {
 // Create a new MutationObserver instance to detect changes in the thumbnail group
 const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
-        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-            // Loop through the added nodes and populate the metadata for their thumbnail
-            mutation.addedNodes.forEach(function (addedNode) {
-                console.log('Child element added to thumbnail-group-grid:', addedNode);
-                populateThumbnailProperties(addedNode.id);
-            });
+        if (mutation.type === 'childList') {
+            if (mutation.addedNodes.length > 0) {
+                // Loop through the added nodes and populate the metadata for their thumbnail
+                mutation.addedNodes.forEach(function (addedNode) {
+                    console.log('Child element added to thumbnail-group-grid:', addedNode);
+                    populateThumbnailProperties(addedNode.id);
+                });
+            }
+            if (mutation.removedNodes.length > 0) {
+                mutation.removedNodes.forEach(function (removedNode) {
+                    console.log('Child element removed from thumbnail-group-grid:', removedNode);
+                    delete imageData[removedNode.id];
+                });
+            }
         }
     });
 });
+
+
 
 // Configure the observer to watch for changes to the child nodes
 const config = { childList: true };
@@ -441,14 +450,13 @@ observer.observe(thumbnailGroupGrid, config);
  * @param {*} id thumbnail-group-grid id
  */
 async function populateThumbnailProperties(id) {
-    const photoData = getSourcePhotos();
-
     // If we have not already stored data for this image then store it now
     if (imageData === null || !imageData.hasOwnProperty(id)) {
         const imageObj = {};
         imageObj["id"] = id;
 
-        const photo = photoData[id];
+        const photo = getSourcePhoto(id);
+        imageObj["sourceImage"] = photo;
 
         if (photo instanceof File) {
             // Read the photo file and parse EXIF data once
@@ -458,7 +466,7 @@ async function populateThumbnailProperties(id) {
                 for (const column of table.columns) {
                     // Use the parsed EXIF data for each Calscape table column
                     if (column.hasOwnProperty("valuemap")) {
-                        const value = getExifPropertyValue(column.name, column.datasources, exifData);
+                        const value = getExifPropertyValue(column.name, column.datasources, column.userinterface.multivalue, exifData);
                         if (column.valuemap.hasOwnProperty(value)) {
                             imageObj[column.name] = column.valuemap[value];
                         }
@@ -467,7 +475,7 @@ async function populateThumbnailProperties(id) {
                         }
                     }
                     else {
-                        imageObj[column.name] = getExifPropertyValue(column.name, column.datasources, exifData);
+                        imageObj[column.name] = getExifPropertyValue(column.name, column.datasources, column.userinterface.multivalue, exifData);
                     }
                     console.log(column.name + ": " + imageObj[column.name]);
                 }
@@ -480,7 +488,7 @@ async function populateThumbnailProperties(id) {
             for (const table of importconfig.photoimportconfig.tables) {
                 for (const column of table.columns) {
                     if (column.hasOwnProperty("valuemap")) {
-                        const value = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
+                        const value = await getFlickrPropertyValue(column.name, column.datasources, column.userinterface.multivalue, flickrData, flickrExifData);
                         if (column.valuemap.hasOwnProperty(value)) {
                             imageObj[column.name] = column.valuemap[value];
                         }
@@ -489,7 +497,7 @@ async function populateThumbnailProperties(id) {
                         }
                     }
                     else {
-                        imageObj[column.name] = await getFlickrPropertyValue(column.name, column.datasources, flickrData, flickrExifData);
+                        imageObj[column.name] = await getFlickrPropertyValue(column.name, column.datasources, column.userinterface.multivalue, flickrData, flickrExifData);
                     }
                 }
             }
@@ -538,7 +546,7 @@ async function readAndParseExifData(photo) {
     });
 }
 
-function getExifPropertyValue(column, datasources, exifData) {
+function getExifPropertyValue(column, datasources, ismultivalue, exifData) {
     let data = '';
     if (exifData) {
         const source = datasources && datasources.jpeg;
@@ -550,6 +558,15 @@ function getExifPropertyValue(column, datasources, exifData) {
     } else {
         console.error('Exif data is not available');
     }
+
+    if (ismultivalue && !Array.isArray(data)) {
+        const newArray = [];
+        if (data !== undefined) {
+            newArray.push(data);
+        }
+        data = newArray;
+    }
+
     return data;
 }
 
@@ -586,42 +603,50 @@ async function getFlickrPhotoInfo(id, method) {
     });
 }
 
-async function getFlickrPropertyValue(column, datasources, flickrData, flickrExifData) {
+async function getFlickrPropertyValue(column, datasources, ismultivalue, flickrData, flickrExifData) {
     const sources = datasources && datasources.flickr;
+
     let propertyvalue = '';
 
+    // If sources is an array of queries, evaluate each query until a non-empty result is found
     if (Array.isArray(sources)) {
-        // If sources is an array of queries, evaluate each query until a non-empty result is found
         for (const source of sources) {
-            const expression = jsonata(source);
             try {
-                if (source.includes('exif')) {
-                    propertyvalue = await expression.evaluate(flickrExifData);
-                } else {
-                    propertyvalue = await expression.evaluate(flickrData);
-                }
+                const expression = jsonata(source);
+                propertyvalue = source.includes('exif') ? await expression.evaluate(flickrExifData) : await expression.evaluate(flickrData);
                 if (propertyvalue !== undefined && propertyvalue !== '') {
-                    break; // Exit the loop if a valid propertyvalue is found
+                    if (ismultivalue && !Array.isArray(propertyvalue)) {
+                        const newArray = [];
+                        if (propertyvalue !== undefined) {
+                            newArray.push(propertyvalue);
+                        }
+                        propertyvalue = newArray;
+                    }
+                    console.log('getDataSource: ' + column + ': ' + propertyvalue);
                 }
             } catch (error) {
                 console.error('Error evaluating expression:', error);
             }
         }
-    } else if (sources !== undefined && sources !== '') {
+    } else if (sources) {
         // If sources is a single query, evaluate it
-        const expression = jsonata(sources);
         try {
-            if (sources.includes('exif')) {
-                propertyvalue = await expression.evaluate(flickrExifData);
-            } else {
-                propertyvalue = await expression.evaluate(flickrData);
+            const expression = jsonata(sources);
+            propertyvalue = sources.includes('exif') ? await expression.evaluate(flickrExifData) : await expression.evaluate(flickrData);
+            if (ismultivalue && !Array.isArray(propertyvalue)) {
+                const newArray = [];
+                if (propertyvalue !== undefined) {
+                    newArray.push(propertyvalue);
+                }
+                propertyvalue = newArray;
             }
+
+            console.log('getDataSource: ' + column + ': ' + propertyvalue);
         } catch (error) {
             console.error('Error evaluating expression:', error);
         }
     }
 
-    console.log('getDataSource: ' + column + ': ' + propertyvalue);
     return propertyvalue;
 }
 
@@ -721,7 +746,6 @@ function addMultiValueProperty() {
         });
     }
 }
-
 
 /**
  * Function to save properties from input element to imageObj
@@ -839,7 +863,7 @@ function createPropertiesFields() {
             label.textContent = column.userinterface.label;
             formgroup.appendChild(label);
 
-            if (uiconfig.multivalue == true) {
+            if (column.userinterface.multivalue == true) {
                 // Clone the template element
                 const template = document.getElementById('multivalue-input-container');
                 const clone = template.cloneNode(true); // Pass true to clone its children
@@ -942,14 +966,6 @@ $('#properties-form').on('blur', 'input, select, textarea', function (event) {
     this.timer = setTimeout(() => {
         saveProperties(event.target);
     }, delayDuration);
-});
-
-submitButton.addEventListener('click', function () {
-    // Convert the imageData object to a JSON string with proper indentation
-    const jsonString = JSON.stringify(imageData, null, 2);
-
-    // Display the JSON string in an alert dialog
-    window.alert(jsonString);
 });
 
 propertiesContainer.addEventListener('click', function () {

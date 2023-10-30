@@ -52,15 +52,20 @@ body {
     background-color: #aaa9a9;
 }
 
-.source-photos-container,
+.source-photos-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-width: 200px;
+    /* Set initial width for panels */
+    width: calc(50% - 5px);
+}
+
 .right-container {
     border: 1px solid #ccc;
     padding: 10px;
     min-width: 200px;
     /* Set initial width for panels */
-    /* Optionally, you can set the initial widths here */
     width: calc(50% - 5px);
-    /* Initial width for both containers */
 }
 
 /* Add this CSS to disable user selection while resizing */

@@ -13,7 +13,7 @@ let specieslist = [];
  */
 function fetchSpeciesList() {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "calscape_query.php", true);
+    xhr.open("GET", "/includes/php/calscape_query.php", true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {

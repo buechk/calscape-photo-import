@@ -157,7 +157,7 @@ async function displayImagesFromFlickr(photosApiUrl) {
                     loadThumbnailImage(t_url, photoId, title);
 
                     // Store photo information
-                    storeSourcePhoto(photo);
+                    storeSourcePhoto(t_url);
                 }
             } else {
                 // Handle the case where no photos were found for the given ID
@@ -426,7 +426,7 @@ function toggleSelection(event) {
         // clicked in grid causing all to be unselected
         clearSelections();
     }
-    if (selectedThumbnails.length === 0) {
+    if (selectedThumbnails.length != 1) {
         clearPropertiesFields();
     }
 }

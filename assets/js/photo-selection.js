@@ -21,24 +21,6 @@ const selectFromFlickrLink = document.getElementById('selectFromFlickrLink');
 const fileInput = document.getElementById('fileInput');
 const flickrUrl = document.getElementById('flickrUrl');
 
-/**
- * Upload files to Calscape. This will be moved to another file.
- */
-function uploadFiles() {
-    // Iterate through the stored file data and upload files
-    for (const uniqueIdentifier in fileData) {
-        if (fileData.hasOwnProperty(uniqueIdentifier)) {
-            const file = fileData[uniqueIdentifier];
-
-            // Simulate uploading the file (replace with actual upload code)
-            console.log(`Uploading file with unique identifier: ${uniqueIdentifier}, File Name: ${file.name}`);
-
-            // Remove the file data after uploading if needed
-            delete fileData[uniqueIdentifier];
-        }
-    }
-}
-
 // EVENT LISTENERS
 
 // Open the File selection modal

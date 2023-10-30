@@ -40,6 +40,10 @@ export function storeSourcePhoto(photo) {
     }
 }
 
+export function getSourcePhoto(id) {
+    return (sourcePhotos[id]);
+}
+
 export function getSourcePhotos() {
     return sourcePhotos;
 }

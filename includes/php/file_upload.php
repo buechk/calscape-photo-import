@@ -1,0 +1,40 @@
+<?php
+include_once(dirname(dirname(__FILE__)).'/php/common.php');
+
+// Check if a file was uploaded
+if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+
+    // Generate a unique filename to prevent overwriting
+    $rootname = $_POST['rootname'];
+    $path_parts = pathinfo($_FILES['file']['name']);
+    $fileExtension = $path_parts['extension'];
+    $filename = $rootname . '_' . uniqid() . '.' . $fileExtension;
+    $targetPath = $uploadDirectory . $filename;
+
+    // Move the uploaded file to the server
+    if (move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
+        // Upload successful
+        $response = [
+            'success' => true,
+            'message' => 'File uploaded successfully',
+            'filename' => $filename,
+        ];
+    } else {
+        // Upload failed
+        $response = [
+            'success' => false,
+            'message' => 'Failed to move the file to the server',
+        ];
+    }
+} else {
+    // No file uploaded or an error occurred
+    $response = [
+        'success' => false,
+        'message' => 'No file uploaded or an error occurred',
+    ];
+
+    error_log('Error: ' . $response['message']);
+}
+
+header('Content-Type: application/json');
+echo json_encode($response);
