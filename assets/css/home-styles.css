@@ -41,3 +41,34 @@ body{
     border: none;
     border-radius: 5px;
 } 
+
+.button:hover{
+    background-color: #6A8855;
+}
+
+.button:focus{
+    background-color: #6A8855;
+}
+
+.button:active{
+    background-color: #516d3d;
+}
+
+#container {
+    display:flex;
+    justify-content: space-between;
+}
+
+#contribute-container,
+#review-container {
+    width: 48%;
+    float: left;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+
+}
+
+p{
+    font-size: 16px;
+}
