@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../assets/css/reviewer-styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet"><link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <title>Calscape Photo Review</title>
+</head>
+<body>
+    <header id="review-header">
+        <h1>Calscape Photo Review</h1>
+
+    </header>
+    <div class="main-container">
+        <div class="source-photos-container">
+            <h2>Photos for review</h2>
+            <div class="thumbnail-scroll-container">
+                <div id="thumbnail-grid">
+                    <!-- Thumbnails will be loaded here -->
+                </div>
+            </div>
+        </div>
+        <div class="divider" id="divider"></div>
+        <div class="right-container">
+            <div class="photo-group-container">
+                <h2>Photos for contribution</h2>
+                <!-- Content for the "photo-group" element -->
+            </div>
+            <div class="group-thumbnail-scroll-container">
+                <div id="thumbnail-group-grid">
+                    <!-- Thumbnails will be loaded here -->
+                </div>
+            </div>
+            <div class="species-container">
+                <label class="label">Species</label>
+                <input type="text" id="speciesInput" placeholder="type species name" class="species-input"
+                    autocomplete="off">
+                <ul id="suggestions" class="suggestions">
+                    <!-- Species list will be loaded as user types-->
+                </ul>
+            </div>
+            <div class="selected-properties-container">
+                <h2>Properties</h2>
+                <div class="properties-scroll-container">
+                    <div id="properties-container" class="properties-container">
+                        <!-- Properties will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div id="submit-button-container">
+                <button type=" button" class="submit-btn" id="submit-button">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template for multivalue properties -->
+    <div id="multivalue-input-container" class="multivalue-input-container" style="display: none;">
+        <div class="multivalue-input-inner">
+        </div>
+        <div class="input-button-container">
+            <input type="text" class="new-multivalue-input" placeholder="Add new value"></input>
+            <button id="add-btn" class="add-btn">Add</button>
+        </div>
+    </div>
+
+    <!-- Modal for Importing Files -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fileModalClose">&times;</span>
+            <h2>Select Files</h2>
+            <input type="file" id="fileInput" multiple>
+        </div>
+    </div>
+
+    <!-- Modal for Importing from Flickr -->
+    <div id="flickrModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="flickrModalClose">&times;</span>
+            <h2>Enter a Flickr URL:</h2>
+            <input type="text" id="flickrUrl">
+            <button id="importFromFlickr">Select</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsonata/jsonata.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="module" src="../assets/js/thumbnails.js"></script>
+    <script type="module" src="../assets/js/properties.js"></script>
+    <script type="module" src="../assets/js/photo-selection.js"></script>
+    <script type="module" src="../assets/js/resizer.js"></script>
+    <script type="module" src="../assets/js/species-selection.js"></script>
+
+</body>
+</html>
