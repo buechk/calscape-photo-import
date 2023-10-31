@@ -78,7 +78,7 @@ function displayImagesFromFilesystem(filelist) {
     clearSourcePhotos();
     for (let i = 0; i < filelist.length; i++) {
         const file = filelist[i];
-        storeSourcePhoto(file);
+        storeSourcePhoto(null, file); // pass null id, a unique identifier will be generated
     }
 
     const sourcePhotos = getSourcePhotos();
@@ -157,7 +157,8 @@ async function displayImagesFromFlickr(photosApiUrl) {
                     loadThumbnailImage(t_url, photoId, title);
 
                     // Store photo information
-                    storeSourcePhoto(t_url);
+                    const l_url = t_url.replace("_q.", "_b.");
+                    storeSourcePhoto(photoId, l_url);
                 }
             } else {
                 // Handle the case where no photos were found for the given ID

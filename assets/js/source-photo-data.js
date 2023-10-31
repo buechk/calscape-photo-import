@@ -27,7 +27,7 @@ function generateUniqueIdentifier() {
     return `${timestamp}-${random}`;
 }
 
-export function storeSourcePhoto(photo) {
+export function storeSourcePhoto(id, photo) {
     if (photo instanceof File) {
         const uniqueIdentifier = generateUniqueIdentifier();
         sourcePhotos[uniqueIdentifier] = photo;
@@ -35,7 +35,7 @@ export function storeSourcePhoto(photo) {
         console.log(`Stored file with unique identifier: ${uniqueIdentifier}, File Name: ${photo.name}`);
     }
     else {
-        sourcePhotos[photo.id] = photo;
+        sourcePhotos[id] = photo;
         console.log(`Stored photo with identifier: ${photo.id}, ${photo}`);
     }
 }

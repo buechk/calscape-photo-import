@@ -13,34 +13,46 @@ const submitButton = document.getElementById('submit-button')
  * @returns path of uploaded file or '' if file failed to upload
  */
 function uploadFile(obj) {
-    const file = obj["sourceImage"];
+    const source = obj["sourceImage"];
     const species = obj["species"];
-    if (file) {
-        const formData = new FormData(); // Create a new FormData object
-        formData.append('file', file); // Append the File object to the form data
-        formData.append('rootname', species);
-        // Send a POST request to the server
-        fetch('/includes/php/file_upload.php', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(response => response.json()) // Parse response as JSON
-            .then(data => {
-                if (data.success) {
-                    // Handle a successful upload
-                    console.log(`file_upload: ${data.filename}, ${data.message}`);
-                    obj["FileName"] = data.filename;
-                } else {
-                    // Handle errors
-                    console.error('file_upload: Upload failed: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+    const formData = new FormData();
+    formData.append('rootname', species);
+    let method = '';
+    
+    if (source instanceof File) {
+        formData.append('file', source);
+        method = '/includes/php/file_upload.php';
+    } else {
+        formData.append('url', source);
+        method = '/includes/php/file_from_url.php';
     }
+    
+    // Send a POST request to the server
+    fetch(method, {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json(); // Parse response as JSON
+    })
+    .then(data => {
+        if (data.success) {
+            // Handle a successful upload
+            console.log(`File upload: ${data.filename}, ${data.message}`);
+            obj["FileName"] = data.filename;
+        } else {
+            // Handle errors from the JSON response
+            console.error(`fFile upload: Upload failed: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        // Handle network errors or other exceptions
+        console.error('Error:', error);
+    });
 }
-
 
 /**
  * Submit entry point
@@ -49,15 +61,8 @@ function submit() {
     // Upload files and update imageData
     for (const id in imageData) {
         const obj = imageData[id];
-
-        // If it's a file, upload the file
-        if (obj["sourceImage"] instanceof File) {
-            uploadFile(obj);
-        }
-        // Upload serialized imageData 
+        uploadFile(obj);
     }
-
-
 }
 
 /* EVENT LISTENERS */

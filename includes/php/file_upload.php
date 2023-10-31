@@ -8,7 +8,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
     $rootname = $_POST['rootname'];
     $path_parts = pathinfo($_FILES['file']['name']);
     $fileExtension = $path_parts['extension'];
-    $filename = $rootname . '_' . uniqid() . '.' . $fileExtension;
+    $filename = str_replace(' ', '_',$rootname) . '_' . uniqid() . '.' . $fileExtension;
     $targetPath = $uploadDirectory . $filename;
 
     // Move the uploaded file to the server
@@ -32,8 +32,6 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
         'success' => false,
         'message' => 'No file uploaded or an error occurred',
     ];
-
-    error_log('Error: ' . $response['message']);
 }
 
 header('Content-Type: application/json');

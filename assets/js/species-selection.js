@@ -77,6 +77,11 @@ function filterData(data, searchText) {
 
 /* EVENT LISTENERS */
 
+speciesinput.addEventListener('focus', function () {
+    // Show unfiltered suggestions here
+    loadSuggestions(specieslist, suggestions);
+});
+
 speciesinput.addEventListener('input', function () {
     const userInput = this.value;
     // populate suggestions

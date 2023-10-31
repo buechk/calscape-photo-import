@@ -34,7 +34,7 @@ const importconfig = {
                                     "visible": true
                                 },
                                 "reviewer": {
-                                    "readonly": true,
+                                    "readonly": false,
                                     "required": false,
                                     "visible": true
                                 }
@@ -100,12 +100,12 @@ const importconfig = {
                             "default": "",
                             "roles": {
                                 "contributor": {
-                                    "readonly": true,
+                                    "readonly": false,
                                     "required": false,
                                     "visible": true
                                 },
                                 "reviewer": {
-                                    "readonly": true,
+                                    "readonly": false,
                                     "required": false,
                                     "visible": true
                                 }
@@ -123,12 +123,12 @@ const importconfig = {
                             "default": "",
                             "roles": {
                                 "contributor": {
-                                    "readonly": true,
+                                    "readonly": false,
                                     "required": false,
                                     "visible": true
                                 },
                                 "reviewer": {
-                                    "readonly": true,
+                                    "readonly": false,
                                     "required": false,
                                     "visible": true
                                 }
@@ -744,6 +744,30 @@ function addMultiValueProperty() {
                 }
             }
         });
+    }
+}
+
+/**
+ * Function to save properties from input element to imageObj
+ * @param {HTMLElement} inputElement - The input element to save.
+ */
+function saveGroupProperties(inputElement) {
+    if (inputElement) {
+        const tcontainerId = document.getElementById("selected-id").textContent;
+        if (!imageData[tcontainerId]) {
+            imageData[tcontainerId] = {}; // Initialize image object if not exists
+        }
+        if (!inputElement.parentElement.parentElement.classList.contains("multivalue-input-container") &&
+            inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA") {
+            const propertyName = inputElement.id;
+            const propertyValue = inputElement.value;
+
+            if (propertyValue) {
+                imageData[tcontainerId][propertyName] = propertyValue;
+            } else {
+                delete imageData[tcontainerId][propertyName];
+            }
+        }
     }
 }
 
