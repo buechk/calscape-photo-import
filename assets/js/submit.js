@@ -3,7 +3,7 @@
  * Handle submission including file upload and upload of metadata
  */
 
-import { imageData } from "./properties.js";
+import { imageData } from "./collection-data.js";
 
 const submitButton = document.getElementById('submit-button')
 
@@ -18,7 +18,7 @@ function uploadFile(obj) {
     const formData = new FormData();
     formData.append('rootname', species);
     let method = '';
-    
+
     if (source instanceof File) {
         formData.append('file', source);
         method = '/includes/php/file_upload.php';
@@ -26,32 +26,32 @@ function uploadFile(obj) {
         formData.append('url', source);
         method = '/includes/php/file_from_url.php';
     }
-    
+
     // Send a POST request to the server
     fetch(method, {
         method: 'POST',
         body: formData,
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json(); // Parse response as JSON
-    })
-    .then(data => {
-        if (data.success) {
-            // Handle a successful upload
-            console.log(`File upload: ${data.filename}, ${data.message}`);
-            obj["FileName"] = data.filename;
-        } else {
-            // Handle errors from the JSON response
-            console.error(`fFile upload: Upload failed: ${data.message}`);
-        }
-    })
-    .catch(error => {
-        // Handle network errors or other exceptions
-        console.error('Error:', error);
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json(); // Parse response as JSON
+        })
+        .then(data => {
+            if (data.success) {
+                // Handle a successful upload
+                console.log(`File upload: ${data.filename}, ${data.message}`);
+                obj["FileName"] = data.filename;
+            } else {
+                // Handle errors from the JSON response
+                console.error(`fFile upload: Upload failed: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            // Handle network errors or other exceptions
+            console.error('Error:', error);
+        });
 }
 
 /**
@@ -70,23 +70,25 @@ function submit() {
 // Delay duration in milliseconds (e.g., 500 milliseconds)
 const delayDuration = 500;
 
-// Handler for the submit button click event
-submitButton.addEventListener('click', function (event) {
-    // Trigger blur event on the currently focused input element
-    const focusedInput = document.activeElement;
-    if (focusedInput) {
-        focusedInput.blur(); // Trigger the blur event
+export function initializeSubmitContribute() {
+    // Handler for the submit button click event
+    submitButton.addEventListener('click', function (event) {
+        // Trigger blur event on the currently focused input element
+        const focusedInput = document.activeElement;
+        if (focusedInput) {
+            focusedInput.blur(); // Trigger the blur event
 
-        // Wait for the autosave to complete (adjust the delay if needed)
-        setTimeout(() => {
-            // Convert the imageData object to a JSON string with proper indentation
-            const jsonString = JSON.stringify(imageData, null, 2);
-            console.log(jsonString);
+            // Wait for the autosave to complete (adjust the delay if needed)
+            setTimeout(() => {
+                // Convert the imageData object to a JSON string with proper indentation
+                const jsonString = JSON.stringify(imageData, null, 2);
+                console.log(jsonString);
 
+                submit();
+            }, delayDuration);
+        } else {
+            // If no input element is focused, we can directly submit
             submit();
-        }, delayDuration);
-    } else {
-        // If no input element is focused, we can directly submit
-        submit();
-    }
-});
+        }
+    });
+}

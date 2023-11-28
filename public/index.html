@@ -3,69 +3,35 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="../assets/css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/home-styles.css" />
 </head>
 
 <header>
-    <h1 id="title">Calscape Photo Contribution</h1>
-    <nav id="menu">
-        <ul>
-            <li><a href="#">Select photos</a>
-                <ul class="submenu">
-                    <li><a href="#" id="selectFilesLink">Select files...</a></li>
-                    <li><a href="#" id="selectFromFlickrLink">Select from Flickr...</a></li>
-                </ul>
-            </li>
-        </ul>
-        <div id=" submit-button-container">
-            <button type=" button" class="submit-btn" id="submit-button">Submit</button>
-        </div>
-    </nav>
+    <div class="banner">
+        <h1 id="title">Calscape Photo Manager</h1>
+    </div>
 </header>
 
 <body>
     <div class="main-container">
-        <div class="source-photos-container">
-            <h2>Source photos</h2>
-            <div class="thumbnail-scroll-container">
-                <div id="thumbnail-grid">
-                    <!-- Thumbnails will be loaded here -->
-                </div>
-            </div>
-        </div>
-        <div class="divider" id="divider"></div>
-        <div class="right-container">
-            <div class="photo-group-container">
-                <h2>Photo collection</h2>
-                <!-- Content for the "photo-group" element -->
-            </div>
-            <div class="group-thumbnail-scroll-container">
-                <div id="thumbnail-group-grid">
-                    <!-- Thumbnails will be loaded here -->
-                </div>
-            </div>
-            <div id="selected-properties-container" class="selected-properties-container">
-                <h2>Photo properties</h2>
-                <div class="properties-scroll-container">
-                    <div id="properties-container" class="properties-container">
-                        <form id="properties-form">
-                            <div class="form-group">
-                                <label class="label">Species</label>
-                                <div class="species-container">
-                                    <input type="text" id="species" placeholder="type species name" class="auto-expand-input" autocomplete="off">
-                                    <ul id="suggestions" class="suggestions">
-                                        <!-- Species list will be loaded as the user types -->
-                                    </ul>
-                                </div>
-                            </div>                            
-                            <br></br>
-                            <!-- Properties will be loaded here -->
-                            <!-- Hidden div to store id of selected image -->
-                            <div id="selected-id" style="display: none;"></div>
-                        </form>
-                    </div>
-                </div>
-            </div>  
-        </div>
+        <nav id="left-nav">
+            <ul>
+                <li id="welcome-link"><a data-page="home">Welcome</a></li>
+                <li><a href="#" data-page="select-photos">Select photos</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-page="select-photos" id="selectFilesLink">Select files...</a></li>
+                        <li><a href="#" data-page="select-photos" id="selectFromFlickrLink">Select from Flickr...</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" data-page="create-collection">Create collection</a></li>
+                <li><a href="#" data-page="set-properties">Set properties</a></li>
+                <li><a href="#" data-page="submit-for-review">Submit</a></li>
+            </ul>
+        </nav>
+
+        <main id="main-content">
+            <!-- The content area to be dynamically updated -->
+        </main>
     </div>
 
     <!-- Template for multivalue properties -->
@@ -101,13 +67,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="module" src="../assets/js/thumbnails.js"></script>
-    <script type="module" src="../assets/js/properties.js"></script>
     <script type="module" src="../assets/js/photo-selection.js"></script>
+    <script type="module" src="../assets/js/side-bar-nav.js"></script>
+    <script type="module" src="../assets/js/thumbnails.js"></script>
+    <script type="module" src="../assets/js/species-selection.js"></script>"
+    <script type="module" src="../assets/js/properties.js"></script>
     <script type="module" src="../assets/js/resizer.js"></script>
-    <script type="module" src="../assets/js/species-selection.js"></script>
     <script type="module" src="../assets/js/submit.js"></script>
-
+    <script type="module" src="../assets/js/main-content.js"></script>"
+    <script type="module" src="../assets/js/collection-data.js"></script>
 
 </body>
 

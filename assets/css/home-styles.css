@@ -1,37 +1,7 @@
-html {
-    margin: 0;
-    height: 100%;
-    padding: 0px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    border: none;
-    outline: none;
-}
-
-header {
-    background-color: #0c2d45;
-    text-align: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    font-size: 17px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    color: #ffffff;
-    font-family: 'Poppins', sans-serif;
-} 
-
-h2{
-    font-family: 'Poppins', sans-serif;
-}
-
 #how-to{
     text-align: left;
 }
 
-body{
-    text-align: center;
-    margin: 1rem;
-}
 .button{
     display: inline-block;
     padding: 10px 20px;
@@ -62,13 +32,31 @@ body{
 #contribute-container,
 #review-container {
     width: 48%;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/*
+#contribute-container,
+#review-container {
+    width: 48%;
     float: left;
     margin: 10px;
     padding: 10px;
     border: 1px solid #ddd;
-
 }
+*/
 
 p{
     font-size: 16px;
+}
+
+.centered-text{
+    text-align: center;
+}
+
+.button-container {
+    text-align: center; /* Center the content within each container */
+    margin-top: 10px; /* Add some top margin to the button container */
 }

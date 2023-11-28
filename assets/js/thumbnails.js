@@ -7,11 +7,9 @@
 import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
 import { showSelectedProperties } from './properties.js';
 import { clearPropertiesFields } from "./properties.js";
-import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum} from './flickr-API.js';
+import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum } from './flickr-API.js';
+import { getCollectionThumbnails } from './collection-data.js';
 const flickrUrl = document.getElementById('flickrUrl');
-
-const thumbnailGrid = document.getElementById('thumbnail-grid');
-const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 
 // variables for implementing standard click, shift-click, cmd-click, ctrl-click selection behavior on thumbnails
 let selectedThumbnails = [];
@@ -19,26 +17,109 @@ let firstSelectedThumbnailThumbnailGrid = null; // Added variable for 'thumbnail
 let firstSelectedThumbnailThumbnailGroupGrid = null; // Added variable for 'thumbnail-group-grid'
 
 // Enable drag-and-drop reordering of thumbnails
-const sortable = new Sortable(thumbnailGrid, {
-    animation: 150,
-    group: 'shared-group',
-    ghostClass: 'sortable-ghost',
-    chosenClass: 'sortable-chosen',
-    dragClass: 'sortable-drag',
-    multiDrag: true,
-    selectedClass: 'selected'
-});
+export function initializeSortableGrid() {
+    const thumbnailGrid = document.getElementById('thumbnail-grid');
+
+    // Enable drag-and-drop reordering of thumbnails
+    const sortable = new Sortable(thumbnailGrid, {
+        animation: 150,
+        group: 'shared-group',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        multiDrag: true,
+        selectedClass: 'selected'
+    });
+
+    const dropTarget = document.getElementById('thumbnail-grid');
+
+    // Prevent the default behavior for dragenter and dragover events
+    dropTarget.addEventListener('dragenter', function (event) {
+        event.preventDefault();
+        // Change the sortablegroup styling to indicate that it's a valid drop target
+        dropTarget.style.border = '2px dashed #33cc33';
+    });
+
+    dropTarget.addEventListener('dragleave', function () {
+        dropTarget.style.border = 'none';
+      });
+
+    // Prevent the default behavior for dragover events
+    dropTarget.addEventListener('dragover', function (event) {
+        event.preventDefault();
+    });
+
+    // Handle the drop event
+    dropTarget.addEventListener('drop', function (event) {
+        event.preventDefault();
+        // Access the dragged data (you might have additional logic here)
+        const draggedData = event.dataTransfer.getData('text/plain');
+        // Perform actions with the dropped data
+        console.log('Dropped to source grid:', draggedData);
+        // Reset the sortablegroup styling
+        dropTarget.style.border = 'none';
+    });
+}
 
 // Enable drag-and-drop reordering of thumbnails
-export const sortablegroup = new Sortable(thumbnailGroupGrid, {
-    animation: 150,
-    group: 'shared-group',
-    ghostClass: 'sortable-ghost',
-    chosenClass: 'sortable-chosen',
-    dragClass: 'sortable-drag',
-    multiDrag: true,
-    selectedClass: 'selected'
-});
+export function initializeSortableGroupGrid() {
+    const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+
+    // Enable drag-and-drop reordering of thumbnails
+    const sortablegroup = new Sortable(thumbnailGroupGrid, {
+        animation: 150,
+        group: 'shared-group',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        multiDrag: true,
+        selectedClass: 'selected'
+    });
+
+    const dropTarget = document.getElementById('thumbnail-group-grid');
+    const dropMessage = document.getElementById('drag-and-drop-message');
+
+    if (getCollectionThumbnails().length > 0) {
+        dropMessage.style.display = 'none';
+    }
+
+    // Prevent the default behavior for dragenter and dragover events
+    dropTarget.addEventListener('dragenter', function (event) {
+        event.preventDefault();
+        // Change the sortablegroup styling to indicate that it's a valid drop target
+        dropTarget.style.border = '2px dashed #33cc33';
+    });
+
+    dropTarget.addEventListener('dragleave', function () {
+        dropTarget.style.border = 'none';
+        // Use a setTimeout to check after a short delay
+        setTimeout(() => {
+          // Check if the number of children is 1 (the dropMessage)
+          if (dropTarget.childElementCount === 1) {
+            // Reset the drop zone styling and redisplay the message
+            dropMessage.style.display = 'block';
+          }
+        }, 100); // Adjust the delay as needed
+      });
+
+    // Prevent the default behavior for dragover events
+    dropTarget.addEventListener('dragover', function (event) {
+        event.preventDefault();
+    });
+
+    // Handle the drop event
+    dropTarget.addEventListener('drop', function (event) {
+        event.preventDefault();
+        // Access the dragged data (you might have additional logic here)
+        const draggedData = event.dataTransfer.getData('text/plain');
+        // Perform actions with the dropped data
+        console.log('Dropped to collection grid:', draggedData);
+        // Reset the sortablegroup styling
+        dropTarget.style.border = 'none';
+        // Hide the drop message
+        dropMessage.style.display = 'none';
+    });
+}
 
 /**
  *  Display thumbnails from files or URLs
@@ -46,8 +127,8 @@ export const sortablegroup = new Sortable(thumbnailGroupGrid, {
  * @param input is either a file list or a url
  */
 export function displayThumbnails(input) {
+    const thumbnailGrid = document.getElementById('thumbnail-grid');
     thumbnailGrid.innerHTML = ''; // Clear previous thumbnails
-    thumbnailGroupGrid.innerHTML = ''; // Clear previous thumbnails
 
     if (input instanceof FileList) {
         // Handle files from file input
@@ -71,45 +152,29 @@ export function displayThumbnails(input) {
  *  @param {*} filelist 
  */
 function displayImagesFromFilesystem(filelist) {
+    // Convert filelist to an array
+    const filesArray = Array.from(filelist);
+
     // Handle files from file input
-    const thumbnailGrid = document.getElementById('thumbnail-grid');
-
-    // 
     clearSourcePhotos();
-    for (let i = 0; i < filelist.length; i++) {
-        const file = filelist[i];
-        storeSourcePhoto(null, file); // pass null id, a unique identifier will be generated
-    }
 
-    const sourcePhotos = getSourcePhotos();
-    for (const uniqueIdentifier in sourcePhotos) {
-        const file = sourcePhotos[uniqueIdentifier];
-        // create a container for the thumbnail and its caption and id
-        const tcontainer = document.createElement('div');
-        const thumbnail = document.createElement('div');
-        tcontainer.classList.add('tcontainer');
-        thumbnail.classList.add('thumbnail');
-        tcontainer.appendChild(thumbnail);
-        const caption = document.createElement('div');
-        caption.classList.add('caption');
-        caption.innerText = file.name;
-        tcontainer.appendChild(caption);
-        tcontainer.id = uniqueIdentifier;
+    // Map each file to a promise returned by storeSourcePhoto
+    const promises = filesArray.map(file => {
+        return storeSourcePhoto(null, file, file.name)
+            .then(result => {
+                console.log('Photo stored successfully: ', result.id, result.caption);
+            })
+            .catch(error => {
+                console.error('Error storing photo:', error);
+            });
+    });
 
-        // listen for when a thumbnail is selected so properties can be updated
-        tcontainer.addEventListener('click', showSelectedProperties);
-
-        // Create a FileReader to read the file as a data URL
-        const reader = new FileReader();
-        reader.onload = function () {
-            thumbnail.style.backgroundImage = `url(${reader.result})`;
-        };
-
-        // Read the file as a data URL
-        reader.readAsDataURL(file);
-
-        thumbnailGrid.appendChild(tcontainer);
-    }
+    // Wait for all promises to be resolved before proceeding
+    Promise.all(promises)
+        .then(() => {
+            // All files have been processed, now display the thumbnails
+            displayThumbnailsFromSourcePhotos();
+        });
 }
 
 /**
@@ -154,11 +219,9 @@ async function displayImagesFromFlickr(photosApiUrl) {
                     console.log("Photo title:", title);
                     console.log("Image URL:", t_url);
 
-                    loadThumbnailImage(t_url, photoId, title);
-
                     // Store photo information
                     const l_url = t_url.replace("_q.", "_b.");
-                    storeSourcePhoto(photoId, l_url);
+                    storeSourcePhoto(photoId, l_url, title);
                 }
             } else {
                 // Handle the case where no photos were found for the given ID
@@ -173,148 +236,39 @@ async function displayImagesFromFlickr(photosApiUrl) {
         console.error("Error fetching and displaying photos:", error);
         alert("An error occurred while fetching and displaying photos. Please try again later.");
     }
+
+    displayThumbnailsFromSourcePhotos();
 }
-// async function displayImagesFromFlickr(photosApiUrl) {
-//     clearSourcePhotos();
 
-//     try {
-//         // extract the user ID from the Flickr URL
-//         const userId = await extractUsernameFromFlickrUrl(flickrUrl.value);
+export function displayThumbnailsFromSourcePhotos() {
+    const thumbnailGrid = document.getElementById('thumbnail-grid');
 
-//         if (userId !== null) {
-//             const photos = await searchPhotosByUsername(userId);
+    thumbnailGrid.innerHTML = ''; // Clear previous thumbnails
 
-//             if (photos && photos.length > 0) {
-//                 for (const photo of photos) {
-//                     const farmId = photo.farm;
-//                     const serverId = photo.server;
-//                     const id = photo.id;
-//                     const secret = photo.secret;
-//                     const title = photo.title;
+    const sourcePhotos = getSourcePhotos();
+    for (const uniqueIdentifier in sourcePhotos) {
+        const photo = sourcePhotos[uniqueIdentifier];
+        const url = photo.url;
+        const captionText = photo.caption;
 
-//                     const t_url = `https://farm${farmId}.staticflickr.com/${serverId}/${id}_${secret}_q.jpg`;
-//                     console.log("Photo title:", title);
-//                     console.log("Image URL:", t_url);
+        // create a container for the thumbnail and its caption and id
+        const tcontainer = document.createElement('div');
+        const thumbnail = document.createElement('div');
+        tcontainer.classList.add('tcontainer');
+        thumbnail.classList.add('thumbnail');
+        thumbnail.style.backgroundImage = `url(${url})`;
+        tcontainer.appendChild(thumbnail);
+        const caption = document.createElement('div');
+        caption.classList.add('caption');
+        caption.innerText = captionText;
+        tcontainer.appendChild(caption);
+        tcontainer.id = uniqueIdentifier;
 
-//                     loadThumbnailImage(t_url, photo.id, title);
+        // listen for when a thumbnail is selected so properties can be updated
+        tcontainer.addEventListener('click', showSelectedProperties);
 
-//                     // Store photo information
-//                     storeSourcePhoto(photo);
-//                 }
-//             } else {
-//                 // Handle the case where no photos were found
-//                 console.warn("No photos found for the given user ID.");
-//             }
-//         } else {
-//             // Handle the case where the user ID couldn't be extracted
-//             console.warn("Invalid Flickr URL or unable to extract user ID.");
-//         }
-//     } catch (error) {
-//         // Handle any errors that occur during the process
-//         console.error("Error fetching and displaying photos:", error);
-//         alert("An error occurred while fetching and displaying photos. Please try again later.");
-//     }
-// }
-
-// /**
-//  * Calls the Flickr API using the given url to get photos
-//  * 
-//  * @param {*} url 
-//  */
-// function displayImagesFromFlickr(url) {
-//     clearSourcePhotos();
-
-//     // Instead of directly issuing URL that user input. Let user input their home page URL
-//     // and parse the user_id out and construct the REST URL
-//     var parameters = {
-//         "async": true,
-//         "crossDomain": true,
-//         "url": url,
-//         "method": "POST",
-//         "headers": {}
-//     }
-//     // Currently, we're calling the Flickr REST service URL that the user directly input.
-//     // but later, we will allow the user more user friendly input and construct
-//     // the url from the user's input
-
-//     $.ajax(parameters)
-//         .done(function (data) {
-//             console.log(data);
-
-//             // Check if 'photos' property exists and 'total' property exists within 'photos'
-//             if (data && data.photos) {
-//                 for (var i = 0; i < data.photos.total; i++) {
-//                     var photo = data.photos.photo[i];
-//                     if (photo) {
-//                         var farmId = photo.farm;
-//                         var serverId = photo.server;
-//                         var id = photo.id;
-//                         var secret = photo.secret;
-//                         var title = photo.title;
-
-//                         // Construct the thumbnail URL
-//                         var t_url = "https://farm" + farmId + ".staticflickr.com/" + serverId + "/" + id + "_" + secret + "_" + "q.jpg";
-//                         loadThumbnailImage(t_url, id, title);
-
-//                         // Store photo information
-//                         storeSourcePhoto(photo);
-//                     }
-//                 }
-//             } else {
-//                 // Handle the case where 'photos' or 'total' is missing or not of the expected type
-//                 alert("Flickr return data does not include photos. Message from Flickr is: " + data.message);
-//             }
-//         })
-//         .fail(function (jqXHR, textStatus, errorThrown) {
-//             // Handle the error here
-//             console.error("AJAX Error: " + textStatus, errorThrown);
-//             alert("AJAX Error: " + textStatus);
-//         });
-// }
-
-/**
- * Displays the given thumbnail URL in the thumbnail grid
- * 
- * @param {string} t_url - URL of the thumbnail image
- * @param {string} title - Title for the thumbnail
- */
-function loadThumbnailImage(t_url, imageid, title) {
-    // create a container for the thumbnail and its caption
-    const tcontainer = document.createElement('div');
-    tcontainer.classList.add('tcontainer');
-
-    const image = new Image();
-    image.src = t_url;
-    const thumbnail = document.createElement('div');
-    thumbnail.classList.add('thumbnail');
-    tcontainer.appendChild(thumbnail);
-
-    // add a visible caption
-    const caption = document.createElement('div')
-    caption.classList.add('caption');
-    caption.innerText = title;
-    tcontainer.appendChild(caption);
-
-    // set tcontainer id to unique identifier
-    tcontainer.id = imageid;
-
-    // listen for when a thumbnail is selected so properties can be updated
-    tcontainer.addEventListener('click', showSelectedProperties);
-
-    image.onload = function () {
-        // Once the image is loaded, set it as the background image for the thumbnail
-        thumbnail.style.backgroundImage = `url(${t_url})`;
-
-        // Add the thumbnail to the grid
-        const thumbnailGrid = document.getElementById('thumbnail-grid');
         thumbnailGrid.appendChild(tcontainer);
-    };
-
-    image.onerror = function () {
-        // Handle image loading errors here
-        console.error(`Error loading image: ${t_url}`);
-        // You can display a placeholder image or take other actions.
-    };
+    }
 }
 
 /**
@@ -334,7 +288,7 @@ function clearSelections() {
 */
 
 function toggleSelection(event) {
-    if (event.target !== thumbnailGroupGrid && event.target !== thumbnailGrid) {
+    if (event.target.id !== 'thumbnail-group-grid' && event.target.id !== 'thumbnail-grid') {
         // The clicked element is a child of the parent <div>
         const clickedElement = event.target;
 
@@ -348,8 +302,11 @@ function toggleSelection(event) {
             tcontainer = clickedElement;
         } else { // background clicked
             // Clear previous selections
-            //            clearPropertiesFields;
+            // clearPropertiesFields;
         }
+
+        const thumbnailGrid = document.getElementById('thumbnail-grid');
+        const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 
         if (tcontainer !== undefined) {
             if (event.ctrlKey || event.metaKey) {
@@ -432,23 +389,20 @@ function toggleSelection(event) {
     }
 }
 
-// EVENT LISTENERS
-
-thumbnailGrid.addEventListener('click', toggleSelection);
-
-thumbnailGroupGrid.addEventListener('click', toggleSelection);
-
 // Listen for when the user clicks outside of thumbnailGroupGrid, causing
 // an unselection and save properties
 
 document.addEventListener('click', (event) => {
     const target = event.target;
+    const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
 
     // Check if the clicked element is the div or one of its children
-    if (target !== thumbnailGroupGrid && !thumbnailGroupGrid.contains(target)) {
+    if (thumbnailGroupGrid && target !== thumbnailGroupGrid && !thumbnailGroupGrid.contains(target)) {
         // The click occurred outside thumbnailGroupGrid
         // Perform actions for unselection here
         console.log('thumbnailGroupGrid unselected');
     }
 });
 
+const mainContentArea = document.getElementById('main-content');
+mainContentArea.addEventListener('click', toggleSelection);
