@@ -19,12 +19,12 @@ define('COLLECTION_CONTAINER', <<<HTML
                     <div>
                         <input type="radio" id="species-choice" name="collection-type" value="species"
                             checked= />
-                        <label for="species-choice">Photos of a single plant species</label>
+                        <label for="species-choice">Species: <i>Photos of a single plant species</i></label>
                     </div>
                     <div>
                         <input type="radio" id="garden-choice" name="collection-type" value="garden" />
-                        <label for="garden-choice">Photos of different species such as garden
-                            images</label>
+                        <label for="garden-choice">Garden: <i>Photos of different species such as garden
+                            images</i></label>
                     </div>
                 </fieldset>
                 <div id="collection-species-container" class="form-group">

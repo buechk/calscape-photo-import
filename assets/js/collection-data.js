@@ -2,7 +2,7 @@
  * @file collection-data.js
  */
 import { removeSourcePhoto, storeSourcePhoto, getSourcePhoto } from "./source-photo-data.js";
-import { importconfig } from "./properties.js";
+import { importconfig, createPropertiesFields } from "./properties.js";
 
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
@@ -11,25 +11,9 @@ let collectionName = '';
 let collectionType = 'species';
 let collectionSpecies = '';
 
-function setCollectionData(name, type, species) {
-    collectionName = name;
-    collectionType = type;
-    collectionSpecies = species;
-}
+const collectionData = {};
 
-function getCollectionName() {
-    return collectionName;
-}
-
-function getCollectionType() {
-    return collectionSpecies;
-}
-
-function getCollectionSpecies() {
-    return collectionSpecies;
-}
-
-// Data for selected image will be stored here
+// Data for each image will be stored here
 export let imageData = {};
 
 /* example data
@@ -41,6 +25,7 @@ export let imageData = {};
         "Artist": "Kristy",
         "CopyrightNotice": "Copyright 2023 Kristy Bueche"
         "CopyrightCategory": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)"
+        ...
     },
     "001": {
         "species": "Eriogonum fasciculatum 'Warriner Lytle'"
@@ -49,6 +34,7 @@ export let imageData = {};
         "Artist": "Ed",
         "CopyrightNotice": ""
         "CopyrightCategory": "Attribution (CC BY)"
+        ...
     }
     // More entries
 }
@@ -64,7 +50,19 @@ export function getCollectionThumbnails() {
 
 export function initializeCollectionData() {
     const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+
+    thumbnailGroupGrid.addEventListener('click', function (event) {
+        if (event.target.id === 'thumbnail-group-grid') {
+            // make sure thumbnail appears selected
+            const tcontainerId = document.getElementById("selected-id").textContent
+            document.getElementById(tcontainerId).classList.add('selected');
+        }
+    });
+
     setupMutationObserver(thumbnailGroupGrid);
+
+    createPropertiesFields();
+    showCollectionProperties();
 
     // add collection thumbnails to group grid
     collectionThumbnails.forEach(function (thumbnail) {
@@ -92,7 +90,7 @@ async function handleRemovedNodes(removedNodes) {
         const caption = removedNode.caption;
         const imageObj = imageData[removedNode.id];
         if (imageObj) {
-             return storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.CaptionTitle)
+            return storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.CaptionTitle)
                 .then(result => {
                     console.log('Source photo stored: ', id, caption);
                 })
@@ -366,4 +364,76 @@ async function getFlickrPropertyValue(column, datasources, ismultivalue, flickrD
     return propertyvalue;
 }
 
+/**
+ * Function to save properties from input element to collectionData
+ * @param {HTMLElement} inputElement - The input element to save.
+ */
+function saveCollectionProperties(inputElement) {
+    if (inputElement) {
+        if (!inputElement.parentElement.parentElement.classList.contains("multivalue-input-container") &&
+            inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA" || inputElement.tagName === 'RADIO') {
+            const propertyName = inputElement.id;
+            const propertyValue = inputElement.value;
 
+            if (propertyValue) {
+                collectionData[propertyName] = propertyValue;
+            } else {
+                delete collectionData[propertyName];
+            }
+        }
+    }
+}
+
+/**
+ * @function
+ * Function to display the collection properties
+ */
+function showCollectionProperties() {
+    if (document.querySelector('#group-properties-container')) {
+        // Iterate through the children elements of group-properties-container
+        for (const property in collectionData) {
+            const input = document.getElementById(property);
+            if (input !== null && input !== undefined) {
+                const propertyvalue = collectionData[property];
+                if (propertyvalue !== undefined) {
+                    if (Array.isArray(propertyvalue)) {
+                        // create new controls to show all array values
+                        propertyvalue.map((value) => {
+                            if (value != undefined) {
+                                const inputContainer = createInputField(value);
+                                input.appendChild(inputContainer);
+                            }
+                        });
+                    }
+                    else {
+                        input.value = propertyvalue;
+                    }
+                }
+                else {
+                    input.value = '';
+                }
+            } else {
+                console.log('Input element not found for property:', property);
+            }
+        }
+    }
+}
+
+/* EVENT LISTENERS */
+
+// Delay duration in milliseconds (e.g., 500 milliseconds)
+const delayDuration = 500;
+
+$(document).on('focusout', '#group-properties-form input, #group-properties-form select, #group-properties-form textarea', function (event) {
+    saveCollectionProperties(event.target);
+    /* // Clear any previous timeouts to prevent multiple executions
+     if (this.timer) {
+         clearTimeout(this.timer);
+     }
+ 
+     // Set a new timeout to execute the function after the delay
+     this.timer = setTimeout(() => {
+         saveCollectionProperties(event.target);
+     }, delayDuration);
+     */
+});

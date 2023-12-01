@@ -438,7 +438,7 @@ function createInputField(value) {
 /**
  * Function to save the properties from the form to the image object
  */
-export function saveSelectedProperties() {
+ export function saveSelectedProperties() {
     const selectedId = document.getElementById('selected-id').textContent;
     const currentImageObj = imageData[selectedId];
     if (currentImageObj) { // Ensure you have a selected image object
@@ -468,31 +468,6 @@ export function saveSelectedProperties() {
         }
     } else {
         console.log("No image object selected to save properties to.");
-    }
-}
-
-function addMultiValueProperty() {
-    if (inputElement.parentElement.parentElement.classList.contains("multivalue-input-container")) {
-        const childInputs = inputElement.parentElement.parentElement.querySelectorAll('.input');
-        childInputs.forEach((childInput) => {
-            const propertyName = childInput.id;
-            const propertyValue = childInput.value;
-
-            if (propertyValue) {
-                if (!imageData[tcontainerId][propertyName]) {
-                    imageData[tcontainerId][propertyName] = [];
-                }
-                imageData[tcontainerId][propertyName].push(propertyValue);
-            } else {
-                // Remove the property if it has no value
-                if (imageData[tcontainerId][propertyName]) {
-                    const index = imageData[tcontainerId][propertyName].indexOf(propertyValue);
-                    if (index !== -1) {
-                        imageData[tcontainerId][propertyName].splice(index, 1);
-                    }
-                }
-            }
-        });
     }
 }
 
@@ -596,7 +571,7 @@ export function clearPropertiesFields() {
 /**
 * Function to create text fields
 */
-function createPropertiesFields() {
+export function createPropertiesFields() {
 
     const form = document.getElementById('properties-form');
     const collectionform = document.getElementById('group-properties-form');
@@ -609,6 +584,18 @@ function createPropertiesFields() {
             const uiconfig = column.userinterface.roles[ROLE];
             const isTextArea = column.userinterface.textarea ? true : false;
             const isCollectionProp = column.applies_to == "collection" ? true : false;
+
+            if (!isCollectionProp && form === null) { 
+                // The selected properties container is not shown and property applies to a 
+                // collection so ignore properties that apply to the selected image
+                continue;
+            }
+            
+            if (isCollectionProp && collectionform.querySelector('#' + column.name)) {
+                // The control for the column already exists on the collection form so don't create another one
+                continue;
+            }
+
 
             // Create form-group
             const formgroup = document.createElement('div');
@@ -685,8 +672,7 @@ function createPropertiesFields() {
             }
         }
     }
-    const propertiesContainer = document.getElementById('selected-properties-container');
-    propertiesContainer.appendChild(form);
+
     // Call autoExpand and get the generated styles
     const styles = autoExpand('textarea', 'height');
 
@@ -703,7 +689,11 @@ function createPropertiesFields() {
 // Delay duration in milliseconds (e.g., 500 milliseconds)
 const delayDuration = 500;
 
-$(document).on('blur', '#properties-form input, #properties-form select, #properties-form textarea, #group-properties-form input, #group-properties-form select, #group-properties-form textarea', function (event) {
+$(document).on('focusout', '#properties-form input, #properties-form select, #properties-form textarea', function (event) {
+    // with Timeout, saved value is not always displayed upon page switching so removed timeout for now to see
+    // if that works better.
+    saveProperties(event.target);
+    /*
     // Clear any previous timeouts to prevent multiple executions
     if (this.timer) {
         clearTimeout(this.timer);
@@ -713,15 +703,5 @@ $(document).on('blur', '#properties-form input, #properties-form select, #proper
     this.timer = setTimeout(() => {
         saveProperties(event.target);
     }, delayDuration);
-});
-
-
-const mainContentArea = document.getElementById('main-content')
-
-mainContentArea.addEventListener('click', function (event) {
-    if (event.target.id === 'thumbnail-group-grid') {
-        // make sure thumbnail appears selected
-        const tcontainerId = document.getElementById("selected-id").textContent
-        document.getElementById(tcontainerId).classList.add('selected');
-    }
+    */
 });

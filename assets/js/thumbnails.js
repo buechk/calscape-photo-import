@@ -42,7 +42,7 @@ export function initializeSortableGrid() {
 
     dropTarget.addEventListener('dragleave', function () {
         dropTarget.style.border = 'none';
-      });
+    });
 
     // Prevent the default behavior for dragover events
     dropTarget.addEventListener('dragover', function (event) {
@@ -94,13 +94,13 @@ export function initializeSortableGroupGrid() {
         dropTarget.style.border = 'none';
         // Use a setTimeout to check after a short delay
         setTimeout(() => {
-          // Check if the number of children is 1 (the dropMessage)
-          if (dropTarget.childElementCount === 1) {
-            // Reset the drop zone styling and redisplay the message
-            dropMessage.style.display = 'block';
-          }
+            // Check if the number of children is 1 (the dropMessage)
+            if (dropTarget.childElementCount === 1) {
+                // Reset the drop zone styling and redisplay the message
+                dropMessage.style.display = 'block';
+            }
         }, 100); // Adjust the delay as needed
-      });
+    });
 
     // Prevent the default behavior for dragover events
     dropTarget.addEventListener('dragover', function (event) {
@@ -288,6 +288,19 @@ function clearSelections() {
 */
 
 function toggleSelection(event) {
+    // Check if the click event originated from within the selected-properties-container
+    const isWithinSelectedProperties = event.target.closest('#selected-properties-container');
+
+    // If it's within selected-properties-container, do not toggle the selection in thumbnailGroupGrid
+    if (isWithinSelectedProperties) {
+        // reapply .selected to selected elements
+        for (let i = 0; i < selectedThumbnails.length; i++) {
+            const tc = selectedThumbnails[i];
+            tc.classList.add('selected');
+        }
+        return;
+    }
+
     if (event.target.id !== 'thumbnail-group-grid' && event.target.id !== 'thumbnail-grid') {
         // The clicked element is a child of the parent <div>
         const clickedElement = event.target;
@@ -388,21 +401,6 @@ function toggleSelection(event) {
         clearPropertiesFields();
     }
 }
-
-// Listen for when the user clicks outside of thumbnailGroupGrid, causing
-// an unselection and save properties
-
-document.addEventListener('click', (event) => {
-    const target = event.target;
-    const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-
-    // Check if the clicked element is the div or one of its children
-    if (thumbnailGroupGrid && target !== thumbnailGroupGrid && !thumbnailGroupGrid.contains(target)) {
-        // The click occurred outside thumbnailGroupGrid
-        // Perform actions for unselection here
-        console.log('thumbnailGroupGrid unselected');
-    }
-});
 
 const mainContentArea = document.getElementById('main-content');
 mainContentArea.addEventListener('click', toggleSelection);

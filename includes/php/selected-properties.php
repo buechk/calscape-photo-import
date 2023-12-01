@@ -4,8 +4,8 @@
 define('SELECTED_PROPERTIES', <<<HTML
 <div id="selected-properties-container" class="outer-properties-container">
     <h2>Selected photo properties</h2>
-    <h3>Properties apply to the selected photo</h3>
     <div class="properties-scroll-container">
+        <h3>Properties apply to the selected photo</h3>
         <form id="properties-form">
             <div id="selected-species-container" class="form-group" style="visibility: hidden;">
                 <label class="label">Species</label>

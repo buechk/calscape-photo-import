@@ -31,7 +31,6 @@ $(function () {
     $('li#welcome-link a').click();
 });
 
-
 $(document).ready(function () {
     // Attach click event listeners to the navigation items
     $('#left-nav a').click(function (event) {
