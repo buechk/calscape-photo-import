@@ -384,16 +384,22 @@ function saveCollectionProperties(inputElement) {
 export function savePhotoCollection() {
     if (document.querySelector('#group-properties-container')) {
         // Iterate through the children elements of group-properties-container
-        for (const property in collectionData) {
-            const inputElement = document.getElementById(property);
 
-            if (inputElement.tagName === 'FIELDSET') {
-                // Handle fieldset with radio buttons
-                saveRadioPropertyValue(inputElement);
-            } else {
-                // Handle other input elements
+        const groupform = document.getElementById('group-properties-form');
+        
+        if (groupform) {
+            // Iterate through all child elements of the form and save the value
+            groupform.querySelectorAll('textarea').forEach(inputElement => {
                 saveCollectionProperties(inputElement);
-            }
+            });
+    
+            groupform.querySelectorAll('input').forEach(inputElement => {
+                saveCollectionProperties(inputElement);
+            });
+    
+            groupform.querySelectorAll('fieldset').forEach(inputElement => {
+                saveRadioPropertyValue(inputElement);
+            });
         }
     }
 }
@@ -483,8 +489,19 @@ function showRadioPropertyValue(fieldset, propertyValue) {
     else {
         console.log('Radio property value did not match any radio buttons: ', propertyValue);
     }
-}
 
+    // Get the radio buttons and the species-container element
+    const speciesChoice = document.getElementById('species-choice');
+    const gardenChoice = document.getElementById('garden-choice');
+    const collSpeciesInput = document.getElementById('collection-species-input');
+
+    if (speciesChoice.checked) {
+        collSpeciesInput.disabled = false;
+    } else if (gardenChoice.checked) {
+        collSpeciesInput.disabled = true;
+        collSpeciesInput.value = '';
+    }
+}
 
 /* EVENT LISTENERS */
 

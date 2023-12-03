@@ -35,7 +35,6 @@ export function initMainContent() {
         initializeCollectionSpeciesInput();
         initializeSortableGroupGrid();
         initializeCollectionData();
-
     }
 
     if (mainContentArea.querySelector('#selected-properties-container')) {

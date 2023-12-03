@@ -172,11 +172,6 @@ function filterData(data, searchText) {
     return data.filter((x) => x.toLowerCase().includes(searchText.toLowerCase()));
 }
 
-function hideTargetElement(target) {
-    // Implement logic to close or hide your suggestions list
-    target.style.display = 'none';
-}
-
 // Add event listeners to the common parent element ('main-content')
 /*
 mainContent.addEventListener('focus', handleFocusAndInput, true);
@@ -193,20 +188,23 @@ mainContent.addEventListener('change', (event) => {
     const gardenChoice = document.getElementById('garden-choice');
     const collSpeciesContainer = document.getElementById('collection-species-container');
     const selSpeciesContainer = document.getElementById('selected-species-container');
+    const collectionSpeciesInput = document.getElementById('collection-species-input');
+    const selectedSpeciesInput = document.getElementById('selected-species');
 
     if (targetId === 'species-choice' && speciesChoice.checked) {
         if (collSpeciesContainer != null) {
-            collSpeciesContainer.style.visibility = 'visible';
+            collectionSpeciesInput.disabled = false;
         }
         if (selSpeciesContainer != null) {
-            selSpeciesContainer.style.visibility = 'hidden';
+            selectedSpeciesInput.disabled = true;
         }
     } else if (targetId === 'garden-choice' && gardenChoice.checked) {
         if (collSpeciesContainer != null) {
-            collSpeciesContainer.style.visibility = 'hidden';
+            collectionSpeciesInput.disabled = true;
+            collectionSpeciesInput.value = '';
         }
         if (selSpeciesContainer != null) {
-            selSpeciesContainer.style.visibility = 'visible';
+            selectedSpeciesInput.disabled = false;
         }
     }
 });
