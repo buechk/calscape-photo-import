@@ -4,6 +4,7 @@
  */
 
 import { initMainContent } from "./main-content.js";
+import { savePhotoCollection } from "./collection-data.js";
 
 const Mode = {
     UNSPECIFIED: 'unspecified',
@@ -58,6 +59,8 @@ function fetchContent(page, append = false) {
         method: 'GET',
         dataType: 'html',
         success: function (data) {
+            savePhotoCollection(); // save current values before replacing page content
+            
             // Replace the main content with the fetched data
             $('#main-content').html(data);
             initMainContent();

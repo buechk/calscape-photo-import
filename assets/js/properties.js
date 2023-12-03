@@ -321,10 +321,6 @@ export const importconfig = {
     }
 }
 
-export function initializeSelectionProperties() {
-    createPropertiesFields();
-}
-
 // Auto Expand textarea according to length of text
 let autoExpand = (selector, direction) => {
 
@@ -450,7 +446,7 @@ function createInputField(value) {
                 if (Array.isArray(currentImageObj[property])) {
                     // If the property is an array, collect the values
                     const propertyValues = [];
-                    const inputContainers = input.querySelectorAll(".array-value-input");
+                    const inputContainers = input.querySelectorAll(".multivalue-input");
                     inputContainers.forEach((container) => {
                         const value = container.querySelector("input").value;
                         if (value.trim() !== "") {
@@ -500,6 +496,7 @@ function saveProperties(inputElement) {
  */
 export function showSelectedProperties(event) {
     if (document.querySelector('#selected-properties-container')) {
+        saveSelectedProperties();
         clearPropertiesFields();
         const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
         if (event.target.parentNode.parentNode == thumbnailGroupGrid) {
@@ -619,7 +616,7 @@ export function createPropertiesFields() {
                 // Add a click event handler to the addBtn
                 addBtn.addEventListener('click', (event) => {
                     event.preventDefault();
-                    const userInput = clone.querySelector('.new-multivalue-input');
+                    const userInput = clone.querySelector('.multivalue-input');
 
                     // save the new value to imageData
                     const tcontainerId = document.getElementById("selected-id").textContent;
@@ -690,10 +687,6 @@ export function createPropertiesFields() {
 const delayDuration = 500;
 
 $(document).on('focusout', '#properties-form input, #properties-form select, #properties-form textarea', function (event) {
-    // with Timeout, saved value is not always displayed upon page switching so removed timeout for now to see
-    // if that works better.
-    saveProperties(event.target);
-    /*
     // Clear any previous timeouts to prevent multiple executions
     if (this.timer) {
         clearTimeout(this.timer);
@@ -703,5 +696,4 @@ $(document).on('focusout', '#properties-form input, #properties-form select, #pr
     this.timer = setTimeout(() => {
         saveProperties(event.target);
     }, delayDuration);
-    */
 });

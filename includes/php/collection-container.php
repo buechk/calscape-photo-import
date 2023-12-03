@@ -14,7 +14,7 @@ define('COLLECTION_CONTAINER', <<<HTML
                     <input type="text" id="collection-name" placeholder="enter a collection name"
                             class="auto-expand-input" autocomplete="off">
                 </div>
-                <fieldset class="colltype-choice">
+                <fieldset id="collection-type" class="colltype-choice">
                     <legend>Collection type:</legend>
                     <div>
                         <input type="radio" id="species-choice" name="collection-type" value="species"

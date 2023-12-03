@@ -6,7 +6,6 @@ import { displayThumbnailsFromSourcePhotos, initializeSortableGrid, initializeSo
 import { initializeResizer } from "./resizer.js";
 import { fetchSpeciesList, initializeSpeciesInput, initializeCollectionSpeciesInput } from "./species-selection.js";
 import { initializeCollectionData } from "./collection-data.js";
-import { initializeSelectionProperties } from "./properties.js";
 import { initializeSubmitContribute } from "./submit.js";
 
 /**
@@ -45,14 +44,13 @@ export function initMainContent() {
         mainContentArea.classList.add('row-layout');
         fetchSpeciesList();
         initializeSpeciesInput();
-        initializeSelectionProperties();
     }
 
     if (mainContentArea.querySelector('#divider')) {
         initializeResizer();
     }
 
-    if (mainContentArea.querySelector('#submit-button-container')) {
+    if (mainContentArea.querySelector('#submit-button')) {
         initializeSubmitContribute()
     }
 

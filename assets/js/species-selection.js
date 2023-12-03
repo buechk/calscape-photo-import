@@ -35,6 +35,23 @@ export function initializeSpeciesInput() {
             selectedSpeciesSuggestions.innerHTML = ''; // Clear the suggestions
         }
     }
+
+    // Add an event listener to close the suggestions list when clicking outside
+    document.addEventListener('click', function (event) {
+        const isClickInside = selectedSpeciesInput.contains(event.target) || selectedSpeciesSuggestions.contains(event.target);
+        if (!isClickInside) {
+            selectedSpeciesSuggestions.innerHTML = ''; // Clear the suggestions
+            //hideTargetElement(selectedSpeciesSuggestions);
+        }
+    });
+
+    // Add an event listener to close the suggestions list when pressing Esc
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            selectedSpeciesSuggestions.innerHTML = ''; // Clear the suggestions
+            //hideTargetElement(selectedSpeciesSuggestions);
+        }
+    });
 }
 
 export function initializeCollectionSpeciesInput() {
@@ -67,6 +84,23 @@ export function initializeCollectionSpeciesInput() {
             collectionSpeciesSuggestions.innerHTML = ''; // Clear the suggestions
         }
     }
+
+    // Add an event listener to close the suggestions list when clicking outside
+    document.addEventListener('click', function (event) {
+        const isClickInside = collectionSpeciesInput.contains(event.target) || collectionSpeciesSuggestions.contains(event.target);
+        if (!isClickInside) {
+            collectionSpeciesSuggestions.innerHTML = ''; // Clear the suggestions
+            //hideTargetElement(collectionSpeciesSuggestions);
+        }
+    });
+
+    // Add an event listener to close the suggestions list when pressing Esc
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            collectionSpeciesSuggestions.innerHTML = ''; // Clear the suggestions
+            //hideTargetElement(collectionSpeciesSuggestions);
+        }
+    });
 }
 
 /**
@@ -136,6 +170,11 @@ function loadSuggestions(data, element) {
  */
 function filterData(data, searchText) {
     return data.filter((x) => x.toLowerCase().includes(searchText.toLowerCase()));
+}
+
+function hideTargetElement(target) {
+    // Implement logic to close or hide your suggestions list
+    target.style.display = 'none';
 }
 
 // Add event listeners to the common parent element ('main-content')

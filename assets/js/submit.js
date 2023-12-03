@@ -3,9 +3,7 @@
  * Handle submission including file upload and upload of metadata
  */
 
-import { imageData } from "./collection-data.js";
-
-const submitButton = document.getElementById('submit-button')
+import { getPhotoCollection, imageData } from "./collection-data.js";
 
 /**
  * 
@@ -72,6 +70,7 @@ const delayDuration = 500;
 
 export function initializeSubmitContribute() {
     // Handler for the submit button click event
+    const submitButton = document.getElementById('submit-button');
     submitButton.addEventListener('click', function (event) {
         // Trigger blur event on the currently focused input element
         const focusedInput = document.activeElement;
@@ -81,7 +80,7 @@ export function initializeSubmitContribute() {
             // Wait for the autosave to complete (adjust the delay if needed)
             setTimeout(() => {
                 // Convert the imageData object to a JSON string with proper indentation
-                const jsonString = JSON.stringify(imageData, null, 2);
+                const jsonString = JSON.stringify(getPhotoCollection(), null, 2);
                 console.log(jsonString);
 
                 submit();

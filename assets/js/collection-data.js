@@ -7,9 +7,6 @@ import { importconfig, createPropertiesFields } from "./properties.js";
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
 let collectionThumbnails = []; // Store collection photo thumbnails as an array
-let collectionName = '';
-let collectionType = 'species';
-let collectionSpecies = '';
 
 const collectionData = {};
 
@@ -371,10 +368,10 @@ async function getFlickrPropertyValue(column, datasources, ismultivalue, flickrD
 function saveCollectionProperties(inputElement) {
     if (inputElement) {
         if (!inputElement.parentElement.parentElement.classList.contains("multivalue-input-container") &&
-            inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA" || inputElement.tagName === 'RADIO') {
-            const propertyName = inputElement.id;
+            (inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA" || inputElement.tagName === 'RADIO')) {
+            const propertyName = inputElement.type === 'radio' ? getParentFieldsetId(inputElement) : inputElement.id;
             const propertyValue = inputElement.value;
-
+            console.log(`Saving collection property - ${propertyName}: ${propertyValue}`);
             if (propertyValue) {
                 collectionData[propertyName] = propertyValue;
             } else {
@@ -382,6 +379,58 @@ function saveCollectionProperties(inputElement) {
             }
         }
     }
+}
+
+export function savePhotoCollection() {
+    if (document.querySelector('#group-properties-container')) {
+        // Iterate through the children elements of group-properties-container
+        for (const property in collectionData) {
+            const inputElement = document.getElementById(property);
+
+            if (inputElement.tagName === 'FIELDSET') {
+                // Handle fieldset with radio buttons
+                saveRadioPropertyValue(inputElement);
+            } else {
+                // Handle other input elements
+                saveCollectionProperties(inputElement);
+            }
+        }
+    }
+}
+
+/**
+ * Function to save the value of the selected radio button in a fieldset.
+ * @param {HTMLFieldSetElement} fieldset - The fieldset element containing radio buttons.
+ */
+function saveRadioPropertyValue(fieldset) {
+    const selectedRadio = fieldset.querySelector('input[type="radio"]:checked');
+    const propertyName = fieldset.id;
+
+    if (selectedRadio) {
+        const propertyValue = selectedRadio.value;
+        collectionData[propertyName] = propertyValue;
+    } else {
+        // No radio button selected
+        delete collectionData[propertyName];
+    }
+}
+
+/**
+ * Function to get the id of the parent fieldset.
+ * @param {HTMLElement} element - The input element.
+ * @returns {string} - The id of the parent fieldset.
+ */
+function getParentFieldsetId(element) {
+    const fieldset = element.closest('fieldset');
+    return fieldset ? fieldset.id : '';
+}
+
+/**
+ * @function
+ */
+export function getPhotoCollection() {
+    collectionData.photos = imageData;
+    return collectionData;
 }
 
 /**
@@ -392,32 +441,50 @@ function showCollectionProperties() {
     if (document.querySelector('#group-properties-container')) {
         // Iterate through the children elements of group-properties-container
         for (const property in collectionData) {
-            const input = document.getElementById(property);
-            if (input !== null && input !== undefined) {
+            const inputElement = document.getElementById(property);
+            if (inputElement !== null && inputElement !== undefined) {
                 const propertyvalue = collectionData[property];
                 if (propertyvalue !== undefined) {
                     if (Array.isArray(propertyvalue)) {
                         // create new controls to show all array values
                         propertyvalue.map((value) => {
-                            if (value != undefined) {
+                            if (value !== undefined) {
                                 const inputContainer = createInputField(value);
-                                input.appendChild(inputContainer);
+                                inputElement.appendChild(inputContainer);
                             }
                         });
+                    } else if (inputElement.tagName === 'FIELDSET') {
+                        // Handle fieldset with radio buttons
+                        showRadioPropertyValue(inputElement, propertyvalue);
+                    } else {
+                        inputElement.value = propertyvalue;
                     }
-                    else {
-                        input.value = propertyvalue;
-                    }
-                }
-                else {
-                    input.value = '';
+                } else {
+                    inputElement.value = '';
                 }
             } else {
-                console.log('Input element not found for property:', property);
+                console.log('Input element not found for property: ', property);
             }
         }
     }
 }
+
+/**
+ * Function to check the child radio buttons in a fieldset according to the property value.
+ * @param {HTMLFieldSetElement} fieldset - The fieldset element containing radio buttons.
+ * @param {string} propertyValue - The value to set for the radio buttons.
+ */
+function showRadioPropertyValue(fieldset, propertyValue) {
+    const radioToCheck = fieldset.querySelector(`input[type="radio"][value="${propertyValue}"]`);
+
+    if (radioToCheck) {
+        radioToCheck.checked = true;
+    }
+    else {
+        console.log('Radio property value did not match any radio buttons: ', propertyValue);
+    }
+}
+
 
 /* EVENT LISTENERS */
 
@@ -425,15 +492,13 @@ function showCollectionProperties() {
 const delayDuration = 500;
 
 $(document).on('focusout', '#group-properties-form input, #group-properties-form select, #group-properties-form textarea', function (event) {
-    saveCollectionProperties(event.target);
-    /* // Clear any previous timeouts to prevent multiple executions
-     if (this.timer) {
-         clearTimeout(this.timer);
-     }
- 
-     // Set a new timeout to execute the function after the delay
-     this.timer = setTimeout(() => {
-         saveCollectionProperties(event.target);
-     }, delayDuration);
-     */
+    // Clear any previous timeouts to prevent multiple executions
+    if (this.timer) {
+        clearTimeout(this.timer);
+    }
+
+    // Set a new timeout to execute the function after the delay
+    this.timer = setTimeout(() => {
+        saveCollectionProperties(event.target);
+    }, delayDuration);
 });
