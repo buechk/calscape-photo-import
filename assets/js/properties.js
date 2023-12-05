@@ -405,7 +405,7 @@ function createInputField(value) {
 
     // Create a text input element
     const inputField = document.createElement('input');
-    inputField.classList.add('input');
+    inputField.classList.add('multivalue-input');
     inputField.value = value;
     inputContainer.appendChild(inputField);
 
@@ -434,36 +434,36 @@ function createInputField(value) {
 /**
  * Function to save the properties from the form to the image object
  */
- export function saveSelectedProperties() {
+export function saveSelectedProperties() {
     const selectedId = document.getElementById('selected-id').textContent;
-    const currentImageObj = imageData[selectedId];
-    if (currentImageObj) { // Ensure you have a selected image object
+    if (selectedId !== '') {
+        const currentImageObj = imageData[selectedId];
+        if (currentImageObj) { // Ensure you have a selected image object
 
-        // Iterate through the children elements of propertiesContainer
-        for (const property in currentImageObj) {
-            const input = document.getElementById(property);
-            if (input !== null && input !== undefined) {
-                if (Array.isArray(currentImageObj[property])) {
-                    // If the property is an array, collect the values
-                    const propertyValues = [];
-                    const inputContainers = input.querySelectorAll(".multivalue-input");
-                    inputContainers.forEach((container) => {
-                        const value = container.querySelector("input").value;
-                        if (value.trim() !== "") {
-                            propertyValues.push(value);
-                        }
-                    });
-                    currentImageObj[property] = propertyValues;
-                } else {
-                    // If it's not an array, set the value directly
-                    currentImageObj[property] = input.value;
+            // Iterate through the children elements of propertiesContainer
+            for (const property in currentImageObj) {
+                const input = document.getElementById(property);
+                if (input !== null && input !== undefined) {
+                    if (Array.isArray(currentImageObj[property])) {
+                        // If the property is an array, collect the values
+                        const propertyValues = [];
+                        const inputContainers = input.querySelectorAll(".multivalue-input");
+                        inputContainers.forEach((container) => {
+                            const value = container.value;
+                            if (value.trim() !== "") {
+                                propertyValues.push(value);
+                            }
+                        });
+                        currentImageObj[property] = propertyValues;
+                    } else {
+                        // If it's not an array, set the value directly
+                        currentImageObj[property] = input.value;
+                    }
                 }
-            } else {
-                console.log('Input element not found for property:', property);
             }
+        } else {
+            console.log("No image object selected to save properties to.");
         }
-    } else {
-        console.log("No image object selected to save properties to.");
     }
 }
 
@@ -582,12 +582,12 @@ export function createPropertiesFields() {
             const isTextArea = column.userinterface.textarea ? true : false;
             const isCollectionProp = column.applies_to == "collection" ? true : false;
 
-            if (!isCollectionProp && form === null) { 
+            if (!isCollectionProp && form === null) {
                 // The selected properties container is not shown and property applies to a 
                 // collection so ignore properties that apply to the selected image
                 continue;
             }
-            
+
             if (isCollectionProp && collectionform.querySelector('#' + column.name)) {
                 // The control for the column already exists on the collection form so don't create another one
                 continue;
@@ -616,7 +616,12 @@ export function createPropertiesFields() {
                 // Add a click event handler to the addBtn
                 addBtn.addEventListener('click', (event) => {
                     event.preventDefault();
-                    const userInput = clone.querySelector('.multivalue-input');
+
+                    // Find the closest ancestor with the class "multivalue-input-container"
+                    const container = event.target.closest('.input-button-container');
+
+                    // Query for the input element within the found container
+                    const userInput = container.querySelector('.multivalue-input');
 
                     // save the new value to imageData
                     const tcontainerId = document.getElementById("selected-id").textContent;

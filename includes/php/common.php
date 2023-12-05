@@ -7,3 +7,6 @@ $database = "calsca6_calscape";
 
 // File upload
 $uploadDirectory = '../../public/ExtData/allimages/';
+
+// Collection directory
+$collectionReviewDirectory = '../../public/ExtData/collections/review/';

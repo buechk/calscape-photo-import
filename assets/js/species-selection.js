@@ -55,7 +55,7 @@ export function initializeSpeciesInput() {
 }
 
 export function initializeCollectionSpeciesInput() {
-    const collectionSpeciesInput = document.getElementById('collection-species-input');
+    const collectionSpeciesInput = document.getElementById('collection-species');
     const collectionSpeciesSuggestions = document.getElementById('collection-suggestions');
 
     collectionSpeciesInput.addEventListener('focus', handleCollectionFocusAndInput);
@@ -188,7 +188,7 @@ mainContent.addEventListener('change', (event) => {
     const gardenChoice = document.getElementById('garden-choice');
     const collSpeciesContainer = document.getElementById('collection-species-container');
     const selSpeciesContainer = document.getElementById('selected-species-container');
-    const collectionSpeciesInput = document.getElementById('collection-species-input');
+    const collectionSpeciesInput = document.getElementById('collection-species');
     const selectedSpeciesInput = document.getElementById('selected-species');
 
     if (targetId === 'species-choice' && speciesChoice.checked) {

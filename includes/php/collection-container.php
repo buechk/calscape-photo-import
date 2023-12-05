@@ -30,7 +30,7 @@ define('COLLECTION_CONTAINER', <<<HTML
                 <div id="collection-species-container" class="form-group">
                     <label class="label">Species</label>
                     <div class="species-container">
-                        <input type="text" id="collection-species-input" placeholder="type species name"
+                        <input type="text" id="collection-species" placeholder="type species name"
                             class="auto-expand-input" autocomplete="off">
                         <ul id="collection-suggestions" class="suggestions">
                             <!-- Species list will be loaded as the user types -->

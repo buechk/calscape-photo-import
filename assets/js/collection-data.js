@@ -16,7 +16,8 @@ export let imageData = {};
 /* example data
 {
     "000": {
-        "species": "Carex pansa"
+        "deleted" : false,
+        "species": "Carex pansa",
         "DateTmeOriginal": "2023-9-27",
         "ImageDescription": "Pathway with sedges",
         "Artist": "Kristy",
@@ -25,7 +26,8 @@ export let imageData = {};
         ...
     },
     "001": {
-        "species": "Eriogonum fasciculatum 'Warriner Lytle'"
+        "deleted" : true,
+        "species": "Eriogonum fasciculatum 'Warriner Lytle'",
         "DateTmeOriginal": "2023-9-21",
         "ImageDescription": "Buckwheat cascading over wall",
         "Artist": "Ed",
@@ -100,8 +102,10 @@ async function handleRemovedNodes(removedNodes) {
     // Wait for all promises to be fulfilled
     await Promise.all(removalPromises)
         .then(() => {
-            delete imageData[id];
-            collectionThumbnails.splice(index, 1); // Remove the removedNode from the array
+            if (imageData.hasOwnProperty(id_)) {
+                imageData[id].deleted = true;
+            }
+//            collectionThumbnails.splice(index, 1); // Remove the removedNode from the array
         });
 
     // Check if there are more mutations in the queue
@@ -123,7 +127,7 @@ async function processMutation(mutation) {
     if (addedNodes.length > 0) {
         addedNodes.forEach(function (addedNode) {
             console.log('Child element added', addedNode);
-            collectionThumbnails.push(addedNode); // Add the addedNode to the array
+//            collectionThumbnails.push(addedNode); // Add the addedNode to the array
             populateThumbnailProperties(addedNode.id);
             removeSourcePhoto(addedNode.id);
         });
@@ -148,6 +152,11 @@ function setupMutationObserver(targetElement) {
                 await processMutation(mutationQueue.shift());
             }
         }
+
+        // sync up collectionThumbnail order with thumbnail-group-grid order.
+        const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+        collectionThumbnails = Array.from(thumbnailGroupGrid.querySelectorAll('.tcontainer'));
+        
     });
 
     const config = { childList: true };
@@ -161,7 +170,11 @@ function setupMutationObserver(targetElement) {
  */
 async function populateThumbnailProperties(id) {
     // If we have not already stored data for this image then store it now
-    if (imageData === null || !imageData.hasOwnProperty(id)) {
+    if (imageData.hasOwnProperty(id)) {
+        // properties for this photo have already been retrieved
+        imageData[id].deleted = false;
+    }
+    else {
         const imageObj = {};
         imageObj["id"] = id;
 
@@ -174,6 +187,14 @@ async function populateThumbnailProperties(id) {
 
             for (const table of importconfig.photoimportconfig.tables) {
                 for (const column of table.columns) {
+                    const isCollectionProp = column.applies_to == "collection" ? true : false;
+
+                    if (isCollectionProp) { 
+                        // The selected properties container is not shown and property applies to a 
+                        // collection so ignore properties that apply to the selected image
+                        continue;
+                    }
+
                     // Use the parsed EXIF data for each Calscape table column
                     if (column.hasOwnProperty("valuemap")) {
                         const value = getExifPropertyValue(column.name, column.datasources, column.userinterface.multivalue, exifData);
@@ -198,6 +219,14 @@ async function populateThumbnailProperties(id) {
             const flickrExifData = await getFlickrPhotoInfo(id, 'flickr.photos.getExif');
             for (const table of importconfig.photoimportconfig.tables) {
                 for (const column of table.columns) {
+                    const isCollectionProp = column.applies_to == "collection" ? true : false;
+
+                    if (isCollectionProp) { 
+                        // The selected properties container is not shown and property applies to a 
+                        // collection so ignore properties that apply to the selected image
+                        continue;
+                    }
+
                     if (column.hasOwnProperty("valuemap")) {
                         const value = await getFlickrPropertyValue(column.name, column.datasources, column.userinterface.multivalue, flickrData, flickrExifData);
                         if (column.valuemap.hasOwnProperty(value)) {
@@ -215,9 +244,8 @@ async function populateThumbnailProperties(id) {
         }
 
         imageData[id] = imageObj;
-    } else {
-        console.log(`Photo data for selected item ${id} already exists`);
-    }
+    } 
+
     console.log('Populated image data: ');
     for (const key in imageData) {
         if (imageData.hasOwnProperty(key)) {
@@ -435,7 +463,13 @@ function getParentFieldsetId(element) {
  * @function
  */
 export function getPhotoCollection() {
-    collectionData.photos = imageData;
+    // Filter out the photos where deleted is true
+    const filteredImageData = Object.fromEntries(
+        Object.entries(imageData).filter(([key, value]) => !value.deleted)
+    );
+
+    // Add the filtered photos to collectionData and return the whole package
+    collectionData.photos = filteredImageData;
     return collectionData;
 }
 
@@ -493,7 +527,7 @@ function showRadioPropertyValue(fieldset, propertyValue) {
     // Get the radio buttons and the species-container element
     const speciesChoice = document.getElementById('species-choice');
     const gardenChoice = document.getElementById('garden-choice');
-    const collSpeciesInput = document.getElementById('collection-species-input');
+    const collSpeciesInput = document.getElementById('collection-species');
 
     if (speciesChoice.checked) {
         collSpeciesInput.disabled = false;
