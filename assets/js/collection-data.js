@@ -10,6 +10,80 @@ let collectionThumbnails = []; // Store collection photo thumbnails as an array
 
 const collectionData = {};
 
+/*
+Example of collectionData
+
+{
+  "collection-name": "Test Collection",
+  "collection-species": "Cornus sericea",
+  "collection-type": "species",
+  "user_id": "buechk6164",
+  "photos": {
+    "263622339": {
+      "id": "263622339",
+      "sourceImage": "https://farm1.staticflickr.com/79/263622339_70fb0695ee_b.jpg",
+      "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood",
+      "CaptionDescription": "",
+      "DateTimeOriginal": "2006-09-30 21:57:48",
+      "ImageDescription": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "Ranking": "0",
+      "Keywords": [
+        "'autumn",
+        "colors'",
+      ],
+      "FileName": "Cornus_sericea_263622339_70fb0695ee_b.jpg"
+    },
+    "264780915": {
+      "id": "264780915",
+      "sourceImage": "https://farm1.staticflickr.com/97/264780915_9cd3287e6e_b.jpg",
+      "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood and Populus tremuloides - Quaking Aspen",
+      "CaptionDescription": "",
+      "DateTimeOriginal": "2006-10-01 00:01:31",
+      "ImageDescription": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "Ranking": "0",
+      "Keywords": [
+        "'autumn",
+        "colors'",
+        "'fall",
+        "'leaf",
+        "'colorful",
+        "foliage'",
+        "yearroundbeauty"
+      ],
+      "FileName": "Cornus_sericea_264780915_9cd3287e6e_b.jpg"
+    },
+    "264781491": {
+      "id": "264781491",
+      "sourceImage": "https://farm1.staticflickr.com/83/264781491_12abaf97e4_b.jpg",
+      "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood",
+      "CaptionDescription": "",
+      "DateTimeOriginal": "2006-10-01 00:26:01",
+      "ImageDescription": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "Ranking": "0",
+      "Keywords": [
+        "'autumn",
+        "colors'",
+        "'fall",
+        "yearroundbeauty"
+      ],
+      "FileName": "Cornus_sericea_264781491_12abaf97e4_b.jpg"
+    }
+  }
+}
+*/
+
 // Data for each image will be stored here
 export let imageData = {};
 
@@ -18,7 +92,7 @@ export let imageData = {};
     "000": {
         "deleted" : false,
         "species": "Carex pansa",
-        "DateTmeOriginal": "2023-9-27",
+        "DateTimeOriginal": "2023-9-27",
         "ImageDescription": "Pathway with sedges",
         "Artist": "Kristy",
         "CopyrightNotice": "Copyright 2023 Kristy Bueche"
