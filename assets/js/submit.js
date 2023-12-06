@@ -60,7 +60,7 @@ function submit(collection) {
     // Upload files
     for (const photoId in collection.photos) {
         const photo = collection.photos[photoId];
-        const species = (collection["collection-type"] === 'species') ? collection["collection-species"] : photo["species"];
+        const species = (collection["collection-type"] === 'species') ? collection["collection-species"] : photo["selected-species"];
         const source = photo["sourceImage"];
 
         // Create a promise for each file upload

@@ -7,11 +7,11 @@ define('SELECTED_PROPERTIES', <<<HTML
     <div class="properties-scroll-container">
         <h3>Properties apply to the selected photo</h3>
         <form id="properties-form">
-            <div id="selected-species-container" class="form-group" style="visibility: hidden;">
+            <div id="selected-species-container" class="form-group">
                 <label class="label">Species</label>
                 <div class="species-container">
                     <input type="text" id="selected-species" placeholder="type species name"
-                        class="auto-expand-input" autocomplete="off">
+                        class="auto-expand-input" autocomplete="off" disabled>
                     <ul id="selected-suggestions" class="suggestions">
                         <!-- Species list will be loaded as the user types -->
                     </ul>

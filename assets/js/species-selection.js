@@ -13,6 +13,9 @@ export function initializeSpeciesInput() {
     selectedSpeciesInput.addEventListener('input', handleFocusAndInput);
     selectedSpeciesSuggestions.addEventListener('click', handleSuggestionsClick);
 
+    const speciesChoice = document.getElementById('species-choice');
+    selectedSpeciesInput.disabled = speciesChoice.checked;
+
     // Function to handle focus and input events
     function handleFocusAndInput(event) {
         // Show unfiltered suggestions when the input is focused
@@ -22,7 +25,7 @@ export function initializeSpeciesInput() {
 
         // Handle input events
         if (event.type === 'input') {
-            const userInput = inputElement.value;
+            const userInput = selectedSpeciesInput.value;
             loadSuggestions(filterData(specieslist, userInput), selectedSpeciesSuggestions);
         }
     }

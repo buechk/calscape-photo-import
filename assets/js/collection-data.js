@@ -152,13 +152,11 @@ let isProcessing = false;
 async function handleRemovedNodes(removedNodes) {
     // Convert NodeList to array
     const removedNodesArray = Array.from(removedNodes);
-    let index = -1;
     let id = '';
 
     // Use map to create an array of promises
     const removalPromises = removedNodesArray.map(removedNode => {
         console.log('Child element removed:', removedNode);
-        index = collectionThumbnails.findIndex(item => item.id === removedNode.id);
         id = removedNode.id;
         const caption = removedNode.caption;
         const imageObj = imageData[removedNode.id];
@@ -176,10 +174,9 @@ async function handleRemovedNodes(removedNodes) {
     // Wait for all promises to be fulfilled
     await Promise.all(removalPromises)
         .then(() => {
-            if (imageData.hasOwnProperty(id_)) {
+            if (imageData.hasOwnProperty(id)) {
                 imageData[id].deleted = true;
             }
-//            collectionThumbnails.splice(index, 1); // Remove the removedNode from the array
         });
 
     // Check if there are more mutations in the queue
@@ -199,10 +196,9 @@ async function processMutation(mutation) {
     const { addedNodes, removedNodes } = mutation;
 
     if (addedNodes.length > 0) {
-        addedNodes.forEach(function (addedNode) {
+        addedNodes.forEach(async function (addedNode) {
             console.log('Child element added', addedNode);
-//            collectionThumbnails.push(addedNode); // Add the addedNode to the array
-            populateThumbnailProperties(addedNode.id);
+            await populateThumbnailProperties(addedNode.id);
             removeSourcePhoto(addedNode.id);
         });
     }
@@ -535,11 +531,24 @@ function getParentFieldsetId(element) {
 
 /**
  * @function
+ * Return the collectionData ordered according to the thumbnail ordering,
+ * filtered to remove delected thumbnails and remove the deleted property
+ * from each photo object
  */
 export function getPhotoCollection() {
+    // Remove the 'deleted' property from each object in imageData
+    for (const key in imageData) {
+        if (imageData.hasOwnProperty(key)) {
+            delete imageData[key].deleted;
+        }
+    }
+
+    // Create a new array with the correct order based on collectionThumbnails
+    const orderedImageData = collectionThumbnails.map(thumbnail => imageData[thumbnail.id]);
+
     // Filter out the photos where deleted is true
     const filteredImageData = Object.fromEntries(
-        Object.entries(imageData).filter(([key, value]) => !value.deleted)
+        Object.entries(orderedImageData).filter(([key, value]) => !value.deleted)
     );
 
     // Add the filtered photos to collectionData and return the whole package
