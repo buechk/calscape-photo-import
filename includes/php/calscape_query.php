@@ -10,10 +10,8 @@ if ($conn->connect_error) {
 }
 
 // SQL query
-$query = "SELECT species FROM plants WHERE disabled = 0 and is_biozone = 0 ORDER BY species";
-
 // Execute the query
-$result = $conn->query($query);
+$result = $conn->query($speciesquery);
 
 // Check if the query was successful
 if ($result) {

@@ -435,34 +435,28 @@ function createInputField(value) {
  * Function to save the properties from the form to the image object
  */
 export function saveSelectedProperties() {
-    const selectedId = document.getElementById('selected-id').textContent;
-    if (selectedId !== '') {
-        const currentImageObj = imageData[selectedId];
-        if (currentImageObj) { // Ensure you have a selected image object
+    const selectedIdElem = document.getElementById('selected-id');
+    if (selectedIdElem != null) {
+        const selectedId = selectedIdElem.textContent;
+        if (selectedId !== '') {
+            const currentImageObj = imageData[selectedId];
+            if (currentImageObj) { // Ensure you have a selected image object
 
-            // Iterate through the children elements of propertiesContainer
-            for (const property in currentImageObj) {
-                const input = document.getElementById(property);
-                if (input !== null && input !== undefined) {
-                    if (Array.isArray(currentImageObj[property])) {
-                        // If the property is an array, collect the values
-                        const propertyValues = [];
-                        const inputContainers = input.querySelectorAll(".multivalue-input");
-                        inputContainers.forEach((container) => {
-                            const value = container.value;
-                            if (value.trim() !== "") {
-                                propertyValues.push(value);
-                            }
-                        });
-                        currentImageObj[property] = propertyValues;
-                    } else {
-                        // If it's not an array, set the value directly
-                        currentImageObj[property] = input.value;
-                    }
-                }
+                // Get the form element
+                const propertiesForm = document.getElementById('properties-form');
+
+                // Iterate through the input elements of the properties form
+                const inputElements = propertiesForm.querySelectorAll('input, select, textarea');
+                inputElements.forEach(input => {
+                    const property = input.id;
+                        if (property !== '') {
+                            // If it's not an array, set the value directly
+                            currentImageObj[property] = input.value;
+                        }
+                });
+            } else {
+                console.log("No image object selected to save properties to.");
             }
-        } else {
-            console.log("No image object selected to save properties to.");
         }
     }
 }
@@ -473,19 +467,22 @@ export function saveSelectedProperties() {
  */
 function saveProperties(inputElement) {
     if (inputElement) {
-        const tcontainerId = document.getElementById("selected-id").textContent;
-        if (!imageData[tcontainerId]) {
-            imageData[tcontainerId] = {}; // Initialize image object if not exists
-        }
-        if (!inputElement.parentElement.parentElement.classList.contains("multivalue-input-container") &&
-            inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA") {
-            const propertyName = inputElement.id;
-            const propertyValue = inputElement.value;
+        const selectedIdElem = document.getElementById('selected-id');
+        if (selectedIdElem != null) {
+            const tcontainerId = selectedIdElem.textContent;
+            if (!imageData[tcontainerId]) {
+                imageData[tcontainerId] = {}; // Initialize image object if not exists
+            }
+            if (!inputElement.parentElement.parentElement.classList.contains("multivalue-input-container") &&
+                inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA") {
+                const propertyName = inputElement.id;
+                const propertyValue = inputElement.value;
 
-            if (propertyValue) {
-                imageData[tcontainerId][propertyName] = propertyValue;
-            } else {
-                delete imageData[tcontainerId][propertyName];
+                if (propertyValue) {
+                    imageData[tcontainerId][propertyName] = propertyValue;
+                } else {
+                    delete imageData[tcontainerId][propertyName];
+                }
             }
         }
     }
@@ -529,10 +526,7 @@ export function showSelectedProperties(event) {
                     else {
                         input.value = '';
                     }
-                } else {
-                    console.log('Input element not found for property:', property);
-                }
-
+                } 
             }
         }
     }
