@@ -13,9 +13,9 @@
             "type": "php",
             "request": "launch",
             "port": 9003,
-            "stopOnEntry": false,
+            "stopOnEntry": true,
             "pathMappings": {
-                "/": "${workspaceFolder}"
+                "/Users/kristybueche/Documents/calscape/photos/calscape-photo-import": "${workspaceFolder}"
             }
         }
     ]
