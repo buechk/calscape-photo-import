@@ -13,3 +13,5 @@ $collectionReviewDirectory = '../../public/ExtData/collections/review/';
 
 // Query to get all species
 $speciesquery = "SELECT species FROM plants WHERE disabled = 0 and is_biozone = 0 ORDER BY species";
+
+$newline = (php_sapi_name() === 'cli') ? PHP_EOL : '<br>';
