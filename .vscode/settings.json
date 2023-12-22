@@ -1,3 +1,6 @@
-{
-    "php.debug.executablePath": "/opt/homebrew/bin/php"
-}
+// {
+//     "php.validate.executablePath": "C:/xampp/php/php.exe",
+//     "php.exectutablePath":"C:/xampp/php/php.exe",
+//     "php.server.documentRoot": "C:/Users/paige/Desktop/photo-upload-prototype/calscape-photo-import",
+//     "php.server.port":80
+// }

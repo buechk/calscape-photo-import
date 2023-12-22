@@ -22,6 +22,7 @@ function initNavigation() {
     }
 }
 
+
 $(function () {
     // Attach the click event handler to the specific li element containing "Welcome"
     $('li a').click(function () {
@@ -51,7 +52,20 @@ $(document).ready(function () {
 
     // Load default content on page load
     fetchContent('home');
+
+    $(document).on('click', '#contributeButton', function(event) {
+        event.preventDefault();
+        var targetPage = $(this).data('page');
+        fetchContent(targetPage);
+    });
+
+    $(document).on('click', '#reviewButton', function(event) {
+        event.preventDefault();
+        var targetPage = $(this).data('page');
+        fetchContent(targetPage);
+    });
 });
+
 
 function fetchContent(page, append = false) {
     // Use jQuery's AJAX function to get the content from the server
@@ -67,11 +81,25 @@ function fetchContent(page, append = false) {
             // Replace the main content with the fetched data
             $('#main-content').html(data);
             initMainContent();
+
+            //comment updateNavigationBar(page) to show all options on home page
+            //update navigation bar based on the fetched page
+            updateNavigationBar(page);
         },
         error: function (error) {
             console.error('Error fetching content:', error);
         }
     });
+}
+
+function updateNavigationBar(currentPage) {
+    if (currentPage === 'home') {
+        // Hide all nav items except 'Welcome' when on the home page
+        $('#left-nav a:not(#welcome-link a)').hide();
+    } else {
+        // Show all nav items on other pages
+        $('#left-nav a').show();
+    }
 }
 
 function openSelectionDialog(id) {

@@ -4,10 +4,34 @@ include_once(dirname(dirname(__FILE__)) . '/php/source-photos-container.php');
 include_once(dirname(dirname(__FILE__)) . '/php/collection-container.php');
 include_once(dirname(dirname(__FILE__)) . '/php/selected-properties.php');
 include_once(dirname(dirname(__FILE__)) . '/php/divider.php');
-include_once(dirname(dirname(__FILE__)) . '/php/submit.php');
+include_once(dirname(dirname(__FILE__)) . '/php/submit-page.php');
 
 // side-bar-nav.php
 $nav = isset($_GET['nav']) ? $_GET['nav'] : 'home';
+
+ //comment this code to show full navigation bar on the home page. line 86 of side-bar-nav.js will also need to be commented
+function generateNavBar($nav) {
+    //hide submenu styles on home page
+    // $navClass = ($nav === 'home') ? 'nav-home' : 'nav-other';
+    // echo '<nav id="left-nav" class="' . $navClass . '">';
+
+    //Only show the full navigation bar if not on the home page
+    if ($nav !== 'home') {
+        echo '<nav id="left-nav">';
+        echo '<ul>';
+        // Add other navigation items here
+        echo '<li><a href="?nav=select-photos">Select Photos</a></li>';
+        echo '<li><a href="?nav=create-collection">Create Collection</a></li>';
+        echo '<li><a href="?nav=set-properties">Set Properties</a></li>';
+        echo '<li><a href="?nav=submit-for-review">Submit for Review</a></li>';
+        echo '</ul>';
+        echo '</nav>';
+    }
+}
+
+// Call to generate the navigation bar
+generateNavBar($nav);
+// //end uncomment
 
 function getContentForPage($nav)
 {

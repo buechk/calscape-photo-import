@@ -1,4 +1,4 @@
-
+/* 
 html {
     margin: 0;
     height: 100%;
@@ -42,13 +42,11 @@ h2 {
     text-align: left;
 }
 
-/* Style for the container of the Submit button */
+
 #submit-button-container {
     position: bottom;
     top: 10px;
-    /* Adjust the top position as needed */
     right: 10px;
-    /* Adjust the right position as needed */
 }
 
 
@@ -59,15 +57,13 @@ h2 {
 
 .divider {
     width: 5px;
-    /* Width of the divider */
     cursor: col-resize;
-    /* Use a resizable cursor */
     background-color: #ccc;
 }
 
 .divider:hover {
     background-color: #aaa9a9;
-}
+} */
 
 .source-photos-container,
 .right-container {
@@ -319,15 +315,15 @@ html {
     box-sizing: border-box;
 }
 
-*,
+/* *,
 *:before,
 *:after {
     box-sizing: inherit;
-}
+} */
 
 /* Styling for the header */
 header {
-    background-color: #124266;
+    background-color: #224762;
     text-align: center;
     padding: 0px;
 }
@@ -453,4 +449,4 @@ header {
     right: 10px;
     font-size: 20px;
     cursor: pointer;
-}
+} 
