@@ -449,10 +449,10 @@ export function saveSelectedProperties() {
                 const inputElements = propertiesForm.querySelectorAll('input, select, textarea');
                 inputElements.forEach(input => {
                     const property = input.id;
-                        if (property !== '') {
-                            // If it's not an array, set the value directly
-                            currentImageObj[property] = input.value;
-                        }
+                    if (property !== '') {
+                        // If it's not an array, set the value directly
+                        currentImageObj[property] = input.value;
+                    }
                 });
             } else {
                 console.log("No image object selected to save properties to.");
@@ -504,8 +504,9 @@ export function showSelectedProperties(event) {
             // set selected id
             document.getElementById('selected-id').textContent = tcontainerId;
 
-            // Iterate through the children elements of propertiesContainer
+            // Iterate through the selected item's properties
             for (const property in imageObj) {
+
                 const input = document.getElementById(property);
                 if (input !== null && input !== undefined) {
                     const propertyvalue = imageObj[property];
@@ -526,7 +527,8 @@ export function showSelectedProperties(event) {
                     else {
                         input.value = '';
                     }
-                } 
+                    input.disabled = input.readOnly;
+                }
             }
         }
     }
@@ -650,6 +652,9 @@ export function createPropertiesFields() {
                 field.id = column.name;
                 field.required = uiconfig.required;
                 field.readOnly = uiconfig.readonly;
+                if (field.readOnly) {
+                    field.disabled = true;
+                }
 
                 formgroup.appendChild(field);
             }

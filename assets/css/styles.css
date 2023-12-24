@@ -33,7 +33,9 @@ h3 {
 
 body {
     margin: 1rem;
-    font-family: 'Poppins',sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+        "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol", "Noto Color Emoji";
     height: 100vh;
 }
 
@@ -59,7 +61,8 @@ body {
 }
 
 #main-content {
-    display: flex;  /* Use flex container */
+    display: flex;
+    /* Use flex container */
     width: 100%;
     height: 100vh;
     padding: 10px;
@@ -84,7 +87,8 @@ body {
 }
 
 .thumbnail-scroll-container {
-    height: 100%; /* Takes the full height of the source-photos-container */
+    height: 100%;
+    /* Takes the full height of the source-photos-container */
     max-height: 800px;
     overflow-y: auto;
     padding: 10px;
@@ -100,13 +104,15 @@ body {
     padding: 20px;
     background-color: #eee;
     min-height: 250px;
-    height: 100%; /* Takes the full height of the thumbnail-scroll-container */
+    height: 100%;
+    /* Takes the full height of the thumbnail-scroll-container */
     box-sizing: border-box;
 }
 
 .right-container {
     display: flex;
-    flex-direction: column; /* Stack children vertically */
+    flex-direction: column;
+    /* Stack children vertically */
     padding: 10px;
     min-width: 350px;
     max-width: calc(100% - 250px);
@@ -120,7 +126,8 @@ body {
     min-width: 400px;
 }
 
-.group-properties-container, .properties-scroll-container {
+.group-properties-container,
+.properties-scroll-container {
     padding: 10px;
     background-color: #f2f2f2;
 }
@@ -139,7 +146,8 @@ body {
     padding: 20px;
     background-color: #fff;
     min-height: 250px;
-    position: relative; /* Make the container relative for absolute positioning */
+    position: relative;
+    /* Make the container relative for absolute positioning */
     height: 100%;
     box-sizing: border-box;
 }
@@ -201,7 +209,8 @@ body {
 .required-asterisk::before {
     content: '*';
     color: tomato;
-    margin-right: 4px; /* Add spacing between asterisk and label */
+    margin-right: 4px;
+    /* Add spacing between asterisk and label */
 }
 
 /* Apply the style to labels of required fields */
@@ -376,17 +385,18 @@ header {
 /* Styling for the navigation bar */
 #left-nav  {
     background-color: rgba(64, 124, 168, 0.5);
-    overflow: hidden;
     display: inline-block;
-    justify-content: space-between;
     height: 100%;
     width: 15%;
     min-width: 200px;
     margin-top: 60px;
     box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.3);
+    margin-top: 60px; 
+    position: relative; /* Add this to establish a positioning context for absolute positioning */
+    z-index: 1;
 }
 
-#left-nav  ul {
+#left-nav ul {
     list-style-type: none;
     padding: 10px;
     margin: 0;
@@ -441,7 +451,7 @@ header {
     display: none;
 }
 
-#menu  {
+#menu {
     background-color: #124266;
     overflow: hidden;
     display: flex;
@@ -486,7 +496,7 @@ header {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 3;
     left: 0;
     top: 0;
     width: 100%;
@@ -511,6 +521,115 @@ header {
     font-size: 20px;
     cursor: pointer;
 }
+
+.container {
+    max-width: 960px;
+    margin-left:20%;
+    background-color: #fff;
+    padding: 20px;
+    
+  }
+  .table-container{
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .table-title {
+    color: #333;
+    text-align: center;
+  }
+  
+  .review-section {
+    margin-top: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+
+  .permissions-checkbox {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .permissions-checkbox label {
+    margin-left: 8px;
+  }
+
+
+#submit-button-container {
+    display: block;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#submit-button {
+    appearance: none;
+    background-color: #516d3d;
+    border:none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    line-height: 20px;
+    padding: 6px 16px;
+    margin: 10px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+#submit-btn:focus:not(:focus-visible):not(.focus-visible) {
+    box-shadow: none;
+    outline: none;
+}
+
+#submit-btn:hover {
+    background-color: #6A8855;
+}
+
+#submit-btn:focus {
+    box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+    outline: none;
+}
+
+#submit-btn:active {
+    background-color: #6A8855;
+    box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+}
+.permissions-checkbox {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .permissions-checkbox label {
+    margin-left: 8px;
+  }
+  
+  #submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 
 .container {
     max-width: 960px;
@@ -596,46 +715,47 @@ header {
     background-color: #6A8855;
     box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
-.permissions-checkbox {
-    margin: 20px 0;
-    display: flex;
-    align-items: center;
-  }
-  
-  .permissions-checkbox label {
-    margin-left: 8px;
-  }
+
   
   #submit-btn:disabled {
     background-color: #ccc;
     cursor: not-allowed;
   }
 
-/* CSS styles for the status area */
 #status-area {
+    display: block;
     position: absolute;
-    bottom: 40px;
-    left: 20px;
+    left: 0;
+    width: 100%; 
+    z-index: 2;
 }
 
 .status-message {
-    border-radius: 4px;
+    position: relative; /* Add this to make the close box position relative to the status-message */
+    border-radius: 0px;
     padding: 10px;
     min-height: 50px;
-    width: 180px;
+    width: 150px;
 }
 
 /* Styles for success messages */
 .status-message.success {
-    background-color: #d4edda; /* Green background */
-    color: #155724; /* Dark green text color */
-    border: 1px solid #3e734a; /* Border color */
+    background-color: #d4edda;
+    /* Green background */
+    color: #155724;
+    /* Dark green text color */
+    border: 1px solid #3e734a;
+    /* Border color */
 
 }
 
 /* Styles for error messages */
 .status-message.error {
-    background-color: #f8d7da; /* Red background */
-    color: #721c24; /* Dark red text color */
-    border: 1px solid #f5c6cb; /* Border color */
+    background-color: #f8d7da;
+    /* Red background */
+    color: #721c24;
+    /* Dark red text color */
+    border: 1px solid #721c24;
+    ;
+    /* Border color */
 }
