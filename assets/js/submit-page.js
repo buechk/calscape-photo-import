@@ -1,7 +1,7 @@
-import {collectionData} from "./collection-data.js";
+import {getPhotoCollection} from "./collection-data.js";
 
-document.addEventListener('DOMContentLoaded', function() {
-
+export function initSubmitPage() {
+    const collectionData = getPhotoCollection();
     const tableBody = document.getElementById('review-table-body');
     tableBody.innerHTML = ''; // Clear the table body
 
@@ -37,7 +37,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         tableBody.appendChild(photoRow);
     });
-});
+};
+
 //     // Loop through each submission and append a row to the table body
 //     collectionData.forEach(function(data, index) {
 //         const row = document.createElement('tr');

@@ -30,7 +30,7 @@ function generateNavBar($nav) {
 }
 
 // Call to generate the navigation bar
-generateNavBar($nav);
+//generateNavBar($nav);
 // //end uncomment
 
 function getContentForPage($nav)

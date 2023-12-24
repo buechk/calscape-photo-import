@@ -8,6 +8,7 @@ import { fetchSpeciesList, initializeSpeciesInput, initializeCollectionSpeciesIn
 import { initializeCollectionData } from "./collection-data.js";
 import { initializeSubmitContribute } from "./submit.js";
 import { clearPropertiesFields } from "./properties.js";
+import { initSubmitPage as initializeSubmitPage } from "./submit-page.js";
 
 /**
  * @function init
@@ -18,19 +19,19 @@ export function initMainContent() {
     if (mainContentArea.querySelector("#welcome")) {
         // When you dynamically add content that requires a column layout
         mainContentArea.classList.remove('row-layout');
-        mainContentArea.classList.add('column-layout'); 
+        mainContentArea.classList.add('column-layout');
     }
 
     if (mainContentArea.querySelector('#source-photos-container')) {
         mainContentArea.classList.remove('row-layout');
-        mainContentArea.classList.add('column-layout'); 
+        mainContentArea.classList.add('column-layout');
         initializeSortableGrid();
         displayThumbnailsFromSourcePhotos();
     }
 
     if (mainContentArea.querySelector('#collection-container')) {
         // When you dynamically add content that requires a row layout
-        mainContentArea.classList.remove('column-layout'); 
+        mainContentArea.classList.remove('column-layout');
         mainContentArea.classList.add('row-layout');
         fetchSpeciesList();
         initializeCollectionSpeciesInput();
@@ -40,7 +41,7 @@ export function initMainContent() {
 
     if (mainContentArea.querySelector('#selected-properties-container')) {
         // When you dynamically add content that requires a row layout
-        mainContentArea.classList.remove('column-layout'); 
+        mainContentArea.classList.remove('column-layout');
         mainContentArea.classList.add('row-layout');
         clearPropertiesFields();
         fetchSpeciesList();
@@ -52,6 +53,7 @@ export function initMainContent() {
     }
 
     if (mainContentArea.querySelector('#submit-button')) {
+        initializeSubmitPage();
         initializeSubmitContribute()
     }
 
