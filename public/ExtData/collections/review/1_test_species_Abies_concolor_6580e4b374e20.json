@@ -1,0 +1,47 @@
+{
+  "collection-name": "test",
+  "collection-species": "Abies concolor",
+  "user_id": "1",
+  "collection-type": "species",
+  "photos": {
+    "0": {
+      "id": "3348743754",
+      "sourceImage": "https://farm4.staticflickr.com/3571/3348743754_b9c8acb4ee_b.jpg",
+      "CaptionTitle": "Lupinus albifrons - Silver Bush Lupine",
+      "DateTimeOriginal": "2009-03-11 00:12:01",
+      "ImageDescription": "Fagan Home - West Oakland\n\nCalifornia Native Landscape by East Bay Wilds\n510-409-5858",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "Ranking": "0",
+      "Keywords": [
+        "presentation",
+        "test"
+      ],
+      "selected-species": "",
+      "CaptionDescription": "1",
+      "FileName": "Abies_concolor_3348743754_b9c8acb4ee_b.jpg"
+    },
+    "1": {
+      "id": "2513619510",
+      "sourceImage": "https://farm4.staticflickr.com/3034/2513619510_2daf137497_b.jpg",
+      "CaptionTitle": "Wild Lupinus albifrons on hill above nursery",
+      "CaptionDescription": "3",
+      "DateTimeOriginal": "2008-04-14 22:24:34",
+      "ImageDescription": "Spring 08 - taken by Luzi\n\nSpring 08 - taken by Luzi",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "Ranking": "0",
+      "Keywords": [
+        "last"
+      ],
+      "selected-species": "",
+      "FileName": "Abies_concolor_2513619510_2daf137497_b.jpg"
+    }
+  }
+}

@@ -4,6 +4,7 @@
  */
 
 import { getPhotoCollection } from "./collection-data.js";
+import { displayStatusMessage } from "./status.js";
 
 /**
  * 
@@ -131,7 +132,7 @@ export function initializeSubmitContribute() {
         setTimeout(() => {
             const collection = getPhotoCollection();
             submit(collection);
-
+            displayStatusMessage(`Thank you! Photo collection "${collection.collection_name}" has been submitted.`, false, false);
             // Convert the collectionData object to a JSON string with proper indentation
             const jsonString = JSON.stringify(collection, null, 2);
             console.log(jsonString);

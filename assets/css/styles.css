@@ -197,6 +197,17 @@ body {
     content: ": ";
 }
 
+/* Style for the required asterisk */
+.required-asterisk::before {
+    content: '*';
+    color: tomato;
+    margin-right: 4px; /* Add spacing between asterisk and label */
+}
+
+/* Apply the style to labels of required fields */
+label[for].required-asterisk {
+    display: inline-block;
+}
 
 /* Container for the label/input pairs */
 .form-group {
@@ -495,7 +506,7 @@ header {
 
 .close {
     position: absolute;
-    top: 10px;
+    top: 5px;
     right: 10px;
     font-size: 20px;
     cursor: pointer;
@@ -599,3 +610,32 @@ header {
     background-color: #ccc;
     cursor: not-allowed;
   }
+
+/* CSS styles for the status area */
+#status-area {
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
+}
+
+.status-message {
+    border-radius: 4px;
+    padding: 10px;
+    min-height: 50px;
+    width: 180px;
+}
+
+/* Styles for success messages */
+.status-message.success {
+    background-color: #d4edda; /* Green background */
+    color: #155724; /* Dark green text color */
+    border: 1px solid #3e734a; /* Border color */
+
+}
+
+/* Styles for error messages */
+.status-message.error {
+    background-color: #f8d7da; /* Red background */
+    color: #721c24; /* Dark red text color */
+    border: 1px solid #f5c6cb; /* Border color */
+}

@@ -12,5 +12,5 @@ define('SOURCE_PHOTOS_CONTAINER', <<<HTML
     </div>
 </div>
 
-<script type="module" src="../assets/js/thumbnails.js"></script>
+<!-- <script type="module" src="../assets/js/thumbnails.js"></script> -->
 HTML);

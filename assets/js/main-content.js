@@ -7,6 +7,7 @@ import { initializeResizer } from "./resizer.js";
 import { fetchSpeciesList, initializeSpeciesInput, initializeCollectionSpeciesInput } from "./species-selection.js";
 import { initializeCollectionData } from "./collection-data.js";
 import { initializeSubmitContribute } from "./submit.js";
+import { clearPropertiesFields } from "./properties.js";
 
 /**
  * @function init
@@ -41,6 +42,7 @@ export function initMainContent() {
         // When you dynamically add content that requires a row layout
         mainContentArea.classList.remove('column-layout'); 
         mainContentArea.classList.add('row-layout');
+        clearPropertiesFields();
         fetchSpeciesList();
         initializeSpeciesInput();
     }

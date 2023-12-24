@@ -53,5 +53,5 @@ define('COLLECTION_CONTAINER', <<<HTML
     </div>
 </div>
 
-<script type="module" src="../assets/js/species-selection.js"></script>
+<!-- <script type="module" src="../assets/js/species-selection.js"></script> -->
 HTML);

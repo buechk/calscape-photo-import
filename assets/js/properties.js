@@ -3,8 +3,8 @@
  *  Display properties of source photos and apply properties to Calscape photos. 
  * 
 */
-
 import { imageData } from "./collection-data.js";
+import { displayStatusMessage } from "./status.js";
 
 const ROLE = "contributor"; // or "reviewer"
 
@@ -26,12 +26,12 @@ export const importconfig = {
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
-                                    "required": false,
+                                    "required": true,
                                     "visible": true
                                 },
                                 "reviewer": {
                                     "readonly": false,
-                                    "required": false,
+                                    "required": true,
                                     "visible": true
                                 }
                             }
@@ -50,12 +50,12 @@ export const importconfig = {
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
-                                    "required": false,
+                                    "required": true,
                                     "visible": true
                                 },
                                 "reviewer": {
                                     "readonly": false,
-                                    "required": false,
+                                    "required": true,
                                     "visible": true
                                 }
                             }
@@ -539,18 +539,13 @@ export function clearPropertiesFields() {
     const form = document.getElementById('properties-form');
 
     if (form) {
-
         // clear selected id
         document.getElementById('selected-id').textContent = '';
 
         // Iterate through all child elements of the form
-        form.querySelectorAll('textarea').forEach(input => {
+        form.querySelectorAll('textarea, input').forEach(input => {
             input.value = ''; // Clear the input field
-        });
-
-        // Iterate through all child elements of the form
-        form.querySelectorAll('input').forEach(input => {
-            input.value = ''; // Clear the input field
+            input.disabled = true; // Disable the input field
         });
 
         form.querySelectorAll('.input-container').forEach(input => {
@@ -558,6 +553,7 @@ export function clearPropertiesFields() {
         });
     }
 }
+
 
 /**
 * Function to create text fields
@@ -595,6 +591,9 @@ export function createPropertiesFields() {
             // Create a label element
             const label = document.createElement('label');
             label.classList.add('label');
+            if (uiconfig.required) {
+                label.classList.add('required-asterisk');
+            }
             label.textContent = column.userinterface.label;
             formgroup.appendChild(label);
 
