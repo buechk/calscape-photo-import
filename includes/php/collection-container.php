@@ -10,9 +10,12 @@ define('COLLECTION_CONTAINER', <<<HTML
         <div class="properties-scroll-container">
             <form id="group-properties-form">
                 <div class="form-group">
-                    <label class="label">Name</label>
+                    <label class="label" for="collection-name">
+                        <span class="required-asterisk">*</span>
+                         Name
+                    </label>
                     <input type="text" id="collection-name" placeholder="enter a collection name"
-                            class="auto-expand-input" autocomplete="off">
+                            class="auto-expand-input" autocomplete="off" required>
                 </div>
                 <fieldset id="collection-type" class="colltype-choice">
                     <legend>Collection type:</legend>
@@ -28,10 +31,13 @@ define('COLLECTION_CONTAINER', <<<HTML
                     </div>
                 </fieldset>
                 <div id="collection-species-container" class="form-group">
-                    <label class="label">Species</label>
+                    <label class="label" for="collection-species">
+                        <span class="required-asterisk">*</span>
+                         Species
+                    </label>
                     <div class="species-container">
                         <input type="text" id="collection-species" placeholder="type species name"
-                            class="auto-expand-input" autocomplete="off">
+                            class="auto-expand-input" autocomplete="off" required=true>
                         <ul id="collection-suggestions" class="suggestions">
                             <!-- Species list will be loaded as the user types -->
                         </ul>

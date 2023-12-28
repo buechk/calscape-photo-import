@@ -14,6 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Download the file from the URL
     $imageData = file_get_contents($imageUrl);
 
+    // Ensure the target directory exists
+    if (!file_exists($uploadDirectory)) {
+        mkdir($uploadDirectory, 0777, true);
+    }
+
     if ($imageData !== false) {
         // Save the downloaded data to a local file
         if (file_put_contents($localFilePath, $imageData) !== false) {

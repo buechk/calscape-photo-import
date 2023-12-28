@@ -30,7 +30,7 @@ export function initMainContent() {
     }
 
     if (mainContentArea.querySelector('#collection-container')) {
-        // When you dynamically add content that requires a row layout
+        // Dynamically add content that requires a row layout
         mainContentArea.classList.remove('column-layout');
         mainContentArea.classList.add('row-layout');
         fetchSpeciesList();
@@ -40,7 +40,7 @@ export function initMainContent() {
     }
 
     if (mainContentArea.querySelector('#selected-properties-container')) {
-        // When you dynamically add content that requires a row layout
+        // Dynamically add content that requires a row layout
         mainContentArea.classList.remove('column-layout');
         mainContentArea.classList.add('row-layout');
         clearPropertiesFields();

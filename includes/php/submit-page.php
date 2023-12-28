@@ -46,7 +46,7 @@ define('SUBMIT', <<<HTML
 
   <script>
     document.getElementById('permissions').addEventListener('change', function(e) {
-      document.getElementById('submit-btn').disabled = !e.target.checked;
+      document.getElementById('submit-button').disabled = !e.target.checked;
     });
   </script>
 

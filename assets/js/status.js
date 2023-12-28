@@ -8,15 +8,13 @@ export function displayStatusMessage(message, isError = false, autoDismiss = fal
     // Set class based on message type (error or success)
     const statusClass = isError ? 'error' : 'success';
 
-    // Create a new status message element
-    const statusMessage = document.createElement('div');
+    // Find existing status message and close button
+    const statusMessage = statusArea.querySelector('.status-message');
+
     statusMessage.className = `status-message ${statusClass}`;
-    statusMessage.textContent = message;
+    statusMessage.querySelector('#status-text').textContent = message;
 
-    // Clear existing messages and append the new one
-    statusArea.innerHTML = '';
-    statusArea.appendChild(statusMessage);
-
+    // Show the status area
     showStatus(autoDismiss);
 }
 
@@ -39,9 +37,11 @@ function showStatus(autoDismiss = false) {
     }
 }
 
-const closeStatus = document.getElementById('close-status');
+document.addEventListener('DOMContentLoaded', function () {
+    const closeStatus = document.getElementById('close-status');
 
-// Close the Flickr import modal
-closeStatus.addEventListener('click', () => {
-    dismissStatus();
+    // Close the status box
+    closeStatus.addEventListener('click', () => {
+        dismissStatus();
+    });
 });

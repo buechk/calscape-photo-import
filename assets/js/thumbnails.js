@@ -16,6 +16,10 @@ let selectedThumbnails = [];
 let firstSelectedThumbnailThumbnailGrid = null; // Added variable for 'thumbnail-grid'
 let firstSelectedThumbnailThumbnailGroupGrid = null; // Added variable for 'thumbnail-group-grid'
 
+export function getSelectedThumbnails() {
+    return selectedThumbnails;
+}
+
 // Enable drag-and-drop reordering of thumbnails
 export function initializeSortableGrid() {
     const thumbnailGrid = document.getElementById('thumbnail-grid');

@@ -206,16 +206,15 @@ body {
 }
 
 /* Style for the required asterisk */
-.required-asterisk::before {
+.label[for]:required::after {
     content: '*';
     color: tomato;
     margin-right: 4px;
     /* Add spacing between asterisk and label */
 }
 
-/* Apply the style to labels of required fields */
-label[for].required-asterisk {
-    display: inline-block;
+.required-asterisk {
+    color: red;
 }
 
 /* Container for the label/input pairs */
@@ -383,7 +382,7 @@ header {
 }
 
 /* Styling for the navigation bar */
-#left-nav  {
+#left-nav {
     background-color: rgba(64, 124, 168, 0.5);
     display: inline-block;
     height: 100%;
@@ -391,8 +390,9 @@ header {
     min-width: 200px;
     margin-top: 60px;
     box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.3);
-    margin-top: 60px; 
-    position: relative; /* Add this to establish a positioning context for absolute positioning */
+    margin-top: 60px;
+    position: relative;
+    /* Add this to establish a positioning context for absolute positioning */
     z-index: 1;
 }
 
@@ -434,19 +434,23 @@ header {
     color: #eee;
     background-color: rgba(64, 124, 168, 0.5);
 }
+
 /* Specific styles when on the home page */
 #left-nav.nav-home ul li:not(#welcome-link) {
-    display: none; /* Hide all li elements except welcome link */
+    display: none;
+    /* Hide all li elements except welcome link */
 }
 
 #left-nav.nav-home ul li#welcome-link {
-    display: block; /* Ensure welcome link is displayed */
+    display: block;
+    /* Ensure welcome link is displayed */
 }
 
 /* Hide submenu on the home page */
 #left-nav.nav-home ul li ul.submenu {
     display: none;
 }
+
 #left-nav.nav-home ul li:hover ul.submenu {
     display: none;
 }
@@ -520,152 +524,56 @@ header {
     right: 10px;
     font-size: 20px;
     cursor: pointer;
+    z-index: 4;
 }
 
 .container {
     max-width: 960px;
-    margin-left:20%;
+    margin-left: 20%;
     background-color: #fff;
     padding: 20px;
-    
-  }
-  .table-container{
+
+}
+
+.table-container {
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .table-title {
+}
+
+.table-title {
     color: #333;
     text-align: center;
-  }
-  
-  .review-section {
+}
+
+.review-section {
     margin-top: 20px;
-  }
-  
-  table {
+}
+
+table {
     width: 100%;
     border-collapse: collapse;
-  }
+}
 
-  th, td {
+th,
+td {
     text-align: left;
     padding: 8px;
     border-bottom: 1px solid #ddd;
-  }
-  
-  th {
+}
+
+th {
     background-color: #f2f2f2;
-  }
-
-  .permissions-checkbox {
-    margin: 20px 0;
-    display: flex;
-    align-items: center;
-  }
-  
-  .permissions-checkbox label {
-    margin-left: 8px;
-  }
-
-
-#submit-button-container {
-    display: block;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-#submit-button {
-    appearance: none;
-    background-color: #516d3d;
-    border:none;
-    border-radius: 5px;
-    box-sizing: border-box;
-    color: #fff;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    line-height: 20px;
-    padding: 6px 16px;
-    margin: 10px;
-    position: relative;
-    text-align: center;
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    vertical-align: middle;
-    white-space: nowrap;
-}
-
-#submit-btn:focus:not(:focus-visible):not(.focus-visible) {
-    box-shadow: none;
-    outline: none;
-}
-
-#submit-btn:hover {
-    background-color: #6A8855;
-}
-
-#submit-btn:focus {
-    box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
-    outline: none;
-}
-
-#submit-btn:active {
-    background-color: #6A8855;
-    box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
-}
 .permissions-checkbox {
     margin: 20px 0;
     display: flex;
     align-items: center;
-  }
-  
-  .permissions-checkbox label {
+}
+
+.permissions-checkbox label {
     margin-left: 8px;
-  }
-  
-  #submit-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-
-.container {
-    max-width: 960px;
-    margin-left:20%;
-    background-color: #fff;
-    padding: 20px;
-    
-  }
-  .table-container{
-    padding: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .table-title {
-    color: #333;
-    text-align: center;
-  }
-  
-  .review-section {
-    margin-top: 20px;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  th, td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #f2f2f2;
-  }
+}
 
 
 #submit-button-container {
@@ -678,7 +586,7 @@ header {
 #submit-button {
     appearance: none;
     background-color: #516d3d;
-    border:none;
+    border: none;
     border-radius: 5px;
     box-sizing: border-box;
     color: #fff;
@@ -716,26 +624,128 @@ header {
     box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
 
-  
-  #submit-btn:disabled {
+.permissions-checkbox {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+}
+
+.permissions-checkbox label {
+    margin-left: 8px;
+}
+
+#submit-btn:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-  }
+}
+
+.container {
+    max-width: 960px;
+    margin-left: 20%;
+    background-color: #fff;
+    padding: 20px;
+
+}
+
+.table-container {
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.table-title {
+    color: #333;
+    text-align: center;
+}
+
+.review-section {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+
+#submit-button-container {
+    display: block;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#submit-button {
+    appearance: none;
+    background-color: #516d3d;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    line-height: 20px;
+    padding: 6px 16px;
+    margin: 10px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+#submit-btn:focus:not(:focus-visible):not(.focus-visible) {
+    box-shadow: none;
+    outline: none;
+}
+
+#submit-btn:hover {
+    background-color: #6A8855;
+}
+
+#submit-btn:focus {
+    box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+    outline: none;
+}
+
+#submit-btn:active {
+    background-color: #6A8855;
+    box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+}
+
+#submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
 
 #status-area {
-    display: block;
     position: absolute;
     left: 0;
-    width: 100%; 
+    margin-top: 20px;
+    width: 100%;
     z-index: 2;
 }
 
 .status-message {
-    position: relative; /* Add this to make the close box position relative to the status-message */
+    position: relative;
+    /* Add this to make the close box position relative to the status-message */
     border-radius: 0px;
     padding: 10px;
     min-height: 50px;
-    width: 150px;
+    width: 200px;
 }
 
 /* Styles for success messages */
@@ -751,7 +761,7 @@ header {
 
 /* Styles for error messages */
 .status-message.error {
-    background-color: #f8d7da;
+    background-color: #e867719d;
     /* Red background */
     color: #721c24;
     /* Dark red text color */

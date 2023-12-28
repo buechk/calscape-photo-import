@@ -11,6 +11,11 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
     $filename = str_replace(' ', '_',$rootname) . '_' . uniqid() . '.' . $fileExtension;
     $targetPath = $uploadDirectory . $filename;
 
+    // Ensure the target directory exists
+    if (!file_exists($uploadDirectory)) {
+        mkdir($uploadDirectory, 0777, true);
+    }
+
     // Move the uploaded file to the server
     if (move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
         // Upload successful

@@ -8,10 +8,13 @@ define('SELECTED_PROPERTIES', <<<HTML
         <h3>Properties apply to the selected photo</h3>
         <form id="properties-form">
             <div id="selected-species-container" class="form-group">
-                <label class="label">Species</label>
+                <label class="label" for="selected-species">
+                    <span class="required-asterisk">*</span>
+                     Species
+                </label>
                 <div class="species-container">
-                    <input type="text" id="selected-species" placeholder="type species name"
-                        class="auto-expand-input" autocomplete="off" disabled>
+                    <input type="text" id="selected-species"
+                        class="auto-expand-input" autocomplete="off" disabled required>
                     <ul id="selected-suggestions" class="suggestions">
                         <!-- Species list will be loaded as the user types -->
                     </ul>

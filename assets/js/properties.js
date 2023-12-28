@@ -3,7 +3,8 @@
  *  Display properties of source photos and apply properties to Calscape photos. 
  * 
 */
-import { imageData } from "./collection-data.js";
+import { getPhotoCollection, imageData } from "./collection-data.js";
+import { updateSpeciesChoice } from "./species-selection.js";
 import { displayStatusMessage } from "./status.js";
 
 const ROLE = "contributor"; // or "reviewer"
@@ -493,8 +494,9 @@ function saveProperties(inputElement) {
  */
 export function showSelectedProperties(event) {
     if (document.querySelector('#selected-properties-container')) {
-        saveSelectedProperties();
+        saveSelectedProperties(); // save previously selected properties before clearing
         clearPropertiesFields();
+
         const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
         if (event.target.parentNode.parentNode == thumbnailGroupGrid) {
             // get the saved image data for the selected thumbnail container
@@ -531,6 +533,7 @@ export function showSelectedProperties(event) {
                 }
             }
         }
+        updateSpeciesChoice();
     }
 }
 
@@ -593,10 +596,20 @@ export function createPropertiesFields() {
             // Create a label element
             const label = document.createElement('label');
             label.classList.add('label');
+            label.htmlFor = column.name;
+
             if (uiconfig.required) {
-                label.classList.add('required-asterisk');
+                const asterisk = document.createElement('span');
+                asterisk.innerHTML = '*';
+                asterisk.classList.add('required-asterisk');
+                // Append the asterisk span before the label text
+                label.appendChild(asterisk);
+                label.appendChild(document.createTextNode(' ')); // Add a space for separation
             }
-            label.textContent = column.userinterface.label;
+
+            // Use innerHTML to set the label text
+            label.innerHTML += column.userinterface.label;
+
             formgroup.appendChild(label);
 
             if (column.userinterface.multivalue == true) {

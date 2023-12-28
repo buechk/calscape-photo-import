@@ -3,6 +3,7 @@
  */
 import { removeSourcePhoto, storeSourcePhoto, getSourcePhoto } from "./source-photo-data.js";
 import { importconfig, createPropertiesFields } from "./properties.js";
+import { updateSpeciesChoice } from "./species-selection.js";
 
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
@@ -123,15 +124,17 @@ export function getCollectionThumbnails() {
 
 export function initializeCollectionData() {
     const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-
+/*
     thumbnailGroupGrid.addEventListener('click', function (event) {
         if (event.target.id === 'thumbnail-group-grid') {
             // make sure thumbnail appears selected
             const tcontainerId = document.getElementById("selected-id").textContent
-            document.getElementById(tcontainerId).classList.add('selected');
+            if (tcontainerId != '') {
+                document.getElementById(tcontainerId).classList.add('selected');
+            }
         }
     });
-
+*/
     setupMutationObserver(thumbnailGroupGrid);
 
     createPropertiesFields();
@@ -226,7 +229,7 @@ function setupMutationObserver(targetElement) {
         // sync up collectionThumbnail order with thumbnail-group-grid order.
         const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
         collectionThumbnails = Array.from(thumbnailGroupGrid.querySelectorAll('.tcontainer'));
-        
+
     });
 
     const config = { childList: true };
@@ -259,7 +262,7 @@ async function populateThumbnailProperties(id) {
                 for (const column of table.columns) {
                     const isCollectionProp = column.applies_to == "collection" ? true : false;
 
-                    if (isCollectionProp) { 
+                    if (isCollectionProp) {
                         // The selected properties container is not shown and property applies to a 
                         // collection so ignore properties that apply to the selected image
                         continue;
@@ -291,7 +294,7 @@ async function populateThumbnailProperties(id) {
                 for (const column of table.columns) {
                     const isCollectionProp = column.applies_to == "collection" ? true : false;
 
-                    if (isCollectionProp) { 
+                    if (isCollectionProp) {
                         // The selected properties container is not shown and property applies to a 
                         // collection so ignore properties that apply to the selected image
                         continue;
@@ -314,7 +317,7 @@ async function populateThumbnailProperties(id) {
         }
 
         imageData[id] = imageObj;
-    } 
+    }
 
     console.log('Populated image data: ');
     for (const key in imageData) {
@@ -484,17 +487,17 @@ export function savePhotoCollection() {
         // Iterate through the children elements of group-properties-container
 
         const groupform = document.getElementById('group-properties-form');
-        
+
         if (groupform) {
             // Iterate through all child elements of the form and save the value
             groupform.querySelectorAll('textarea').forEach(inputElement => {
                 saveCollectionProperties(inputElement);
             });
-    
+
             groupform.querySelectorAll('input').forEach(inputElement => {
                 saveCollectionProperties(inputElement);
             });
-    
+
             groupform.querySelectorAll('fieldset').forEach(inputElement => {
                 saveRadioPropertyValue(inputElement);
             });
@@ -553,6 +556,11 @@ export function getPhotoCollection() {
 
     // Add the filtered photos to collectionData and return the whole package
     collectionData.photos = filteredImageData;
+
+    if (collectionData["collection-type"] === 'garden') {
+        collectionData["collection-species"] = 'na';
+    }
+
     return collectionData;
 }
 
@@ -607,17 +615,7 @@ function showRadioPropertyValue(fieldset, propertyValue) {
         console.log('Radio property value did not match any radio buttons: ', propertyValue);
     }
 
-    // Get the radio buttons and the species-container element
-    const speciesChoice = document.getElementById('species-choice');
-    const gardenChoice = document.getElementById('garden-choice');
-    const collSpeciesInput = document.getElementById('collection-species');
-
-    if (speciesChoice.checked) {
-        collSpeciesInput.disabled = false;
-    } else if (gardenChoice.checked) {
-        collSpeciesInput.disabled = true;
-        collSpeciesInput.value = '';
-    }
+    updateSpeciesChoice();
 }
 
 /* EVENT LISTENERS */

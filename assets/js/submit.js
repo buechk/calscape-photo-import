@@ -111,7 +111,7 @@ function saveCollection(collection) {
         .then(data => {
             // Handle the response (if needed)
             console.log('Collection saved to file: ', data.filename);
-            displayStatusMessage(`Thank you! The photo collection, "${collection['collection-name']}", has been submitted.`, false, false);
+            displayStatusMessage(`The photo collection, "${collection['collection-name']}", has been submitted for review. Thank you!`, false, false);
         })
         .catch(error => {
             // Handle network errors or other exceptions

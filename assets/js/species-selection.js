@@ -2,6 +2,8 @@
  * @file
  * Enable user to select plant species in which to assign photos
  */
+import { getPhotoCollection } from "./collection-data.js";
+import { getSelectedThumbnails } from "./thumbnails.js";
 
 let specieslist = [];
 
@@ -55,6 +57,8 @@ export function initializeSpeciesInput() {
             //hideTargetElement(selectedSpeciesSuggestions);
         }
     });
+
+    updateSpeciesChoice();
 }
 
 export function initializeCollectionSpeciesInput() {
@@ -175,39 +179,43 @@ function filterData(data, searchText) {
     return data.filter((x) => x.toLowerCase().includes(searchText.toLowerCase()));
 }
 
-// Add event listeners to the common parent element ('main-content')
-/*
-mainContent.addEventListener('focus', handleFocusAndInput, true);
-mainContent.addEventListener('input', handleFocusAndInput, true);
-mainContent.addEventListener('click', handleSuggestionsClick, true);
-*/
+export function updateSpeciesChoice() {
+     // Get the radio buttons and the species-container element
+     const speciesChoice = document.getElementById('species-choice');
+     const gardenChoice = document.getElementById('garden-choice');
+     const collSpeciesContainer = document.getElementById('collection-species-container');
+     const selSpeciesContainer = document.getElementById('selected-species-container');
+     const collectionSpeciesInput = document.getElementById('collection-species');
+     const selectedSpeciesInput = document.getElementById('selected-species');
+ 
+     if (speciesChoice.checked) {
+         if (collSpeciesContainer != null) {
+             collectionSpeciesInput.disabled = false;
+             collectionSpeciesInput.placeholder = 'type species name';
+         }
+         if (selSpeciesContainer != null) {
+             selectedSpeciesInput.disabled = true;
+             selectedSpeciesInput.value = '';
+             selectedSpeciesInput.placeholder = 'applied from collection';
+         }
+     } else if (gardenChoice.checked) {
+         if (collSpeciesContainer != null) {
+             collectionSpeciesInput.disabled = true;
+             collectionSpeciesInput.value = '';
+             collectionSpeciesInput.placeholder = 'not applicable';
+         }
+         if (selSpeciesContainer != null) {
+             selectedSpeciesInput.disabled = getSelectedThumbnails().length < 1;
+             selectedSpeciesInput.placeholder = 'type species name';
+         }
+     }   
+}
+
 // Add an event listener for radio button changes
 const mainContent = document.getElementById('main-content');
 mainContent.addEventListener('change', (event) => {
     const targetId = event.target.id;
-
-    // Get the radio buttons and the species-container element
-    const speciesChoice = document.getElementById('species-choice');
-    const gardenChoice = document.getElementById('garden-choice');
-    const collSpeciesContainer = document.getElementById('collection-species-container');
-    const selSpeciesContainer = document.getElementById('selected-species-container');
-    const collectionSpeciesInput = document.getElementById('collection-species');
-    const selectedSpeciesInput = document.getElementById('selected-species');
-
-    if (targetId === 'species-choice' && speciesChoice.checked) {
-        if (collSpeciesContainer != null) {
-            collectionSpeciesInput.disabled = false;
-        }
-        if (selSpeciesContainer != null) {
-            selectedSpeciesInput.disabled = true;
-        }
-    } else if (targetId === 'garden-choice' && gardenChoice.checked) {
-        if (collSpeciesContainer != null) {
-            collectionSpeciesInput.disabled = true;
-            collectionSpeciesInput.value = '';
-        }
-        if (selSpeciesContainer != null) {
-            selectedSpeciesInput.disabled = false;
-        }
+    if (targetId === 'species-choice' || targetId === 'garden-choice') {
+        updateSpeciesChoice();
     }
 });

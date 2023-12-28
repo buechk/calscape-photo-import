@@ -1,4 +1,4 @@
-import {getPhotoCollection} from "./collection-data.js";
+import { getPhotoCollection } from "./collection-data.js";
 
 export function initSubmitPage() {
     const collectionData = getPhotoCollection();
@@ -42,7 +42,7 @@ export function initSubmitPage() {
 //     // Loop through each submission and append a row to the table body
 //     collectionData.forEach(function(data, index) {
 //         const row = document.createElement('tr');
-        
+
 //         const checkBoxTd = document.createElement('td');
 //         const checkBox = document.createElement('input');
 //         checkBox.type = 'checkbox';
@@ -59,17 +59,22 @@ export function initSubmitPage() {
 //             <td>${escapeHtml(data.DateTimeOriginal)}</td>
 //             <td>${escapeHtml(data['collection-name'])}</td>
 //         `;
-        
+
 //         tableBody.appendChild(row);
 //     });
 // });
 
 // Function to escape HTML content
 function escapeHtml(unsafe) {
-    return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
+    if (unsafe === undefined) {
+        return '';
+    }
+    else {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 }
