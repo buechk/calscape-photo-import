@@ -16,8 +16,21 @@ let selectedThumbnails = [];
 let firstSelectedThumbnailThumbnailGrid = null; // Added variable for 'thumbnail-grid'
 let firstSelectedThumbnailThumbnailGroupGrid = null; // Added variable for 'thumbnail-group-grid'
 
-export function getSelectedThumbnails() {
-    return selectedThumbnails;
+export function getSelectedThumbnailCount() {
+    const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+
+    // Check if the element with the given id exists
+    if (thumbnailGroupGrid) {
+        // Get all elements with the 'selected' class within thumbnailGroupGrid
+        const selectedThumbnails = thumbnailGroupGrid.getElementsByClassName('selected');
+        
+        // Return the count of selected thumbnails
+        return selectedThumbnails.length;
+    } else {
+        // Handle the case where the element with the given id doesn't exist
+        console.error("Element with id 'thumbnail-group-grid' not found.");
+        return 0;
+    }
 }
 
 // Enable drag-and-drop reordering of thumbnails

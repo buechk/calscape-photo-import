@@ -3,7 +3,7 @@
  * Enable user to select plant species in which to assign photos
  */
 import { getPhotoCollection } from "./collection-data.js";
-import { getSelectedThumbnails } from "./thumbnails.js";
+import { getSelectedThumbnailCount } from "./thumbnails.js";
 
 let specieslist = [];
 
@@ -205,7 +205,7 @@ export function updateSpeciesChoice() {
              collectionSpeciesInput.placeholder = 'not applicable';
          }
          if (selSpeciesContainer != null) {
-             selectedSpeciesInput.disabled = getSelectedThumbnails().length < 1;
+             selectedSpeciesInput.disabled = getSelectedThumbnailCount() < 1;
              selectedSpeciesInput.placeholder = 'type species name';
          }
      }   
