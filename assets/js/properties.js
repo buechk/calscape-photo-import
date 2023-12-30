@@ -521,15 +521,20 @@ export function showSelectedProperties(event) {
                                     input.appendChild(inputContainer);
                                 }
                             });
+                            // enable/disable input fields acording to readonly configuration
+                            const multivalueInput = input.parentElement;
+                            multivalueInput.querySelectorAll('.multivalue-input').forEach(field => {
+                                field.disabled = input.readonly;
+                            });
                         }
                         else {
                             input.value = propertyvalue;
+                            input.disabled = input.readOnly;
                         }
                     }
                     else {
                         input.value = '';
                     }
-                    input.disabled = input.readOnly;
                 }
             }
         }
@@ -647,6 +652,11 @@ export function createPropertiesFields() {
                     // Append the new input element to multivalue-input-inner
                     multiinput.appendChild(inputContainer);
                     multiinput.scrollTop = multiinput.scrollHeight;
+                });
+
+                // enable/disable input fields acording to readonly configuration
+                clone.querySelectorAll('.multivalue-input').forEach(field => {
+                    field.disabled = uiconfig.readonly;
                 });
 
                 formgroup.appendChild(clone);

@@ -3,7 +3,7 @@
  * Handle submission including file upload and upload of metadata
  */
 
-import { getPhotoCollection } from "./collection-data.js";
+import { getPhotoCollection, clearPhotoCollection } from "./collection-data.js";
 import { displayStatusMessage } from "./status.js";
 
 /**
@@ -112,6 +112,7 @@ function saveCollection(collection) {
             // Handle the response (if needed)
             console.log('Collection saved to file: ', data.filename);
             displayStatusMessage(`The photo collection, "${collection['collection-name']}", has been submitted for review. Thank you!`, false, false);
+            clearPhotoCollection();
         })
         .catch(error => {
             // Handle network errors or other exceptions

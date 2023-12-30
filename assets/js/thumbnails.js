@@ -23,7 +23,7 @@ export function getSelectedThumbnailCount() {
     if (thumbnailGroupGrid) {
         // Get all elements with the 'selected' class within thumbnailGroupGrid
         const selectedThumbnails = thumbnailGroupGrid.getElementsByClassName('selected');
-        
+
         // Return the count of selected thumbnails
         return selectedThumbnails.length;
     } else {

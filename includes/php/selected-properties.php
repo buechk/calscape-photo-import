@@ -20,7 +20,6 @@ define('SELECTED_PROPERTIES', <<<HTML
                     </ul>
                 </div>
             </div>
-            <br></br>
             <!-- Properties will be loaded here -->
             <!-- Hidden div to store id of selected image -->
             <div id="selected-id" style="display: none;"></div>

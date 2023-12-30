@@ -9,7 +9,7 @@ const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
 let collectionThumbnails = []; // Store collection photo thumbnails as an array
 
-const collectionData = {};
+let collectionData = {};
 
 /*
 Example of collectionData
@@ -558,10 +558,41 @@ export function getPhotoCollection() {
     collectionData.photos = filteredImageData;
 
     if (collectionData["collection-type"] === 'garden') {
-        collectionData["collection-species"] = 'na';
+        collectionData["collection-species"] = '';
     }
 
     return collectionData;
+}
+
+export async function clearPhotoCollection() {
+    // Move collectionThumbnails back to source photos and clear the collection.
+    await handleRemovedNodes(collectionThumbnails);
+    collectionThumbnails.length = 0;
+    imageData = {};
+    collectionData = {};
+}
+
+export function validateRequiredFields(formId) {
+    const form = document.getElementById(formId);
+
+    if (form) {
+        // Get all required input elements within the form
+        const requiredInputs = form.querySelectorAll('input[required], textarea[required]');
+
+        // Check each required input for a non-empty value
+        for (const input of requiredInputs) {
+            if (!input.value.trim()) {
+                // If any required field is empty, return false
+                return false;
+            }
+        }
+
+        // All required fields have data
+        return true;
+    }
+
+    // Form not found
+    return false;
 }
 
 /**
