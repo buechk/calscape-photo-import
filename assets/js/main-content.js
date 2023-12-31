@@ -9,6 +9,7 @@ import { initializeCollectionData } from "./collection-data.js";
 import { initializeSubmitContribute } from "./submit.js";
 import { clearPropertiesFields } from "./properties.js";
 import { initSubmitPage as initializeSubmitPage } from "./submit-page.js";
+import { initWelcome } from "./side-bar-nav.js";
 
 /**
  * @function init
@@ -20,6 +21,7 @@ export function initMainContent() {
         // When you dynamically add content that requires a column layout
         mainContentArea.classList.remove('row-layout');
         mainContentArea.classList.add('column-layout');
+        initWelcome();
     }
 
     if (mainContentArea.querySelector('#source-photos-container')) {

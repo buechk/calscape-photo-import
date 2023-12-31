@@ -5,6 +5,8 @@ include_once(dirname(dirname(__FILE__)) . '/php/collection-container.php');
 include_once(dirname(dirname(__FILE__)) . '/php/selected-properties.php');
 include_once(dirname(dirname(__FILE__)) . '/php/divider.php');
 include_once(dirname(dirname(__FILE__)) . '/php/submit-page.php');
+include_once(dirname(dirname(__FILE__)) . '/php/contributor-nav.php');
+include_once(dirname(dirname(__FILE__)) . '/php/reviewer-nav.php');
 
 // side-bar-nav.php
 $nav = isset($_GET['nav']) ? $_GET['nav'] : 'home';
@@ -50,6 +52,12 @@ function getContentForPage($nav)
             break;
         case 'submit-for-review':
             echo SUBMIT;
+            break;
+        case 'role-contributor':
+            echo CONTRIBUTOR_NAV;
+            break;
+        case 'role-reviewer':
+            echo REVIEWER_NAV;
             break;
         default:
             header('HTTP/1.0 404 Not Found');

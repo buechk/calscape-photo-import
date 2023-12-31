@@ -29,7 +29,7 @@ define('WELCOME', <<<HTML
             community. Thank you for sharing your knowledge through photos.
         </p>
         <div class="button-container">
-            <a href="#" class="button" id="contributeButton" data-page="select-photos">Contribute photos</a>
+            <a href="#" class="button" id="contributeButton" data-menu="role-contributor" data-nav="select-photos">Contribute photos</a>
         </div>
     </div>
     <div id="review-container">
@@ -53,7 +53,7 @@ define('WELCOME', <<<HTML
             resource possible. Thank you for your invaluable contribution to our community.
         </p>
         <div class="button-container">
-            <a href="#" class="button" id="reviewButton" data-url="reviewer.html">Review photos</a>
+            <a href="#" class="button" id="reviewButton" data-menu="role-reviewer" data-nav="select-collection">Review photos</a>
         </div>
     </div>
 </div>

@@ -682,16 +682,11 @@ export function createPropertiesFields() {
                 formgroup.appendChild(field);
             }
 
-            // Create a line break element for spacing
-            const lineBreak = document.createElement('br');
-
             if (isCollectionProp) {
                 collectionform.appendChild(formgroup);
-                collectionform.appendChild(lineBreak);
             }
             else {
                 form.appendChild(formgroup);
-                form.appendChild(lineBreak);
             }
         }
     }

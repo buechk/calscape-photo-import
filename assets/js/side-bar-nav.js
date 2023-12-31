@@ -13,31 +13,48 @@ const Mode = {
     REVIEW: 'review'
 };
 
+$(document).ready(function () {
+    // Load default content on page load
+    fetchContent('home');
+
+
+    $(function () {
+        // Trigger a click on the "Welcome" li element when the page loads
+        $('li#welcome-link a').click();
+    });
+});
+
 // Represent's the user's choice of Review or Contribute
 let mode = Mode.UNSPECIFIED;
 
-function initNavigation() {
-    if (mode === Mode.UNSPECIFIED) {
-
-    }
-}
-
-
-$(function () {
-    // Attach the click event handler to the specific li element containing "Welcome"
-    $('li a').click(function () {
-        $('li a.selected').removeClass('selected'); // Remove the class from previously selected items
-        $(this).addClass('selected'); // Add the class to the clicked item
+export function initWelcome() {
+    $(document).on('click', '#contributeButton', function (event) {
+        event.preventDefault();
+        const targetMenu = $(this).data('menu');
+        const nav = $(this).data('nav');
+        fetchMenu(targetMenu, nav);
     });
 
-    // Trigger a click on the "Welcome" li element when the page loads
-    $('li#welcome-link a').click();
-});
+    $(document).on('click', '#reviewButton', function (event) {
+        event.preventDefault();
+        const targetMenu = $(this).data('menu');
+        const nav = $(this).data('nav');
+        fetchMenu(targetMenu, nav);
+    });
+}
 
-$(document).ready(function () {
+export function initNavigation() {
     // Attach click event listeners to the navigation items
     $('#left-nav a').click(function (event) {
         event.preventDefault(); // Prevent the default link behavior
+
+        // Add selected class to clicked menu item
+        $('li a.selected').removeClass('selected'); // Remove the class from previously selected items
+        $(this).addClass('selected'); // Add the class to the clicked item
+
+        // Display submenus
+        $(this).addClass('hover');
+
         // If it's not a submenu, fetch and append the content to the main content area
         var targetPage = $(this).data('page');
         fetchContent(targetPage);
@@ -49,23 +66,7 @@ $(document).ready(function () {
             openSelectionDialog(clickedId);
         }
     });
-
-    // Load default content on page load
-    fetchContent('home');
-
-    $(document).on('click', '#contributeButton', function(event) {
-        event.preventDefault();
-        var targetPage = $(this).data('page');
-        fetchContent(targetPage);
-    });
-
-    $(document).on('click', '#reviewButton', function(event) {
-        event.preventDefault();
-        var targetPage = $(this).data('page');
-        fetchContent(targetPage);
-    });
-});
-
+};
 
 function fetchContent(page, append = false) {
     // Use jQuery's AJAX function to get the content from the server
@@ -75,8 +76,8 @@ function fetchContent(page, append = false) {
         dataType: 'html',
         success: function (data) {
             // save current values before replacing page content
-            savePhotoCollection(); 
-            saveSelectedProperties(); 
+            savePhotoCollection();
+            saveSelectedProperties();
 
             // Replace the main content with the fetched data
             $('#main-content').html(data);
@@ -88,6 +89,28 @@ function fetchContent(page, append = false) {
         },
         error: function (error) {
             console.error('Error fetching content:', error);
+        }
+    });
+}
+
+function fetchMenu(menu, navigate, append = false) {
+    // Use jQuery's AJAX function to get the content from the server
+    $.ajax({
+        url: '/includes/php/side-bar-nav.php?nav=' + menu,
+        method: 'GET',
+        dataType: 'html',
+        success: function (data) {
+            // Replace the main content with the fetched data
+            $('#left-nav').html(data);
+
+            initNavigation()
+
+            if (navigate) {
+                $('#' + navigate).trigger('click');
+            }
+        },
+        error: function (error) {
+            console.error('Error fetching menu:', error);
         }
     });
 }
