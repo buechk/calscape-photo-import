@@ -4,12 +4,18 @@
 import { removeSourcePhoto, storeSourcePhoto, getSourcePhoto } from "./source-photo-data.js";
 import { importconfig, createPropertiesFields } from "./properties.js";
 import { updateSpeciesChoice } from "./species-selection.js";
+import { displayStatusMessage } from "./status.js";
+import { ROLE } from "./side-bar-nav.js";
 
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
 let collectionThumbnails = []; // Store collection photo thumbnails as an array
 
-let collectionData = {};
+let collectionData = {
+    "collection-name": "",
+    "collection-type": "species",
+    "user_id": "",
+};
 
 /*
 Example of collectionData
@@ -124,17 +130,17 @@ export function getCollectionThumbnails() {
 
 export function initializeCollectionData() {
     const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-/*
-    thumbnailGroupGrid.addEventListener('click', function (event) {
-        if (event.target.id === 'thumbnail-group-grid') {
-            // make sure thumbnail appears selected
-            const tcontainerId = document.getElementById("selected-id").textContent
-            if (tcontainerId != '') {
-                document.getElementById(tcontainerId).classList.add('selected');
+    /*
+        thumbnailGroupGrid.addEventListener('click', function (event) {
+            if (event.target.id === 'thumbnail-group-grid') {
+                // make sure thumbnail appears selected
+                const tcontainerId = document.getElementById("selected-id").textContent
+                if (tcontainerId != '') {
+                    document.getElementById(tcontainerId).classList.add('selected');
+                }
             }
-        }
-    });
-*/
+        });
+    */
     setupMutationObserver(thumbnailGroupGrid);
 
     createPropertiesFields();
@@ -572,27 +578,107 @@ export async function clearPhotoCollection() {
     collectionData = {};
 }
 
-export function validateRequiredFields(formId) {
-    const form = document.getElementById(formId);
+function validateRequiredFields(id) {
+    const imageObj = imageData[id];
 
-    if (form) {
+    if (imageObj) {
         // Get all required input elements within the form
         const requiredInputs = form.querySelectorAll('input[required], textarea[required]');
+        const missingFields = {};
 
         // Check each required input for a non-empty value
         for (const input of requiredInputs) {
             if (!input.value.trim()) {
-                // If any required field is empty, return false
-                return false;
+                // If any required field is empty, add it to the missingFields array
+                missingFields.id = input.id;
+
             }
+        }
+
+        if (missingFields.length > 0) {
+            // Return the array of missing fields
+            return missingFields;
         }
 
         // All required fields have data
         return true;
     }
 
-    // Form not found
+    // imageObj not found
     return false;
+}
+
+function getRequiredColumnsForRole(importConfig, roleName) {
+    const requiredColumns = [];
+
+    if (importConfig && importConfig.photoimportconfig && importConfig.photoimportconfig.tables) {
+        const tables = importConfig.photoimportconfig.tables;
+
+        for (const table of tables) {
+            if (table.columns) {
+                const columns = table.columns;
+
+                for (const column of columns) {
+                    const roles = column.userinterface?.roles;
+
+                    if (roles && roles[roleName] && roles[roleName].required) {
+                        requiredColumns.push(column.name);
+                    }
+                }
+            }
+        }
+    }
+
+    return requiredColumns;
+}
+
+function checkRequiredData(collectionData, requiredColumns) {
+    const missingData = [];
+
+    for (const key of Object.keys(collectionData)) {
+        // Check if the key is in the requiredColumns array
+        if (requiredColumns.includes(key)) {
+            const value = collectionData[key];
+
+            // Check if the value is blank or undefined
+            if (value === undefined || (typeof value === 'string' && value.trim() === '')) {
+                missingData.push(key);
+            }
+        }
+
+        // Recursively check nested objects
+        if (typeof collectionData[key] === 'object') {
+            const nestedMissingData = checkRequiredData(collectionData[key], requiredColumns);
+            missingData.push(...nestedMissingData.map(nestedKey => `${key}.${nestedKey}`));
+        }
+    }
+
+    return missingData;
+}
+
+export function validatePhotoCollection() {
+    // Verify there is at least one photo in the collection
+    if (!collectionData.hasOwnProperty("photos") || collectionData.photos.length === 0) {
+        console.log('Validation failure: Empty collection. There must be at least 1 photo in the collection');
+        displayStatusMessage(`There must be at least 1 photo in the collection.`, true)
+        return false;
+    }
+
+    const requiredColumns = getRequiredColumnsForRole(importconfig, ROLE);
+
+    console.log(`Required columns for ${ROLE}:`, requiredColumns);
+
+    // validate collection properties
+    const missingRequiredData = checkRequiredData(collectionData, requiredColumns);
+    
+    if (missingRequiredData.length > 0) {
+        console.log('Missing required data:', missingRequiredData);
+        displayStatusMessage(`The following fields require input values: ${missingRequiredData.join('\r\n')}`, true)
+        return false;
+    } else {
+        console.log('All required data is present.');
+        return true;
+    }
 }
 
 /**

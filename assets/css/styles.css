@@ -749,6 +749,19 @@ th {
     width: 200px;
 }
 
+.status-message {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px; /* Adjust the padding as needed */
+    border: 1px solid #ccc; /* Optional: add a border for better separation */
+}
+
+#status-text {
+    flex-grow: 1; /* Allow the text to take up available space */
+    margin-right: 10px; /* Adjust the margin as needed */
+}
+
 /* Styles for success messages */
 .status-message.success {
     background-color: #d4edda;

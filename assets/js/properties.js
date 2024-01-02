@@ -3,11 +3,9 @@
  *  Display properties of source photos and apply properties to Calscape photos. 
  * 
 */
-import { getPhotoCollection, imageData } from "./collection-data.js";
+import { imageData } from "./collection-data.js";
 import { updateSpeciesChoice } from "./species-selection.js";
-import { displayStatusMessage } from "./status.js";
-
-const ROLE = "contributor"; // or "reviewer"
+import { ROLE } from "./side-bar-nav.js";
 
 export const importconfig = {
     "photoimportconfig": {
@@ -240,6 +238,17 @@ export const importconfig = {
                             "7": "Public Domain Dedication (CC0)",
                             "8": "GNU Free Documentation License (GFDL)"
                         },
+                        "picklist": [
+                            "All Rights Reserved (ARR)",
+                            "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+                            "Attribution-NonCommercial (CC BY-NC)",
+                            "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
+                            "Attribution (CC BY)",
+                            "Attribution-ShareAlike (CC BY-SA)",
+                            "Attribution-NoDerivs (CC BY-ND)",
+                            "Public Domain Dedication (CC0)",
+                            "GNU Free Documentation License (GFDL)"
+                        ]
                     },
                     {
                         "name": "Ranking",
@@ -249,7 +258,8 @@ export const importconfig = {
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Ranking",
+                            "label": "Ranking - 0 (worst) to 5 (best)",
+                            "placeholder": "Enter 0 to 5",
                             "default": "",
                             "roles": {
                                 "contributor": {
@@ -553,7 +563,7 @@ export function clearPropertiesFields() {
         document.getElementById('selected-id').textContent = '';
 
         // Iterate through all child elements of the form
-        form.querySelectorAll('textarea, input').forEach(input => {
+        form.querySelectorAll('textarea, input, select').forEach(input => {
             input.value = ''; // Clear the input field
             input.disabled = true; // Disable the input field
         });
@@ -580,6 +590,7 @@ export function createPropertiesFields() {
         for (const column of table.columns) {
             const uiconfig = column.userinterface.roles[ROLE];
             const isTextArea = column.userinterface.textarea ? true : false;
+            const hasPicklist = column.hasOwnProperty('picklist') ? true : false;
             const isCollectionProp = column.applies_to == "collection" ? true : false;
 
             if (!isCollectionProp && form === null) {
@@ -592,7 +603,6 @@ export function createPropertiesFields() {
                 // The control for the column already exists on the collection form so don't create another one
                 continue;
             }
-
 
             // Create form-group
             const formgroup = document.createElement('div');
@@ -668,6 +678,24 @@ export function createPropertiesFields() {
                     field = document.createElement('textarea');
                     field.classList.add('auto-expand-input');
                 }
+                else if (hasPicklist) {
+                    // Create a select element
+                    field = document.createElement("select");
+                    const blankOption = document.createElement("option");
+                    blankOption.value = "";
+                    blankOption.text = "-- Please choose an option --";
+                    field.appendChild(blankOption);
+
+                    // Iterate over the array and create an option for each value
+                    column.picklist.forEach((value, index) => {
+                        const optionElement = document.createElement("option");
+                        optionElement.value = value; // Assign a value (you can use any unique identifier)
+                        optionElement.text = value; // Set the text of the option
+                        field.appendChild(optionElement); // Append the option to the select element
+                    });
+
+                    field.classList.add('auto-expand-input');
+                }
                 else {
                     field = document.createElement('input');
                     field.classList.add('auto-expand-input');
@@ -675,6 +703,7 @@ export function createPropertiesFields() {
                 field.id = column.name;
                 field.required = uiconfig.required;
                 field.readOnly = uiconfig.readonly;
+                field.placeholder = column.userinterface.hasOwnProperty("placeholder") ? column.userinterface.placeholder : "";
                 if (field.readOnly) {
                     field.disabled = true;
                 }

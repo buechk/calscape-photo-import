@@ -9,8 +9,8 @@ import { saveSelectedProperties } from "./properties.js"
 
 const Mode = {
     UNSPECIFIED: 'unspecified',
-    CONTRIBUTE: 'contribute',
-    REVIEW: 'review'
+    CONTRIBUTE: 'contributor',
+    REVIEW: 'reviewer'
 };
 
 $(document).ready(function () {
@@ -25,7 +25,7 @@ $(document).ready(function () {
 });
 
 // Represent's the user's choice of Review or Contribute
-let mode = Mode.UNSPECIFIED;
+export let ROLE = Mode.UNSPECIFIED;
 
 export function initWelcome() {
     $(document).on('click', '#contributeButton', function (event) {
@@ -33,6 +33,7 @@ export function initWelcome() {
         const targetMenu = $(this).data('menu');
         const nav = $(this).data('nav');
         fetchMenu(targetMenu, nav);
+        ROLE = Mode.CONTRIBUTE;
     });
 
     $(document).on('click', '#reviewButton', function (event) {
@@ -40,6 +41,7 @@ export function initWelcome() {
         const targetMenu = $(this).data('menu');
         const nav = $(this).data('nav');
         fetchMenu(targetMenu, nav);
+        ROLE = Mode.REVIEW;
     });
 }
 

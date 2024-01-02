@@ -5,6 +5,7 @@
 
 import { getPhotoCollection, clearPhotoCollection } from "./collection-data.js";
 import { displayStatusMessage } from "./status.js";
+import { validatePhotoCollection } from "./collection-data.js";
 
 /**
  * 
@@ -111,7 +112,7 @@ function saveCollection(collection) {
         .then(data => {
             // Handle the response (if needed)
             console.log('Collection saved to file: ', data.filename);
-            displayStatusMessage(`The photo collection, "${collection['collection-name']}", has been submitted for review. Thank you!`, false, false);
+            displayStatusMessage(`The photo collection, "${collection['collection-name']}", has been submitted for review.\nThank you for your photo contribution.`, false, false);
             clearPhotoCollection();
         })
         .catch(error => {
@@ -133,12 +134,13 @@ export function initializeSubmitContribute() {
     submitButton.addEventListener('click', function (event) {
         // Wait for the autosave to complete (adjust the delay if needed)
         setTimeout(() => {
-            const collection = getPhotoCollection();
-            submit(collection);
-            // Convert the collectionData object to a JSON string with proper indentation
-            const jsonString = JSON.stringify(collection, null, 2);
-            console.log(jsonString);
-
+            if (validatePhotoCollection()) {
+                const collection = getPhotoCollection();
+                submit(collection);
+                // Convert the collectionData object to a JSON string with proper indentation
+                const jsonString = JSON.stringify(collection, null, 2);
+                console.log(jsonString);
+            }
         }, delayDuration);
     });
 }

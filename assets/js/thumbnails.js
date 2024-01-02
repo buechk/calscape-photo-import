@@ -9,6 +9,8 @@ import { showSelectedProperties } from './properties.js';
 import { clearPropertiesFields } from "./properties.js";
 import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum } from './flickr-API.js';
 import { getCollectionThumbnails } from './collection-data.js';
+import { displayStatusMessage } from "./status.js";
+
 const flickrUrl = document.getElementById('flickrUrl');
 
 // variables for implementing standard click, shift-click, cmd-click, ctrl-click selection behavior on thumbnails
@@ -242,16 +244,19 @@ async function displayImagesFromFlickr(photosApiUrl) {
                 }
             } else {
                 // Handle the case where no photos were found for the given ID
+                displayStatusMessage("No photos found for the given user/album ID.", false, false);
                 console.warn("No photos found for the given user/album ID.");
             }
         } else {
             // Handle the case where the ID couldn't be extracted
+            displayStatusMessage("Invalid Flickr URL or unable to extract user/album ID.", true, false);
             console.warn("Invalid Flickr URL or unable to extract user/album ID.");
         }
     } catch (error) {
         // Handle any errors that occur during the process
+
         console.error("Error fetching and displaying photos:", error);
-        alert("An error occurred while fetching and displaying photos. Please try again later.");
+        alert("An error occurred while fetching and displaying photos. " + error.message);
     }
 
     displayThumbnailsFromSourcePhotos();
