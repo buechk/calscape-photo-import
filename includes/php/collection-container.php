@@ -50,7 +50,7 @@ define('COLLECTION_CONTAINER', <<<HTML
 
     <div class="thumbnail-scroll-container">
         <h2>Collection photos</h2>
-        <div id="thumbnail-group-grid">
+        <div id="thumbnail-group-grid" class="thumbnail-grid">
             <div  id="drag-and-drop-message" class="drag-and-drop-message">Drag and drop source photo thumbnails here to add the photo to a
                 collection
             </div>
@@ -58,6 +58,4 @@ define('COLLECTION_CONTAINER', <<<HTML
         </div>
     </div>
 </div>
-
-<!-- <script type="module" src="../assets/js/species-selection.js"></script> -->
 HTML);

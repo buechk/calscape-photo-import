@@ -261,6 +261,53 @@ async function displayImagesFromFlickr(photosApiUrl) {
 
     displayThumbnailsFromSourcePhotos();
 }
+/*
+export function createThumbnailContainer(uniqueIdentifier, url, captionText) {
+    // create a container for the thumbnail and its caption and id
+    const tcontainer = document.createElement('div');
+    const thumbnail = document.createElement('div');
+    tcontainer.classList.add('tcontainer');
+    thumbnail.classList.add('thumbnail');
+    thumbnail.style.backgroundImage = `url(${url})`;
+    tcontainer.appendChild(thumbnail);
+    const caption = document.createElement('div');
+    caption.classList.add('caption');
+    caption.innerText = captionText;
+    tcontainer.appendChild(caption);
+    tcontainer.id = uniqueIdentifier;
+
+    // listen for when a thumbnail is selected so properties can be updated
+    tcontainer.addEventListener('click', showSelectedProperties);
+
+    return tcontainer
+}
+*/
+
+export function createThumbnailContainer(uniqueIdentifier, url, captionText) {
+    // Create a container for the thumbnail and its caption and id
+    const tcontainer = document.createElement('div');
+    tcontainer.classList.add('tcontainer');
+
+    // Create an img element for the thumbnail
+    const thumbnail = document.createElement('img');
+    thumbnail.classList.add('thumbnail');
+    thumbnail.src = url; // Set the source URL
+    thumbnail.alt = captionText; // Set alt text for accessibility
+    tcontainer.appendChild(thumbnail);
+
+    // Create a div for the caption
+    const caption = document.createElement('div');
+    caption.classList.add('caption');
+    caption.innerText = captionText;
+    tcontainer.appendChild(caption);
+
+    tcontainer.id = uniqueIdentifier;
+
+    // Listen for when a thumbnail is selected so properties can be updated
+    tcontainer.addEventListener('click', showSelectedProperties);
+
+    return tcontainer;
+}
 
 export function displayThumbnailsFromSourcePhotos() {
     const thumbnailGrid = document.getElementById('thumbnail-grid');
@@ -273,21 +320,7 @@ export function displayThumbnailsFromSourcePhotos() {
         const url = photo.url;
         const captionText = photo.caption;
 
-        // create a container for the thumbnail and its caption and id
-        const tcontainer = document.createElement('div');
-        const thumbnail = document.createElement('div');
-        tcontainer.classList.add('tcontainer');
-        thumbnail.classList.add('thumbnail');
-        thumbnail.style.backgroundImage = `url(${url})`;
-        tcontainer.appendChild(thumbnail);
-        const caption = document.createElement('div');
-        caption.classList.add('caption');
-        caption.innerText = captionText;
-        tcontainer.appendChild(caption);
-        tcontainer.id = uniqueIdentifier;
-
-        // listen for when a thumbnail is selected so properties can be updated
-        tcontainer.addEventListener('click', showSelectedProperties);
+        const tcontainer = createThumbnailContainer(uniqueIdentifier, url, captionText);
 
         thumbnailGrid.appendChild(tcontainer);
     }

@@ -7,12 +7,15 @@ include_once(dirname(dirname(__FILE__)) . '/php/divider.php');
 include_once(dirname(dirname(__FILE__)) . '/php/submit-page.php');
 include_once(dirname(dirname(__FILE__)) . '/php/contributor-nav.php');
 include_once(dirname(dirname(__FILE__)) . '/php/reviewer-nav.php');
+include_once(dirname(dirname(__FILE__)) . '/php/collection_for_review_list.php');
+include_once(dirname(dirname(__FILE__)) . '/php/sort_photos.php');
 
 // side-bar-nav.php
 $nav = isset($_GET['nav']) ? $_GET['nav'] : 'home';
 
- //comment this code to show full navigation bar on the home page. line 86 of side-bar-nav.js will also need to be commented
-function generateNavBar($nav) {
+//comment this code to show full navigation bar on the home page. line 86 of side-bar-nav.js will also need to be commented
+function generateNavBar($nav)
+{
     //hide submenu styles on home page
     // $navClass = ($nav === 'home') ? 'nav-home' : 'nav-other';
     // echo '<nav id="left-nav" class="' . $navClass . '">';
@@ -52,6 +55,12 @@ function getContentForPage($nav)
             break;
         case 'submit-for-review':
             echo SUBMIT;
+            break;
+        case 'select-collection':
+            echo COLLECTIONS_FOR_REVIEW;
+            break;
+        case 'sort-photos':
+            echo '<div class="left-container">' . COLLECTION_CONTAINER . '</div>' . DIVIDER . '<div class="right-container">' . CALSCAPE_PHOTOS . '</div>';
             break;
         case 'role-contributor':
             echo CONTRIBUTOR_NAV;

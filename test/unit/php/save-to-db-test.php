@@ -209,7 +209,7 @@ $testJsonData = '{
     }
   }';
 
-// Include your original PHP code and pass the JSON data as an argument
+// Include test subject PHP code and pass the JSON data as an argument
 include_once('../../../includes/php/save-to-db.php');
 updateDatabase($testJsonDataPrunus);
 ?>

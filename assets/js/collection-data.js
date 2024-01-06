@@ -6,6 +6,7 @@ import { importconfig, createPropertiesFields } from "./properties.js";
 import { updateSpeciesChoice } from "./species-selection.js";
 import { displayStatusMessage } from "./status.js";
 import { ROLE } from "./side-bar-nav.js";
+import { createThumbnailContainer } from "./thumbnails.js";
 
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
@@ -26,7 +27,7 @@ Example of collectionData
   "collection-type": "species",
   "user_id": "buechk6164",
   "photos": {
-    "263622339": {
+    "0": {
       "id": "263622339",
       "sourceImage": "https://farm1.staticflickr.com/79/263622339_70fb0695ee_b.jpg",
       "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood",
@@ -44,7 +45,7 @@ Example of collectionData
       ],
       "FileName": "Cornus_sericea_263622339_70fb0695ee_b.jpg"
     },
-    "264780915": {
+    "1": {
       "id": "264780915",
       "sourceImage": "https://farm1.staticflickr.com/97/264780915_9cd3287e6e_b.jpg",
       "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood and Populus tremuloides - Quaking Aspen",
@@ -67,7 +68,7 @@ Example of collectionData
       ],
       "FileName": "Cornus_sericea_264780915_9cd3287e6e_b.jpg"
     },
-    "264781491": {
+    "2": {
       "id": "264781491",
       "sourceImage": "https://farm1.staticflickr.com/83/264781491_12abaf97e4_b.jpg",
       "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood",
@@ -87,6 +88,7 @@ Example of collectionData
       ],
       "FileName": "Cornus_sericea_264781491_12abaf97e4_b.jpg"
     }
+    ...<more entries>
   }
 }
 */
@@ -97,6 +99,7 @@ export let imageData = {};
 /* example data
 {
     "000": {
+        "id" : "000",
         "deleted" : false,
         "species": "Carex pansa",
         "DateTimeOriginal": "2023-9-27",
@@ -107,6 +110,7 @@ export let imageData = {};
         ...
     },
     "001": {
+        "id" : "000"
         "deleted" : true,
         "species": "Eriogonum fasciculatum 'Warriner Lytle'",
         "DateTmeOriginal": "2023-9-21",
@@ -126,6 +130,10 @@ export function getImageData(id) {
 
 export function getCollectionThumbnails() {
     return collectionThumbnails;
+}
+
+export function addCollectionThumbnail(tcontainer) {
+    collectionThumbnails.push(tcontainer);
 }
 
 export function initializeCollectionData() {
@@ -486,6 +494,33 @@ function saveCollectionProperties(inputElement) {
             }
         }
     }
+}
+
+export async function setPhotoCollection (data) {
+    await clearPhotoCollection();
+    collectionData["collection-name"] = data["collection-name"];
+    collectionData["collection-type"] = data["collection-type"];
+    collectionData["collection-species"] = data["collection-species"];
+    collectionData["user_id"] = data["user_id"];
+    imageData = {};
+
+    const photos = data['photos'];
+
+    // Add thumbnails to group thumbnail grid
+    // and populate imageData with photo data
+    for (const photoKey in photos) {
+        if (photos.hasOwnProperty(photoKey)) {
+            const photo = photos[photoKey];
+            const uniqueIdentifier = photo.id;
+            imageData[uniqueIdentifier] = { ...photo };
+
+            const fileName = photo.FileName;
+            const captionText = photo.CaptionTitle;
+            const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
+            const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText);
+            addCollectionThumbnail(tc);
+        }
+    } 
 }
 
 export function savePhotoCollection() {

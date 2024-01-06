@@ -10,6 +10,7 @@ import { initializeSubmitContribute } from "./submit.js";
 import { clearPropertiesFields } from "./properties.js";
 import { initSubmitPage as initializeSubmitPage } from "./submit-page.js";
 import { initWelcome } from "./side-bar-nav.js";
+import { getCollectionsForReview} from "./collections-for-review.js";
 
 /**
  * @function init
@@ -57,6 +58,10 @@ export function initMainContent() {
     if (mainContentArea.querySelector('#submit-button')) {
         initializeSubmitPage();
         initializeSubmitContribute()
+    }
+
+    if (mainContentArea.querySelector('#collections_for_review-container')) {
+        getCollectionsForReview();
     }
 
 }

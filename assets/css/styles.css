@@ -82,11 +82,14 @@ body {
     flex-grow: 1;
 }
 
-.source-photos-container {
+.source-photos-container,
+.collections_for_review-container,
+.calscape-photos-container {
     margin-right: 10px;
 }
 
-.thumbnail-scroll-container {
+.thumbnail-scroll-container,
+.collections-scroll-container {
     height: 100%;
     /* Takes the full height of the source-photos-container */
     max-height: 800px;
@@ -139,7 +142,7 @@ body {
     padding: 10px;
 }
 
-#thumbnail-group-grid {
+.thumbnail-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
@@ -783,3 +786,20 @@ th {
     ;
     /* Border color */
 }
+
+#collectionTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#collectionTable a {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+}
+
+#collectionTable a:hover {
+    color: darkblue;
+}
+
