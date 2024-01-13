@@ -2,15 +2,17 @@
  * @file main-content.js
  */
 
-import { displayThumbnailsFromSourcePhotos, initializeSortableGrid, initializeSortableGroupGrid } from "./thumbnails.js";
+import { displayThumbnailsFromSourcePhotos, initializeSortableGrid } from "./thumbnails.js";
 import { initializeResizer } from "./resizer.js";
 import { fetchSpeciesList, initializeSpeciesInput, initializeCollectionSpeciesInput } from "./species-selection.js";
-import { initializeCollectionData } from "./collection-data.js";
+import { initializeCollectionData, getCollectionThumbnails } from "./collection-data.js";
 import { initializeSubmitContribute } from "./submit.js";
 import { clearPropertiesFields } from "./properties.js";
 import { initSubmitPage as initializeSubmitPage } from "./submit-page.js";
 import { initWelcome } from "./side-bar-nav.js";
 import { getCollectionsForReview} from "./collections-for-review.js";
+import { getSourcePhotos } from "./source-photo-data.js";
+import { initPhotoSort } from "./sort-photos.js";
 
 /**
  * @function init
@@ -28,7 +30,7 @@ export function initMainContent() {
     if (mainContentArea.querySelector('#source-photos-container')) {
         mainContentArea.classList.remove('row-layout');
         mainContentArea.classList.add('column-layout');
-        initializeSortableGrid();
+        initializeSortableGrid('thumbnail-grid','select-photos-message', Object.entries(getSourcePhotos()));
         displayThumbnailsFromSourcePhotos();
     }
 
@@ -38,7 +40,7 @@ export function initMainContent() {
         mainContentArea.classList.add('row-layout');
         fetchSpeciesList();
         initializeCollectionSpeciesInput();
-        initializeSortableGroupGrid();
+        initializeSortableGrid('thumbnail-group-grid', 'drag-and-drop-message', getCollectionThumbnails());
         initializeCollectionData();
     }
 
@@ -62,6 +64,10 @@ export function initMainContent() {
 
     if (mainContentArea.querySelector('#collections_for_review-container')) {
         getCollectionsForReview();
+    }
+
+    if (mainContentArea.querySelector('#calscape-photos-container')) {
+        initPhotoSort();
     }
 
 }

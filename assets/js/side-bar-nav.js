@@ -6,6 +6,7 @@
 import { initMainContent } from "./main-content.js";
 import { savePhotoCollection } from "./collection-data.js";
 import { saveSelectedProperties } from "./properties.js"
+import { dismissStatusOnNavigation } from "./status.js";
 
 const Mode = {
     UNSPECIFIED: 'unspecified',
@@ -53,9 +54,6 @@ export function initNavigation() {
         // Add selected class to clicked menu item
         $('li a.selected').removeClass('selected'); // Remove the class from previously selected items
         $(this).addClass('selected'); // Add the class to the clicked item
-
-        // Display submenus
-        $(this).addClass('hover');
 
         // If it's not a submenu, fetch and append the content to the main content area
         var targetPage = $(this).data('page');
@@ -125,6 +123,8 @@ function updateNavigationBar(currentPage) {
         // Show all nav items on other pages
         $('#left-nav a').show();
     }
+
+    dismissStatusOnNavigation();
 }
 
 function openSelectionDialog(id) {

@@ -1,9 +1,13 @@
 /**
  * @param {*} message 
  * @param {*} isError 
+ * @param {*} autoDismissTime Number of milliseconds before message is automatically dismissed. -1 or empty means
+ * the message will not be auto dismissed.
  */
-export function displayStatusMessage(message, isError = false, autoDismiss = false) {
+export function displayStatusMessage(message, isError = false, autoDismissTime = -1, dismissOnNavigation = false) {
     const statusArea = document.getElementById('status-area');
+
+    statusArea.dataset.dismissOnNav = dismissOnNavigation;
 
     // Set class based on message type (error or success)
     const statusClass = isError ? 'error' : 'success';
@@ -15,7 +19,14 @@ export function displayStatusMessage(message, isError = false, autoDismiss = fal
     statusMessage.querySelector('#status-text').textContent = message;
 
     // Show the status area
-    showStatus(autoDismiss);
+    showStatus(autoDismissTime);
+}
+
+export function dismissStatusOnNavigation() {
+    var statusArea = document.getElementById('status-area');
+    if (statusArea.dataset.dismissOnNav) {
+        dismissStatus();
+    }
 }
 
 function dismissStatus() {
@@ -26,14 +37,14 @@ function dismissStatus() {
 /**
 * Show status message and automatically dismiss after 5 seconds
 */
-function showStatus(autoDismiss = false) {
+function showStatus(autoDismissTime = -1) {
     var statusArea = document.getElementById('status-area');
     statusArea.style.display = 'block';
 
-    if (autoDismiss) {
+    if (autoDismissTime > 0) {
         setTimeout(function () {
             dismissStatus();
-        }, 5000); // 5000 milliseconds (5 seconds)
+        }, autoDismissTime);
     }
 }
 

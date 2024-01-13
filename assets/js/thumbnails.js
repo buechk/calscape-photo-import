@@ -8,7 +8,6 @@ import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-p
 import { showSelectedProperties } from './properties.js';
 import { clearPropertiesFields } from "./properties.js";
 import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum } from './flickr-API.js';
-import { getCollectionThumbnails } from './collection-data.js';
 import { displayStatusMessage } from "./status.js";
 
 const flickrUrl = document.getElementById('flickrUrl');
@@ -36,11 +35,11 @@ export function getSelectedThumbnailCount() {
 }
 
 // Enable drag-and-drop reordering of thumbnails
-export function initializeSortableGrid() {
-    const thumbnailGrid = document.getElementById('thumbnail-grid');
+export function initializeSortableGrid(gridId, messageId, gridContentsArr) {
+    const dropTarget = document.getElementById(gridId);
 
     // Enable drag-and-drop reordering of thumbnails
-    const sortable = new Sortable(thumbnailGrid, {
+    const sortablegroup = new Sortable(dropTarget, {
         animation: 150,
         group: 'shared-group',
         ghostClass: 'sortable-ghost',
@@ -50,55 +49,9 @@ export function initializeSortableGrid() {
         selectedClass: 'selected'
     });
 
-    const dropTarget = document.getElementById('thumbnail-grid');
+    const dropMessage = document.getElementById(messageId);
 
-    // Prevent the default behavior for dragenter and dragover events
-    dropTarget.addEventListener('dragenter', function (event) {
-        event.preventDefault();
-        // Change the sortablegroup styling to indicate that it's a valid drop target
-        dropTarget.style.border = '2px dashed #33cc33';
-    });
-
-    dropTarget.addEventListener('dragleave', function () {
-        dropTarget.style.border = 'none';
-    });
-
-    // Prevent the default behavior for dragover events
-    dropTarget.addEventListener('dragover', function (event) {
-        event.preventDefault();
-    });
-
-    // Handle the drop event
-    dropTarget.addEventListener('drop', function (event) {
-        event.preventDefault();
-        // Access the dragged data (you might have additional logic here)
-        const draggedData = event.dataTransfer.getData('text/plain');
-        // Perform actions with the dropped data
-        console.log('Dropped to source grid:', draggedData);
-        // Reset the sortablegroup styling
-        dropTarget.style.border = 'none';
-    });
-}
-
-// Enable drag-and-drop reordering of thumbnails
-export function initializeSortableGroupGrid() {
-    const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-
-    // Enable drag-and-drop reordering of thumbnails
-    const sortablegroup = new Sortable(thumbnailGroupGrid, {
-        animation: 150,
-        group: 'shared-group',
-        ghostClass: 'sortable-ghost',
-        chosenClass: 'sortable-chosen',
-        dragClass: 'sortable-drag',
-        multiDrag: true,
-        selectedClass: 'selected'
-    });
-
-    const dropTarget = document.getElementById('thumbnail-group-grid');
-    const dropMessage = document.getElementById('drag-and-drop-message');
-
-    if (getCollectionThumbnails().length > 0) {
+    if (gridContentsArr.length > 0) {
         dropMessage.style.display = 'none';
     }
 
@@ -132,7 +85,7 @@ export function initializeSortableGroupGrid() {
         // Access the dragged data (you might have additional logic here)
         const draggedData = event.dataTransfer.getData('text/plain');
         // Perform actions with the dropped data
-        console.log('Dropped to collection grid:', draggedData);
+        console.log('Dropped to grid:', draggedData);
         // Reset the sortablegroup styling
         dropTarget.style.border = 'none';
         // Hide the drop message
@@ -147,7 +100,12 @@ export function initializeSortableGroupGrid() {
  */
 export function displayThumbnails(input) {
     const thumbnailGrid = document.getElementById('thumbnail-grid');
-    thumbnailGrid.innerHTML = ''; // Clear previous thumbnails
+
+    // Clear previous thumbnails elements
+    const thumbnails = thumbnailGrid.querySelectorAll('.tcontainer');
+    thumbnails.forEach(thumbnail => {
+        thumbnail.remove();
+    });
 
     if (input instanceof FileList) {
         // Handle files from file input
@@ -179,7 +137,7 @@ function displayImagesFromFilesystem(filelist) {
 
     // Map each file to a promise returned by storeSourcePhoto
     const promises = filesArray.map(file => {
-        return storeSourcePhoto(null, file, file.name)
+        return storeSourcePhoto(null, file, null, file.name)
             .then(result => {
                 console.log('Photo stored successfully: ', result.id, result.caption);
             })
@@ -240,16 +198,16 @@ async function displayImagesFromFlickr(photosApiUrl) {
 
                     // Store photo information
                     const l_url = t_url.replace("_q.", "_b.");
-                    storeSourcePhoto(photoId, l_url, title);
+                    storeSourcePhoto(photoId, l_url, t_url, title);
                 }
             } else {
                 // Handle the case where no photos were found for the given ID
-                displayStatusMessage("No photos found for the given user/album ID.", false, false);
+                displayStatusMessage("No photos found for the given user/album ID.", false, -1, true);
                 console.warn("No photos found for the given user/album ID.");
             }
         } else {
             // Handle the case where the ID couldn't be extracted
-            displayStatusMessage("Invalid Flickr URL or unable to extract user/album ID.", true, false);
+            displayStatusMessage("Invalid Flickr URL or unable to extract user/album ID.", true, -1, true);
             console.warn("Invalid Flickr URL or unable to extract user/album ID.");
         }
     } catch (error) {
@@ -261,27 +219,6 @@ async function displayImagesFromFlickr(photosApiUrl) {
 
     displayThumbnailsFromSourcePhotos();
 }
-/*
-export function createThumbnailContainer(uniqueIdentifier, url, captionText) {
-    // create a container for the thumbnail and its caption and id
-    const tcontainer = document.createElement('div');
-    const thumbnail = document.createElement('div');
-    tcontainer.classList.add('tcontainer');
-    thumbnail.classList.add('thumbnail');
-    thumbnail.style.backgroundImage = `url(${url})`;
-    tcontainer.appendChild(thumbnail);
-    const caption = document.createElement('div');
-    caption.classList.add('caption');
-    caption.innerText = captionText;
-    tcontainer.appendChild(caption);
-    tcontainer.id = uniqueIdentifier;
-
-    // listen for when a thumbnail is selected so properties can be updated
-    tcontainer.addEventListener('click', showSelectedProperties);
-
-    return tcontainer
-}
-*/
 
 export function createThumbnailContainer(uniqueIdentifier, url, captionText) {
     // Create a container for the thumbnail and its caption and id
@@ -309,20 +246,50 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText) {
     return tcontainer;
 }
 
+export function displayThumbnailsFromCalscape(calscapePhotos) {
+    const thumbnailGrid = document.getElementById('thumbnail-calscape-grid');
+
+    // Clear previous thumbnails elements
+    const thumbnails = thumbnailGrid.querySelectorAll('.tcontainer');
+    thumbnails.forEach(thumbnail => {
+        thumbnail.remove();
+    });
+
+    for (species in calscapePhotos) {
+        photos = species["photos"];
+        for (photo in photos) {
+            const fileName = photo.FileName;
+            const captionText = photo.CaptionTitle;
+            const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
+            const tc = createThumbnailContainer(photo["photoID"], turl, captionText);
+            thumbnailGrid.appendChild(tc);
+        }
+    }
+}
+
 export function displayThumbnailsFromSourcePhotos() {
     const thumbnailGrid = document.getElementById('thumbnail-grid');
 
-    thumbnailGrid.innerHTML = ''; // Clear previous thumbnails
+    // Clear previous thumbnails elements
+    const thumbnails = thumbnailGrid.querySelectorAll('.tcontainer');
+    thumbnails.forEach(thumbnail => {
+        thumbnail.remove();
+    });
 
     const sourcePhotos = getSourcePhotos();
     for (const uniqueIdentifier in sourcePhotos) {
         const photo = sourcePhotos[uniqueIdentifier];
-        const url = photo.url;
+        const url = photo.thumbnail != undefined? photo.thumbnail : photo.url;
         const captionText = photo.caption;
 
         const tcontainer = createThumbnailContainer(uniqueIdentifier, url, captionText);
 
         thumbnailGrid.appendChild(tcontainer);
+    }
+
+    const message = document.getElementById('select-photos-message');
+    if (thumbnailGrid.querySelectorAll('.tcontainer').length > 0) {
+        message.style.display = 'none';
     }
 }
 

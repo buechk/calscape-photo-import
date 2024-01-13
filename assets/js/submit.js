@@ -112,13 +112,13 @@ function saveCollection(collection) {
         .then(data => {
             // Handle the response (if needed)
             console.log('Collection saved to file: ', data.filename);
-            displayStatusMessage(`The photo collection, "${collection['collection-name']}", has been submitted for review.\nThank you for your photo contribution.`, false, false);
+            displayStatusMessage(`The photo collection, "${collection['collection-name']}", has been submitted for review.\nThank you for your photo contribution.`, false, -1, true);
             clearPhotoCollection();
         })
         .catch(error => {
             // Handle network errors or other exceptions
             console.error('Error:', error);
-            displayStatusMessage(`Error submitting photo collection, "${collection['collection-name']}": ${error.message}`, true, false);
+            displayStatusMessage(`Error submitting photo collection, "${collection['collection-name']}": ${error.message}`, true);
         });
 }
 
@@ -136,6 +136,7 @@ export function initializeSubmitContribute() {
         setTimeout(() => {
             if (validatePhotoCollection()) {
                 const collection = getPhotoCollection();
+                displayStatusMessage(`Submitting "${collection['collection-name']}" for review...`);
                 submit(collection);
                 // Convert the collectionData object to a JSON string with proper indentation
                 const jsonString = JSON.stringify(collection, null, 2);

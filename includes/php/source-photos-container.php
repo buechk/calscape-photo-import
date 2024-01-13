@@ -8,8 +8,10 @@ define('SOURCE_PHOTOS_CONTAINER', <<<HTML
     <div class="thumbnail-scroll-container">
         <div id="thumbnail-grid" class="thumbnail-grid">
             <!-- Thumbnails will be loaded here -->
-            <div  id="select-photos-message" class="drag-and-drop-message">
-                Choose Select files... or Select from Flickr... from the Select Photos menu
+            <div id="select-photos-message" class="drag-and-drop-message"> 
+            Under the <strong>Select photos</strong> menu, 
+            choose <strong>Select files...</strong> or <strong>Select from Flickr...</strong> 
+            to get started.
             </div>
         </div>
     </div>

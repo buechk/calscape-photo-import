@@ -178,7 +178,7 @@ async function handleRemovedNodes(removedNodes) {
         const caption = removedNode.caption;
         const imageObj = imageData[removedNode.id];
         if (imageObj) {
-            return storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.CaptionTitle)
+            return storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle)
                 .then(result => {
                     console.log('Source photo stored: ', id, caption);
                 })
@@ -695,7 +695,7 @@ export function validatePhotoCollection() {
     // Verify there is at least one photo in the collection
     if (!collectionData.hasOwnProperty("photos") || collectionData.photos.length === 0) {
         console.log('Validation failure: Empty collection. There must be at least 1 photo in the collection');
-        displayStatusMessage(`There must be at least 1 photo in the collection.`, true)
+        displayStatusMessage(`There must be at least 1 photo in the collection.`, true, -1, true);
         return false;
     }
 

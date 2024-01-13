@@ -12,7 +12,10 @@ if ($fileName) {
     $image = imagecreatefromjpeg($filePath);
 
     // Resize to create a thumbnail (adjust dimensions as needed)
-    $thumbnail = imagescale($image, 100, 100);
+ //   $thumbnail = imagescale($image, 148, 148);
+
+    $thumbnail = imagecreatetruecolor(148, 148);
+    imagecopyresampled($thumbnail, $image, 0, 0, 0, 0, 148, 148, imagesx($image), imagesy($image));
 
     // Output the thumbnail
     header('Content-Type: image/jpeg');

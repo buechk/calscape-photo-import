@@ -40,7 +40,7 @@ function generateUniqueIdentifier() {
     return `${timestamp}-${random}`;
 }
 
-export function storeSourcePhoto(id, photo, caption) {
+export function storeSourcePhoto(id, photo, thumbnail, caption) {
     return new Promise((resolve, reject) => {
         if (photo instanceof File) {
             if (id === null) {
@@ -67,12 +67,14 @@ export function storeSourcePhoto(id, photo, caption) {
         } else {
             sourcePhotos[id] = {
                 url: photo,
+                thumbnail: thumbnail,
                 caption: caption,
             };
             console.log(`Stored photo with identifier: ${id}, ${sourcePhotos[id].url}`);
             resolve({
                 id: id,
                 caption: caption,
+                thumbnail: thumbnail
             });
         }
     });
