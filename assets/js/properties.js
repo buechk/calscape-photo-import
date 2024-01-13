@@ -444,7 +444,7 @@ function createInputField(value) {
 
 /**
  * Function to save the properties from the form to the image object
- */
+
 export function saveSelectedProperties() {
     const selectedIdElem = document.getElementById('selected-id');
     if (selectedIdElem != null) {
@@ -471,6 +471,59 @@ export function saveSelectedProperties() {
         }
     }
 }
+ */
+
+/**
+ * Function to save the properties from the form to the image object
+ */
+export function saveSelectedProperties() {
+    const selectedIdElem = document.getElementById('selected-id');
+
+    if (selectedIdElem != null) {
+        const selectedId = selectedIdElem.textContent;
+
+        if (selectedId !== '') {
+            const currentImageObj = imageData[selectedId];
+
+            if (currentImageObj) {
+                // Get the form element
+                const propertiesForm = document.getElementById('properties-form');
+
+                // Iterate through the input elements of the properties form
+                const inputElements = propertiesForm.querySelectorAll('input, select, textarea');
+                inputElements.forEach(input => {
+                    if (input.classList.contains('multivalue-input')) {
+                        // Handle multivalue inputs
+                        const container = input.closest('.multivalue-input-container');
+                        const innerContainer = container.querySelector('.multivalue-input-inner');
+
+                        // Find the id from the multivalue-input-inner element
+                        const property = innerContainer.id;
+
+                        // Add the value to the multivalue array if it doesn't already exist
+                        const value = input.value.trim();
+                        if (property && value !== '') {
+                            currentImageObj[property] = currentImageObj[property] || [];
+                            
+                            if (!currentImageObj[property].includes(value)) {
+                                currentImageObj[property].push(value);
+                            }
+                        }
+                    } else {
+                        // If it's not a multivalue input, set the value directly
+                        const property = input.id;
+                        if (property !== '') {
+                            currentImageObj[property] = input.value;
+                        }
+                    }
+                });
+            } else {
+                console.log("No image object selected to save properties to.");
+            }
+        }
+    }
+}
+
 
 /**
  * Function to save properties from input element to imageObj
@@ -489,7 +542,7 @@ function saveProperties(inputElement) {
                 const propertyName = inputElement.id;
                 const propertyValue = inputElement.value;
 
-                if (propertyValue) {
+                if (propertyName && propertyValue) {
                     imageData[tcontainerId][propertyName] = propertyValue;
                 } else {
                     delete imageData[tcontainerId][propertyName];
