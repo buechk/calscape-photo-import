@@ -191,23 +191,26 @@ export function updateSpeciesChoice() {
      if (speciesChoice.checked) {
          if (collSpeciesContainer != null) {
              collectionSpeciesInput.disabled = false;
+             collectionSpeciesInput.required = true;
              collectionSpeciesInput.placeholder = 'type species name';
          }
          if (selSpeciesContainer != null) {
              selectedSpeciesInput.disabled = true;
              selectedSpeciesInput.value = '';
+             selectedSpeciesInput.required = false;
              selectedSpeciesInput.placeholder = 'applied from collection';
          }
      } else if (gardenChoice.checked) {
          if (collSpeciesContainer != null) {
              collectionSpeciesInput.disabled = true;
              collectionSpeciesInput.value = '';
-             collectionSpeciesInput.
+             collectionSpeciesInput.required = false;
              collectionSpeciesInput.placeholder = 'not applicable';
          }
          if (selSpeciesContainer != null) {
              selectedSpeciesInput.disabled = getSelectedThumbnailCount() < 1;
              selectedSpeciesInput.placeholder = 'type species name';
+             selectedSpeciesInput.required = true;
          }
      }   
 }

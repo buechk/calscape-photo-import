@@ -51,6 +51,11 @@ export function initNavigation() {
     $('#left-nav a').click(function (event) {
         event.preventDefault(); // Prevent the default link behavior
 
+        // save current values before replacing page content
+        savePhotoCollection();
+        saveSelectedProperties();
+
+        if (event.target.id === 'save' || event.target.id === 'submit')
         // Validate required fields before leaving
         if (!validateLeavePage()) {
             return;
@@ -80,10 +85,6 @@ function fetchContent(page, append = false) {
         method: 'GET',
         dataType: 'html',
         success: function (data) {
-            // save current values before replacing page content
-            savePhotoCollection();
-            saveSelectedProperties();
-
             // Replace the main content with the fetched data
             $('#main-content').html(data);
             initMainContent();

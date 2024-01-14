@@ -8,6 +8,6 @@ define('REVIEWER_NAV', <<<HTML
     <li><a href="#" id="select-collection" data-page="select-collection">Select collection</a></li>
     <li id="review-collection"><a href="#" data-page="set-properties">Review collection</a></li>
     <li><a href="#" data-page="sort-photos">Sort photos</a></li>
-    <li><a href="#" data-page="save">Save</a></li>
+    <li><a href="#" id="save" data-page="save">Save</a></li>
 </ul>
 HTML);
