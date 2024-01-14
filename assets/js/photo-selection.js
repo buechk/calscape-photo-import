@@ -21,13 +21,6 @@ const selectFromFlickrLink = document.getElementById('selectFromFlickrLink');
 const fileInput = document.getElementById('fileInput');
 const flickrUrl = document.getElementById('flickrUrl');
 
-function closeSubmenu() {
-    const submenu = document.querySelector('.submenu');
-    if (submenu != null) {
-        submenu.style.display = 'none';
-    }
-}
-
 // EVENT LISTENERS
 
 // Open the File selection modal
@@ -39,7 +32,6 @@ selectFilesLink.addEventListener('click', function (event) {
 // Close the file selection modal
 fileModalClose.addEventListener('click', () => {
     fileModal.style.display = 'none';
-    closeSubmenu();
 });
 
 // Add an event listener for the "change" event on the file input
@@ -50,7 +42,6 @@ fileInput.addEventListener('change', function (event) {
     displayThumbnails(fileInput.files);
     fileInput.value = '';
     fileModal.style.display = 'none';
-    closeSubmenu();
 });
 
 // Open the Flickr selection modal
@@ -62,25 +53,21 @@ selectFromFlickrLink.addEventListener('click', function (event) {
 // Close the Flickr import modal
 flickrModalClose.addEventListener('click', () => {
     flickrModal.style.display = 'none';
-    closeSubmenu();
 });
 
 // Open the Flickr import modal
 flickrUrl.addEventListener('change', () => {
     displayThumbnails(flickrUrl.value);
     flickrModal.style.display = 'none';
-    closeSubmenu();
 });
 
 // When the user clicks anywhere outside of the modals, close them
 window.addEventListener('click', (event) => {
     if (event.target === fileModal) {
         fileModal.style.display = 'none';
-        closeSubmenu();
     }
     if (event.target === flickrModal) {
         flickrModal.style.display = 'none';
-        closeSubmenu();
     }
 });
 

@@ -496,7 +496,7 @@ function saveCollectionProperties(inputElement) {
     }
 }
 
-export async function setPhotoCollection (data) {
+export async function setPhotoCollection(data) {
     await clearPhotoCollection();
     collectionData["collection-name"] = data["collection-name"];
     collectionData["collection-type"] = data["collection-type"];
@@ -520,7 +520,7 @@ export async function setPhotoCollection (data) {
             const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText);
             addCollectionThumbnail(tc);
         }
-    } 
+    }
 }
 
 export function savePhotoCollection() {
@@ -613,34 +613,26 @@ export async function clearPhotoCollection() {
     collectionData = {};
 }
 
-function validateRequiredFields(id) {
-    const imageObj = imageData[id];
-
-    if (imageObj) {
-        // Get all required input elements within the form
-        const requiredInputs = form.querySelectorAll('input[required], textarea[required]');
-        const missingFields = {};
-
-        // Check each required input for a non-empty value
-        for (const input of requiredInputs) {
-            if (!input.value.trim()) {
-                // If any required field is empty, add it to the missingFields array
-                missingFields.id = input.id;
-
-            }
-        }
-
-        if (missingFields.length > 0) {
-            // Return the array of missing fields
-            return missingFields;
-        }
-
-        // All required fields have data
+export function validateLeavePage() {
+    const form = document.getElementById("group-properties-form");
+    if (form === null) {
+        // The group-properties-form is not shown. It's okay to switch pages.
         return true;
     }
 
-    // imageObj not found
-    return false;
+
+    // Report validity and display validation messages
+    const isFormValid = form.reportValidity();
+
+    if (isFormValid) {
+        // Form is valid, you can proceed with further actions
+        console.log('Form is valid');
+        return true;
+    } else {
+        // Form is not valid, handle accordingly (e.g., display error messages)
+        console.log('Form is not valid');
+        return false;
+    }
 }
 
 function getRequiredColumnsForRole(importConfig, roleName) {
@@ -693,7 +685,7 @@ function checkRequiredData(collectionData, requiredColumns) {
 
 export function validatePhotoCollection() {
     // Verify there is at least one photo in the collection
-    if (!collectionData.hasOwnProperty("photos") || collectionData.photos.length === 0) {
+    if (!collectionData.hasOwnProperty("photos") || Object.keys(collectionData.photos).length === 0) {
         console.log('Validation failure: Empty collection. There must be at least 1 photo in the collection');
         displayStatusMessage(`There must be at least 1 photo in the collection.`, true, -1, true);
         return false;
@@ -705,7 +697,7 @@ export function validatePhotoCollection() {
 
     // validate collection properties
     const missingRequiredData = checkRequiredData(collectionData, requiredColumns);
-    
+
     if (missingRequiredData.length > 0) {
         console.log('Missing required data:', missingRequiredData);
         displayStatusMessage(`The following fields require input values: ${missingRequiredData.join('\r\n')}`, true)

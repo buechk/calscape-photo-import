@@ -4,7 +4,7 @@
  */
 
 import { initMainContent } from "./main-content.js";
-import { savePhotoCollection } from "./collection-data.js";
+import { savePhotoCollection, validateLeavePage } from "./collection-data.js";
 import { saveSelectedProperties } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
 
@@ -50,6 +50,11 @@ export function initNavigation() {
     // Attach click event listeners to the navigation items
     $('#left-nav a').click(function (event) {
         event.preventDefault(); // Prevent the default link behavior
+
+        // Validate required fields before leaving
+        if (!validateLeavePage()) {
+            return;
+        }
 
         // Add selected class to clicked menu item
         $('li a.selected').removeClass('selected'); // Remove the class from previously selected items

@@ -202,6 +202,7 @@ export function updateSpeciesChoice() {
          if (collSpeciesContainer != null) {
              collectionSpeciesInput.disabled = true;
              collectionSpeciesInput.value = '';
+             collectionSpeciesInput.
              collectionSpeciesInput.placeholder = 'not applicable';
          }
          if (selSpeciesContainer != null) {
