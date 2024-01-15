@@ -6,24 +6,18 @@ $fileName = isset($_GET['fileName']) ? $_GET['fileName'] : null;
 
 // Check if $fileName is set
 if ($fileName) {
-    $filePath = $uploadDirectory . $fileName;
+    $filePath = PHOTOS_DIR . $fileName;
 
     // Load the image
     $image = imagecreatefromjpeg($filePath);
 
-    // Resize to create a thumbnail (adjust dimensions as needed)
- //   $thumbnail = imagescale($image, 148, 148);
-
-    $thumbnail = imagecreatetruecolor(148, 148);
-    imagecopyresampled($thumbnail, $image, 0, 0, 0, 0, 148, 148, imagesx($image), imagesy($image));
-
     // Output the thumbnail
     header('Content-Type: image/jpeg');
-    imagejpeg($thumbnail);
+    imagejpeg($image);
 
     // Clean up resources
     imagedestroy($image);
-    imagedestroy($thumbnail);
+//    imagedestroy($thumbnail);
 } else {
     // Handle the case where $fileName is not set
     header('HTTP/1.1 400 Bad Request');

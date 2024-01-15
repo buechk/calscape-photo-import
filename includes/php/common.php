@@ -10,7 +10,9 @@ $database = "calsca6_calscape";
 $dbManager = new DatabaseManager($hostname, $username, $password, $database);
 
 // File upload
-$uploadDirectory = '../../public/ExtData/allimages/';
+define('ALL_IMAGES_DIR', '../../public/ExtData/allimages/');
+define('BIG_IMAGES_DIR', ALL_IMAGES_DIR.'900/');
+define('PHOTOS_DIR', ALL_IMAGES_DIR.'Photos/');
 
 // Collection directory
 $collectionReviewDirectory = '../../public/ExtData/collections/review/';

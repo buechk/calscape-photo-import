@@ -258,7 +258,7 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
     for (species in calscapePhotos) {
         photos = species["photos"];
         for (photo in photos) {
-            const fileName = photo.FileName;
+            const fileName = photo.thumbnail;
             const captionText = photo.CaptionTitle;
             const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
             const tc = createThumbnailContainer(photo["photoID"], turl, captionText);

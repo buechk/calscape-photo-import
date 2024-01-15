@@ -302,6 +302,7 @@ async function populateThumbnailProperties(id) {
         else {
             console.log(`photo ${id} is from Flickr`);
             imageObj["sourceImage"] = getSourcePhoto(id).url;
+            imageObj["thumbnail"] = getSourcePhoto(id).thumbnail;
             const flickrData = await getFlickrPhotoInfo(id, 'flickr.photos.getInfo');
             const flickrExifData = await getFlickrPhotoInfo(id, 'flickr.photos.getExif');
             for (const table of importconfig.photoimportconfig.tables) {
@@ -514,7 +515,7 @@ export async function setPhotoCollection(data) {
             const uniqueIdentifier = photo.id;
             imageData[uniqueIdentifier] = { ...photo };
 
-            const fileName = photo.FileName;
+            const fileName = photo.thumbnail;
             const captionText = photo.CaptionTitle;
             const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
             const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText);

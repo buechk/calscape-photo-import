@@ -1,22 +1,19 @@
 <?php
 include_once(dirname(dirname(__FILE__)) . '/php/common.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the URL of the JPEG file from the POST request
-    $imageUrl = $_POST['url'];
-    $rootname = $_POST['rootname'];
+function saveFile($rootname, $uploaddirectory, $imageUrl) {
     $pathParts = pathinfo($imageUrl);
-    $filename = str_replace(' ', '_', $rootname)  . '_' . $pathParts['filename'] . '.' .  $pathParts['extension']; 
+    $filename = str_replace(' ', '_', $rootname)  . '_' . $pathParts['filename'] . '.' .  $pathParts['extension'];
 
     // Construct the local file path, replace blanks with underscores
-    $localFilePath = str_replace(' ', '_', $uploadDirectory . $filename);
+    $localFilePath = str_replace(' ', '_', $uploaddirectory . $filename);
 
     // Download the file from the URL
     $imageData = file_get_contents($imageUrl);
 
     // Ensure the target directory exists
-    if (!file_exists($uploadDirectory)) {
-        mkdir($uploadDirectory, 0777, true);
+    if (!file_exists($uploaddirectory)) {
+        mkdir($uploaddirectory, 0777, true);
     }
 
     if ($imageData !== false) {
@@ -40,9 +37,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'message' => 'No file uploaded or an error occurred',
         ];
     }
+
+    return $response;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get the URL of the JPEG file from the POST request
+    $imageUrl = $_POST['url'];
+    $imageThumbnail = $_POST['thumbnail'];
+    $rootname = $_POST['rootname'];
+
+    // Save the original image
+    $responseOriginal = saveFile($rootname, BIG_IMAGES_DIR, $imageUrl);
+
+    // Save the thumbnail image only if the original image was saved successfully
+    if ($responseOriginal['success'] === true) {
+        $responseThumbnail = saveFile($rootname, PHOTOS_DIR, $imageThumbnail);
+
+        // Combine responses and return
+        $combinedResponse = [
+            'success' => $responseOriginal['success'] && $responseThumbnail['success'],
+            'messages' => [
+                $responseOriginal['message'],
+                $responseThumbnail['message']
+            ],
+            'filename' => $responseOriginal['filename'],
+            'thumbnail' => $responseThumbnail['filename']
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($combinedResponse);
+        exit(); // Stop further execution
+        
+    } else {
+        // If the original image was not saved successfully, return its response
+        header('Content-Type: application/json');
+        echo json_encode($responseOriginal);
+        exit(); // Stop further execution
+    }
 } else {
     echo "Invalid request method.";
 }
-
-header('Content-Type: application/json');
-echo json_encode($response);
+?>

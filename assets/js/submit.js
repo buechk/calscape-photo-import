@@ -12,7 +12,7 @@ import { validatePhotoCollection } from "./collection-data.js";
  * @param {*} file 
  * @param {function} callback - Callback function to handle the uploaded filename
  */
-function uploadFile(source, rootname, callback) {
+function uploadFile(source, thumbnail, rootname, callback) {
     const formData = new FormData();
     formData.append('rootname', rootname);
     let method = '';
@@ -22,6 +22,7 @@ function uploadFile(source, rootname, callback) {
         method = '/includes/php/file_upload.php';
     } else {
         formData.append('url', source);
+        formData.append('thumbnail', thumbnail);
         method = '/includes/php/file_from_url.php';
     }
 
@@ -40,7 +41,7 @@ function uploadFile(source, rootname, callback) {
             if (data.success) {
                 // Handle a successful upload
                 console.log(`File upload: ${data.filename}, ${data.message}`);
-                callback(data.filename); // Call the callback function with the uploaded filename
+                callback(data.filename, data.thumbnail); // Call the callback function with the uploaded filename
             } else {
                 // Handle errors from the JSON response
                 console.error(`File upload: Upload failed: ${data.message}`);
@@ -64,13 +65,15 @@ function submit(collection) {
         const photo = collection.photos[photoId];
         const species = (collection["collection-type"] === 'species') ? collection["collection-species"] : photo["selected-species"];
         const source = photo["sourceImage"];
+        const tn = photo["thumbnail"];
 
         // Create a promise for each file upload
         const uploadPromise = new Promise((resolve, reject) => {
             // Pass a callback to handle the uploaded filename so it gets saved back to the collection photo
-            uploadFile(source, species, (filename) => {
+            uploadFile(source, tn, species, (filename, thumbnail) => {
                 // Store the filename in the photo object
                 collection.photos[photoId]["FileName"] = filename;
+                collection.photos[photoId]["thumbnail"] = thumbnail;
                 resolve(); // Resolve the promise once the file upload is complete
             });
         });
