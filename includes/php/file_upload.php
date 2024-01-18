@@ -16,6 +16,25 @@ function generateThumbnail($sourcePath, $targetPath, $width, $height)
     imagedestroy($thumbnail);
 }
 
+/*
+function makeThumbnail($in, $out) {
+    $width = THUMBNAIL_WIDTH;
+    $height = THUMBNAIL_HEIGHT;
+    list($w,$h) = getimagesize($in);
+
+    $thumbRatio = $width/$height;
+    $inRatio = $w/$h;
+    $isLandscape = $inRatio > $thumbRatio;
+
+    $size = ($isLandscape ? '1000x'.$height : $width.'x1000');
+    $xoff = ($isLandscape ? floor((($inRatio*$height)-$width)/2) : 0);
+    $command = MAGICK_PATH."convert $in -resize $size -crop {$width}x{$height}+{$xoff}+0 ".
+        "-colorspace RGB -strip -quality 90 $out";
+
+    exec($command);
+}
+*/
+
 // Check if a file was uploaded
 if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
     // Generate a unique filename to prevent overwriting
@@ -40,7 +59,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
     // Move the uploaded file to the server
     if (move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
         // Generate and save thumbnail
-        generateThumbnail($targetPath, $thumbnailPath, 150, 150); // Adjust thumbnail size as needed
+        generateThumbnail($targetPath, $thumbnailPath, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT); // Adjust thumbnail size as needed
 
         // Upload successful
         $response = [

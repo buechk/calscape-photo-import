@@ -57,25 +57,26 @@ function getPhotos($plantID)
             plants.ID,
             photo.ID AS photo_id,
             photo.FileName,
-            photo.CaptionTitle,
+            photo.ImageDescription as Copyright,
             plant_photo.photo_order AS plant_photo_order,
             NULL AS plant_photo_calphotos_order
         FROM plants
         INNER JOIN plant_photo ON plants.ID = plant_photo.Plant_ID
         INNER JOIN photo ON plant_photo.Photo_ID = photo.ID
-        WHERE deleted = 0 and plants.ID = ?
+        WHERE plants.ID = ? AND plant_photo.deleted = 0 AND photo.FileName IS NOT null AND photo.FileName != ''
         UNION ALL
         SELECT
             plants.ID,
             plant_photo_calphotos.photo_id,
             plant_photo_calphotos.image AS FileName,
-            NULL AS CaptionTitle,
+            plant_photo_calphotos.copyright AS Copyright,
             NULL AS plant_photo_order,
             plant_photo_calphotos.photo_order AS plant_photo_calphotos_order
         FROM plants
         INNER JOIN plant_photo_calphotos ON plants.ID = plant_photo_calphotos.plant_id
-        WHERE deleted = 0 and plants.ID = ?
+        WHERE plants.ID = ? AND plant_photo_calphotos.deleted = 0 AND plant_photo_calphotos.image IS NOT null AND plant_photo_calphotos.image != ''
         ORDER BY COALESCE(plant_photo_order, plant_photo_calphotos_order)";
+
 
     $params = ['ii', $plantID, $plantID];
 

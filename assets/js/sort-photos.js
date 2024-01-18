@@ -8,41 +8,62 @@ import { displayThumbnailsFromCalscape, initializeSortableGrid } from "./thumbna
 
 let calscapePhotos = {};
 
-export function initPhotoSort() {
-    initializeSortableGrid('thumbnail-calscape-grid', 'calscape-drag-and-drop-message', Object.entries(calscapePhotos));
+// The structure of calscapePhotos is as follows:
+/*
+{
+    "Prunus ilicifolia ssp. lyonii": {
+        "plantID": 3082,
+        "photos": {
+            "1": {
+                "CaptionTitle": null,
+                "FileName": "Prunus_ilicifolia_ssp_lyonii_image_5.jpg",
+                "photoID": "29202"
+            },
+            // ... (other photos)
+        }
+    },
+    // ... (other species)
+};
+*/
+
+export async function initPhotoSort() {
+    initializeSortableGrid('thumbnail-calscape-grid', 'calscape-drag-and-drop-message', Object.entries(calscapePhotos), false);
     const collection = getPhotoCollection();
     const species = collection["collection-type"] === 'species' ? collection["collection-species"] : '';
     if (species !== '') {
-        fetchExistingPhotos(species);
+        await fetchExistingPhotos(species);
+        displayThumbnailsFromCalscape(calscapePhotos);
     }
-
-    displayThumbnailsFromCalscape(calscapePhotos);
 }
 
-function fetchExistingPhotos(speciesName) {
-    // Use fetch to send the plant species name to your PHP script
-    fetch("/includes/php/get_species_photos.php", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: speciesName,
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            populateCalscapePhotos(speciesName, data);
-            console.log("Calscape photo data: ",calscapePhotos);
-        })
-        .catch((error) => {
-            console.error("Error:", error);
+async function fetchExistingPhotos(speciesName) {
+    try {
+        const response = await fetch("/includes/php/get_species_photos.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: speciesName,
         });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(data);
+        populateCalscapePhotos(speciesName, data);
+        console.log("Calscape photo data: ", calscapePhotos);
+    } catch (error) {
+        console.error("Error:", error);
+    }
 }
+
 
 function populateCalscapePhotos(speciesName, results) {
     results.forEach(result => {
         const plantID = result.ID;
-        const photoOrder = result.plant_photo_order;
+        const photoOrder = result.plant_photo_order !== null? result.plant_photo_order : result.plant_photo_calphotos_order;
 
         if (!(speciesName in calscapePhotos)) {
             calscapePhotos[speciesName] = {};
@@ -51,7 +72,7 @@ function populateCalscapePhotos(speciesName, results) {
         }
 
         calscapePhotos[speciesName]["photos"][photoOrder] = {
-            "CaptionTitle": result.CaptionTitle,
+            "CaptionTitle": result.Copyright,
             "FileName": result.FileName,
             "photoID": result.photo_id
         };

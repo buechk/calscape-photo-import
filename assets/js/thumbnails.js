@@ -35,19 +35,36 @@ export function getSelectedThumbnailCount() {
 }
 
 // Enable drag-and-drop reordering of thumbnails
-export function initializeSortableGrid(gridId, messageId, gridContentsArr) {
+export function initializeSortableGrid(gridId, messageId, gridContentsArr, allowDragOut = true) {
     const dropTarget = document.getElementById(gridId);
 
     // Enable drag-and-drop reordering of thumbnails
-    const sortablegroup = new Sortable(dropTarget, {
-        animation: 150,
+    const sortableGridOptions = {
+        // Other options...
         group: 'shared-group',
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
         dragClass: 'sortable-drag',
         multiDrag: true,
-        selectedClass: 'selected'
-    });
+        selectedClass: 'selected',
+        onEnd: function (/**Event*/evt) {
+            const draggedItem = evt.item;
+            
+            // Check if the dragged item or any ancestor has the no-drag-out class
+            const isNoDragOut = (
+                draggedItem.classList.contains('no-drag-out') ||
+                draggedItem.closest('.no-drag-out') !== null
+            );
+    
+            if (isNoDragOut && evt.to !== evt.from) {
+                // Cancel the drop action if the item has no-drag-out class and is being dropped into a different grid
+                evt.from.insertBefore(draggedItem, evt.from.children[evt.oldIndex]);
+            }
+        }
+    };
+
+    const sortablegrid = new Sortable(dropTarget, sortableGridOptions);
+    console.log(sortablegrid);
 
     const dropMessage = document.getElementById(messageId);
 
@@ -55,14 +72,13 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr) {
         dropMessage.style.display = 'none';
     }
 
-    // Prevent the default behavior for dragenter and dragover events
     dropTarget.addEventListener('dragenter', function (event) {
         event.preventDefault();
         // Change the sortablegroup styling to indicate that it's a valid drop target
         dropTarget.style.border = '2px dashed #33cc33';
     });
 
-    dropTarget.addEventListener('dragleave', function () {
+    dropTarget.addEventListener('dragleave', function (event) {
         dropTarget.style.border = 'none';
         // Use a setTimeout to check after a short delay
         setTimeout(() => {
@@ -82,7 +98,6 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr) {
     // Handle the drop event
     dropTarget.addEventListener('drop', function (event) {
         event.preventDefault();
-        // Access the dragged data (you might have additional logic here)
         const draggedData = event.dataTransfer.getData('text/plain');
         // Perform actions with the dropped data
         console.log('Dropped to grid:', draggedData);
@@ -248,21 +263,36 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText) {
 
 export function displayThumbnailsFromCalscape(calscapePhotos) {
     const thumbnailGrid = document.getElementById('thumbnail-calscape-grid');
+    const dropMessage = document.getElementById('calscape-drag-and-drop-message');
 
     // Clear previous thumbnails elements
     const thumbnails = thumbnailGrid.querySelectorAll('.tcontainer');
     thumbnails.forEach(thumbnail => {
         thumbnail.remove();
     });
+    Object.keys(calscapePhotos).length > 0 ? dropMessage.style.display = 'none' : dropMessage.style.display = 'block';
 
-    for (species in calscapePhotos) {
-        photos = species["photos"];
-        for (photo in photos) {
-            const fileName = photo.thumbnail;
-            const captionText = photo.CaptionTitle;
-            const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
-            const tc = createThumbnailContainer(photo["photoID"], turl, captionText);
-            thumbnailGrid.appendChild(tc);
+    for (const species in calscapePhotos) {
+        if (calscapePhotos.hasOwnProperty(species)) {
+            console.log(`Processing species: ${species}`);
+
+            // Access the photos object for the current species
+            const speciesPhotos = calscapePhotos[species].photos;
+
+            // Iterate through each photo in the current species
+            for (const photoID in speciesPhotos) {
+                if (speciesPhotos.hasOwnProperty(photoID)) {
+                    const photo = speciesPhotos[photoID];
+                    console.log(`Processing photo: ${photo.FileName}`);
+                    const fileName = photo.FileName;
+                    const captionText = photo.CaptionTitle;
+                    const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
+                    const tc = createThumbnailContainer(photo["photoID"], turl, captionText);
+                    tc.classList.add('no-drag-out');
+                    tc.draggable = true;
+                    thumbnailGrid.appendChild(tc);
+                }
+            }
         }
     }
 }
@@ -279,7 +309,7 @@ export function displayThumbnailsFromSourcePhotos() {
     const sourcePhotos = getSourcePhotos();
     for (const uniqueIdentifier in sourcePhotos) {
         const photo = sourcePhotos[uniqueIdentifier];
-        const url = photo.thumbnail != undefined? photo.thumbnail : photo.url;
+        const url = photo.thumbnail != undefined ? photo.thumbnail : photo.url;
         const captionText = photo.caption;
 
         const tcontainer = createThumbnailContainer(uniqueIdentifier, url, captionText);

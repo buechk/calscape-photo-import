@@ -1,5 +1,5 @@
 <?php
-include_once(dirname(dirname(__FILE__)).'/php/common.php');
+include_once(dirname(dirname(__FILE__)) . '/php/common.php');
 
 // Assuming $fileName is the image file name
 $fileName = isset($_GET['fileName']) ? $_GET['fileName'] : null;
@@ -17,11 +17,9 @@ if ($fileName) {
 
     // Clean up resources
     imagedestroy($image);
-//    imagedestroy($thumbnail);
+    imagedestroy($thumbnail);
 } else {
     // Handle the case where $fileName is not set
     header('HTTP/1.1 400 Bad Request');
     echo 'File name not provided';
 }
-
-?>
