@@ -597,6 +597,7 @@ export function showSelectedProperties(event) {
                     }
                     else {
                         input.value = '';
+                        input.disabled = input.readOnly;
                     }
                 }
             }

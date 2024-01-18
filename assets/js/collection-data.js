@@ -621,7 +621,6 @@ export function validateLeavePage() {
         return true;
     }
 
-
     // Report validity and display validation messages
     const isFormValid = form.reportValidity();
 

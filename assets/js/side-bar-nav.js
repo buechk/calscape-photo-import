@@ -4,7 +4,7 @@
  */
 
 import { initMainContent } from "./main-content.js";
-import { savePhotoCollection, validateLeavePage } from "./collection-data.js";
+import { clearPhotoCollection, getCollectionThumbnails, savePhotoCollection, validateLeavePage } from "./collection-data.js";
 import { saveSelectedProperties } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
 
@@ -18,6 +18,43 @@ $(document).ready(function () {
     // Load default content on page load
     fetchContent('home');
 
+    $(document).on('click', '#contributeButton', function (event) {
+        event.preventDefault();
+
+        if (ROLE !== Mode.CONTRIBUTE) {
+            if (getCollectionThumbnails().length > 0) {
+                if (!confirm("Changes made to the current collection will not be saved if you switch to Contribute mode. \
+                \n\r\Press OK to switch to Contribute or Cancel to remain in Review mode.")) {
+                    return;
+                }
+            }
+            clearPhotoCollection(); // user is switching roles so clear the current collection
+        }
+        
+        const targetMenu = $(this).data('menu');
+        const nav = $(this).data('nav');
+        fetchMenu(targetMenu, nav);
+        ROLE = Mode.CONTRIBUTE;
+    });
+
+    $(document).on('click', '#reviewButton', function (event) {
+        event.preventDefault();
+
+        if (ROLE !== Mode.REVIEW) {
+            if (getCollectionThumbnails().length > 0) {
+                if (!confirm("Changes made to the current collection will not be saved if you switch to Review mode. \
+            \n\rPress OK to switch to Review or Cancel to remain in Contribute mode.")) {
+                    return;
+                }
+            }
+            clearPhotoCollection();
+        }
+
+        const targetMenu = $(this).data('menu');
+        const nav = $(this).data('nav');
+        fetchMenu(targetMenu, nav);
+        ROLE = Mode.REVIEW;
+    });
 
     $(function () {
         // Trigger a click on the "Welcome" li element when the page loads
@@ -29,21 +66,7 @@ $(document).ready(function () {
 export let ROLE = Mode.UNSPECIFIED;
 
 export function initWelcome() {
-    $(document).on('click', '#contributeButton', function (event) {
-        event.preventDefault();
-        const targetMenu = $(this).data('menu');
-        const nav = $(this).data('nav');
-        fetchMenu(targetMenu, nav);
-        ROLE = Mode.CONTRIBUTE;
-    });
-
-    $(document).on('click', '#reviewButton', function (event) {
-        event.preventDefault();
-        const targetMenu = $(this).data('menu');
-        const nav = $(this).data('nav');
-        fetchMenu(targetMenu, nav);
-        ROLE = Mode.REVIEW;
-    });
+    console.log("Welcome page initialized")
 }
 
 export function initNavigation() {
@@ -56,10 +79,10 @@ export function initNavigation() {
         saveSelectedProperties();
 
         if (event.target.id === 'save' || event.target.id === 'submit')
-        // Validate required fields before leaving
-        if (!validateLeavePage()) {
-            return;
-        }
+            // Validate required fields before leaving
+            if (!validateLeavePage()) {
+                return;
+            }
 
         // Add selected class to clicked menu item
         $('li a.selected').removeClass('selected'); // Remove the class from previously selected items
