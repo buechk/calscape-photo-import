@@ -80,19 +80,23 @@ export function storeSourcePhoto(id, photo, thumbnail, caption) {
     });
 }
 
-
 export function getSourcePhoto(id) {
     return sourcePhotos[id];
 }
 
 // Function to remove an entry by uniqueId
 export function removeSourcePhoto(id) {
-    if (sourcePhotos.hasOwnProperty(id)) {
-        delete sourcePhotos[id];
-        console.log(`Photo with id ${id} removed successfully.`);
-    } else {
-        console.log(`Photo with id ${id} not found.`);
-    }
+    return new Promise((resolve, reject) => {
+        if (sourcePhotos.hasOwnProperty(id)) {
+            delete sourcePhotos[id];
+            console.log(`Photo with id ${id} removed successfully.`);
+        } else {
+            console.log(`Photo with id ${id} not found.`);
+        }
+        resolve({
+            success: true
+        });
+    });
 }
 
 export function getSourcePhotos() {

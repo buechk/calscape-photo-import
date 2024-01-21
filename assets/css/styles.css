@@ -813,3 +813,13 @@ th {
     color: darkblue;
 }
 
+#save-photos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#save-button-container {
+    margin-left: auto;
+}
+

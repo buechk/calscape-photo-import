@@ -50,21 +50,21 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
         onEnd: function (/**Event*/evt) {
             const draggedItem = evt.item;
             
-            // Check if the dragged item or any ancestor has the no-drag-out class
+            // Check if the dragged item or any ancestor has the calscape-existing class
             const isNoDragOut = (
-                draggedItem.classList.contains('no-drag-out') ||
-                draggedItem.closest('.no-drag-out') !== null
+                draggedItem.classList.contains('calscape-existing') ||
+                draggedItem.closest('.calscape-existing') !== null
             );
     
             if (isNoDragOut && evt.to !== evt.from) {
-                // Cancel the drop action if the item has no-drag-out class and is being dropped into a different grid
+                // Cancel the drop action if the item has calscape-existing class and is being dropped into a different grid
                 evt.from.insertBefore(draggedItem, evt.from.children[evt.oldIndex]);
             }
         }
     };
 
     const sortablegrid = new Sortable(dropTarget, sortableGridOptions);
-    console.log(sortablegrid);
+    console.log("Initializing sortable grid: ", sortablegrid);
 
     const dropMessage = document.getElementById(messageId);
 
@@ -108,6 +108,28 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
     });
 }
 
+// Function to set up the observer
+export function setupMutationObserver(targetGrid, gridArray, callback) {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            callback(mutation);
+
+            // Update the contents of the existing array with the current order of elements
+            updateGridArray();
+        });
+    });
+
+    const config = { childList: true };
+    observer.observe(targetGrid, config);
+
+    // Function to update the contents of the array with the current order of elements
+    function updateGridArray() {
+        console.log("Sync'ing grid array with grid contents: ", targetGrid.querySelectorAll('.tcontainer'));
+        gridArray.length = 0; // Clear the existing array
+        gridArray.push(...Array.from(targetGrid.querySelectorAll('.tcontainer')));
+    }
+}
+
 /**
  *  Display thumbnails from files or URLs
  * 
@@ -143,30 +165,28 @@ export function displayThumbnails(input) {
  * Displays the thumbnails given in the file list
  *  @param {*} filelist 
  */
-function displayImagesFromFilesystem(filelist) {
+async function displayImagesFromFilesystem(filelist) {
     // Convert filelist to an array
     const filesArray = Array.from(filelist);
 
     // Handle files from file input
     clearSourcePhotos();
 
-    // Map each file to a promise returned by storeSourcePhoto
-    const promises = filesArray.map(file => {
-        return storeSourcePhoto(null, file, null, file.name)
-            .then(result => {
-                console.log('Photo stored successfully: ', result.id, result.caption);
-            })
-            .catch(error => {
-                console.error('Error storing photo:', error);
-            });
+    // Map each file to an async call of storeSourcePhoto
+    const promises = filesArray.map(async file => {
+        try {
+            const result = await storeSourcePhoto(null, file, null, file.name);
+            console.log('Photo stored successfully:', result.id, result.caption);
+        } catch (error) {
+            console.error('Error storing photo:', error);
+        }
     });
 
     // Wait for all promises to be resolved before proceeding
-    Promise.all(promises)
-        .then(() => {
-            // All files have been processed, now display the thumbnails
-            displayThumbnailsFromSourcePhotos();
-        });
+    await Promise.all(promises);
+
+    // All files have been processed, now display the thumbnails
+    displayThumbnailsFromSourcePhotos();
 }
 
 /**
@@ -287,8 +307,8 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     const fileName = photo.FileName;
                     const captionText = photo.CaptionTitle;
                     const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
-                    const tc = createThumbnailContainer(photo["photoID"], turl, captionText);
-                    tc.classList.add('no-drag-out');
+                    const tc = createThumbnailContainer(photoID, turl, captionText);
+                    tc.classList.add('calscape-existing');
                     tc.draggable = true;
                     thumbnailGrid.appendChild(tc);
                 }

@@ -2,7 +2,12 @@
 // calscape_photos.php
 define('CALSCAPE_PHOTOS', <<<HTML
 <div id="calscape-photos-container" class="calscape-photos-container">
-    <h2>Calscape photos</h2>
+    <div id='save-photos-header'>
+        <h2>Calscape photos</h2>
+        <div id="save-button-container">
+            <button type=" button" class="button" id="save-button">Save</button>
+        </div>
+    </div>
     <h3>Drag and drop collection photo thumbnails here to insert 
         them into the desired position among the Calscape photos</h3>
     <div class="thumbnail-scroll-container">

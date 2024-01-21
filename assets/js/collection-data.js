@@ -6,7 +6,7 @@ import { importconfig, createPropertiesFields } from "./properties.js";
 import { updateSpeciesChoice } from "./species-selection.js";
 import { displayStatusMessage } from "./status.js";
 import { ROLE } from "./side-bar-nav.js";
-import { createThumbnailContainer } from "./thumbnails.js";
+import { createThumbnailContainer, setupMutationObserver } from "./thumbnails.js";
 
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
@@ -124,6 +124,24 @@ export let imageData = {};
 }
 */
 
+export function getPhotoById(photoId) {
+    // Check if the 'photos' property exists in the collection object
+    if ('photos' in collectionData) {
+        // Iterate through the photos
+        for (const photoIndex in collectionData.photos) {
+            const photo = collectionData.photos[photoIndex];
+
+            // Check if the current photo has the desired ID
+            if (photo.id === photoId) {
+                return photo; // Return the photo object if found
+            }
+        }
+    }
+
+    // Return null if the photo with the given ID is not found
+    return null;
+}
+
 export function getImageData(id) {
     return imageData[id];
 }
@@ -149,7 +167,7 @@ export function initializeCollectionData() {
             }
         });
     */
-    setupMutationObserver(thumbnailGroupGrid);
+    setupMutationObserver(thumbnailGroupGrid, collectionThumbnails, processMutation);
 
     createPropertiesFields();
     showCollectionProperties();
@@ -165,59 +183,89 @@ const mutationQueue = [];
 // Flag to indicate if the observer is currently processing a mutation
 let isProcessing = false;
 
-// Function to handle removed nodes
-async function handleRemovedNodes(removedNodes) {
-    // Convert NodeList to array
-    const removedNodesArray = Array.from(removedNodes);
-    let id = '';
+async function handleRemovedNode(removedNode) {
+    console.log('Child element removed:', removedNode);
+    const id = removedNode.id;
+    const imageObj = imageData[id];
 
-    // Use map to create an array of promises
-    const removalPromises = removedNodesArray.map(removedNode => {
-        console.log('Child element removed:', removedNode);
-        id = removedNode.id;
-        const caption = removedNode.caption;
-        const imageObj = imageData[removedNode.id];
-        if (imageObj) {
-            return storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle)
-                .then(result => {
-                    console.log('Source photo stored: ', id, caption);
-                })
-                .catch(error => {
-                    console.error('Error storing source photo:', error);
-                });
+    if (imageObj) {
+        try {
+            await storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle);
+            console.log('Source photo stored: ', id, imageObj.CaptionTitle);
+        } catch (error) {
+            console.error('Error storing source photo:', error);
         }
+    }
+}
+
+async function handleAddedNode(addedNode) {
+    try {
+        console.log('Child element added', addedNode);
+        await populateThumbnailProperties(addedNode.id);
+        console.log('Thumbnail properties populated successfully.');
+        await removeSourcePhoto(addedNode.id);
+    } catch (error) {
+        console.error('Error processing added node:', error);
+    }
+}
+
+export function processMutation(mutation) {
+    mutation.addedNodes.forEach((addedNode) => {
+        console.log('Child element added', addedNode);
+        handleAddedNode(addedNode);
     });
 
-    // Wait for all promises to be fulfilled
-    await Promise.all(removalPromises)
-        .then(() => {
-            if (imageData.hasOwnProperty(id)) {
-                imageData[id].deleted = true;
+    mutation.removedNodes.forEach((removedNode) => {
+        console.log('Child element removed:', removedNode);
+        handleRemovedNode(removedNode);
+    });
+}
+
+/* Old implementation
+
+async function handleRemovedNodes(removedNodes) {
+    const removedNodesArray = Array.from(removedNodes);
+
+    for (const removedNode of removedNodesArray) {
+        console.log('Child element removed:', removedNode);
+        const id = removedNode.id;
+        const caption = removedNode.caption;
+        const imageObj = imageData[id];
+
+        if (imageObj) {
+            try {
+                await storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle);
+                console.log('Source photo stored: ', id, caption);
+            } catch (error) {
+                console.error('Error storing source photo:', error);
             }
-        });
+        }
+    }
+
+    // Reset the processing flag
+    isProcessing = false;
 
     // Check if there are more mutations in the queue
     if (mutationQueue.length > 0) {
         const nextMutation = mutationQueue.shift();
         await processMutation(nextMutation);
-    } else {
-        // Reset the processing flag
-        isProcessing = false;
     }
 }
 
-// Function to process a mutation
 async function processMutation(mutation) {
     isProcessing = true;
 
     const { addedNodes, removedNodes } = mutation;
 
-    if (addedNodes.length > 0) {
-        addedNodes.forEach(async function (addedNode) {
+    for (const addedNode of addedNodes) {
+        try {
             console.log('Child element added', addedNode);
             await populateThumbnailProperties(addedNode.id);
-            removeSourcePhoto(addedNode.id);
-        });
+            console.log('Thumbnail properties populated successfully.');
+            await removeSourcePhoto(addedNode.id);
+        } catch (error) {
+            console.error('Error processing added node:', error);
+        }
     }
 
     if (removedNodes.length > 0) {
@@ -227,120 +275,171 @@ async function processMutation(mutation) {
         isProcessing = false;
     }
 }
+*/
 
+/*
+// Function to set up the observer - uses DomNodeInserted and DomNodeRemoved events
+function setupMutationObserver(targetGrid, gridArray, callback,) {
+    // Listen for the DOMNodeInserted event to capture added nodes
+    targetGrid.addEventListener('DOMNodeInserted', handleNodeInserted);
+ 
+    // Listen for the DOMNodeRemoved event to capture removed nodes
+    targetGrid.addEventListener('DOMNodeRemoved', handleNodeRemoved);
+ 
+    // Function to handle added nodes
+    function handleNodeInserted(event) {
+        const addedNode = event.target;
+        console.log('Child element added', addedNode);
+        callback(addedNode, targetGrid, gridArray);
+        // Update the contents of the existing array with the current order of elements
+        updateGridArray();
+    }
+ 
+    // Function to handle removed nodes
+    function handleNodeRemoved(event) {
+        const removedNode = event.target;
+        console.log('Child element removed:', removedNode);
+        // Process the removal and update the array
+        callback(removedNode, targetGrid, gridArray);
+        updateGridArray();
+    }
+ 
+    // Function to update the contents of the array with the current order of elements
+    function updateGridArray() {
+        console.log("Sync'ing grid array with grid contents: ", targetGrid.querySelectorAll('.tcontainer'));
+        gridArray.length = 0; // Clear the existing array
+        gridArray.push(...Array.from(targetGrid.querySelectorAll('.tcontainer')));
+    }
+}
+*/
+
+/*
 // Function to set up the observer
-function setupMutationObserver(targetElement) {
+function setupMutationObserver(targetGrid, gridArray, callback,) {
     const observer = new MutationObserver(async function (mutations) {
         for (const mutation of mutations) {
+            console.log("Processing mutations to mutation target: ", mutation.target);
+            console.log("Added nodes:", mutation.addedNodes);
+            console.log("Removed nodes", mutation.removedNodes);
             mutationQueue.push(mutation);
-
+ 
             if (!isProcessing) {
                 // Process the first mutation in the queue
-                await processMutation(mutationQueue.shift());
+                await callback(mutationQueue.shift(), targetGrid, gridArray);
             }
         }
-
-        // sync up collectionThumbnail order with thumbnail-group-grid order.
-        const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-        collectionThumbnails = Array.from(thumbnailGroupGrid.querySelectorAll('.tcontainer'));
-
+ 
+        // After processing mutations, update the contents of the existing array with the current order of elements
+        // Note: This is outside the for loop, so it's called after all mutations have been processed.
+        setTimeout(() => updateGridArray(targetGrid, gridArray), 500);
     });
-
+ 
     const config = { childList: true };
-
-    observer.observe(targetElement, config);
+    observer.observe(targetGrid, config);
+ 
+    // Function to update the contents of the array with the current order of elements
+    function updateGridArray(targetGrid, gridArray) {
+        console.log("Sync'ing grid array with grid contents: ", targetGrid.querySelectorAll('.tcontainer'));
+        gridArray.length = 0; // Clear the existing array
+        gridArray.push(...Array.from(targetGrid.querySelectorAll('.tcontainer')));
+    }
 }
+ 
+*/
 
 /**
  * populate properties from the configured datasource for the given thumbnail
  * @param {*} id thumbnail-group-grid id
  */
-async function populateThumbnailProperties(id) {
-    // If we have not already stored data for this image then store it now
-    if (imageData.hasOwnProperty(id)) {
-        // properties for this photo have already been retrieved
-        imageData[id].deleted = false;
-    }
-    else {
-        const imageObj = {};
-        imageObj["id"] = id;
+function populateThumbnailProperties(id) {
+    return new Promise(async (resolve, reject) => {
+        // If we have not already stored data for this image then store it now
+        if (imageData.hasOwnProperty(id)) {
+            // properties for this photo have already been retrieved
+            imageData[id].deleted = false;
+            resolve();
+        } else {
+            try {
+                const imageObj = {};
+                imageObj["id"] = id;
 
-        const photo = getSourcePhoto(id);
+                const photo = getSourcePhoto(id);
 
-        if (photo.hasOwnProperty('file') && photo.file instanceof File) {
-            imageObj["sourceImage"] = photo.file;
-            // Read the photo file and parse EXIF data once
-            const exifData = await readAndParseExifData(photo.file);
+                if (photo.hasOwnProperty('file') && photo.file instanceof File) {
+                    imageObj["sourceImage"] = photo.file;
+                    // Read the photo file and parse EXIF data once
+                    const exifData = await readAndParseExifData(photo.file);
 
-            for (const table of importconfig.photoimportconfig.tables) {
-                for (const column of table.columns) {
-                    const isCollectionProp = column.applies_to == "collection" ? true : false;
+                    for (const table of importconfig.photoimportconfig.tables) {
+                        for (const column of table.columns) {
+                            const isCollectionProp = column.applies_to == "collection" ? true : false;
 
-                    if (isCollectionProp) {
-                        // The selected properties container is not shown and property applies to a 
-                        // collection so ignore properties that apply to the selected image
-                        continue;
-                    }
+                            if (isCollectionProp) {
+                                // The selected properties container is not shown, and property applies to a 
+                                // collection, so ignore properties that apply to the selected image
+                                continue;
+                            }
 
-                    // Use the parsed EXIF data for each Calscape table column
-                    if (column.hasOwnProperty("valuemap")) {
-                        const value = getExifPropertyValue(column.name, column.datasources, column.userinterface.multivalue, exifData);
-                        if (column.valuemap.hasOwnProperty(value)) {
-                            imageObj[column.name] = column.valuemap[value];
+                            // Use the parsed EXIF data for each Calscape table column
+                            if (column.hasOwnProperty("valuemap")) {
+                                const value = getExifPropertyValue(column.name, column.datasources, column.userinterface.multivalue, exifData);
+                                if (column.valuemap.hasOwnProperty(value)) {
+                                    imageObj[column.name] = column.valuemap[value];
+                                } else {
+                                    imageObj[column.name] = value;
+                                }
+                            } else {
+                                imageObj[column.name] = getExifPropertyValue(column.name, column.datasources, column.userinterface.multivalue, exifData);
+                            }
+                            console.log(column.name + ": " + imageObj[column.name]);
                         }
-                        else {
-                            imageObj[column.name] = value;
+                    }
+                } else {
+                    console.log(`photo ${id} is from Flickr`);
+                    imageObj["sourceImage"] = getSourcePhoto(id).url;
+                    imageObj["thumbnail"] = getSourcePhoto(id).thumbnail;
+                    const flickrData = await getFlickrPhotoInfo(id, 'flickr.photos.getInfo');
+                    const flickrExifData = await getFlickrPhotoInfo(id, 'flickr.photos.getExif');
+                    for (const table of importconfig.photoimportconfig.tables) {
+                        for (const column of table.columns) {
+                            const isCollectionProp = column.applies_to == "collection" ? true : false;
+
+                            if (isCollectionProp) {
+                                // The selected properties container is not shown, and property applies to a 
+                                // collection, so ignore properties that apply to the selected image
+                                continue;
+                            }
+
+                            if (column.hasOwnProperty("valuemap")) {
+                                const value = await getFlickrPropertyValue(column.name, column.datasources, column.userinterface.multivalue, flickrData, flickrExifData);
+                                if (column.valuemap.hasOwnProperty(value)) {
+                                    imageObj[column.name] = column.valuemap[value];
+                                } else {
+                                    imageObj[column.name] = value;
+                                }
+                            } else {
+                                imageObj[column.name] = await getFlickrPropertyValue(column.name, column.datasources, column.userinterface.multivalue, flickrData, flickrExifData);
+                            }
                         }
                     }
-                    else {
-                        imageObj[column.name] = getExifPropertyValue(column.name, column.datasources, column.userinterface.multivalue, exifData);
-                    }
-                    console.log(column.name + ": " + imageObj[column.name]);
                 }
+
+                imageData[id] = imageObj;
+
+                console.log('Populated image data: ');
+                for (const key in imageData) {
+                    if (imageData.hasOwnProperty(key)) {
+                        const value = imageData[key];
+                        console.log(`Key: ${key}, Value:`, value);
+                    }
+                }
+
+                resolve(); // Resolve the promise when everything is done
+            } catch (error) {
+                reject(error); // Reject the promise if there's an error
             }
         }
-        else {
-            console.log(`photo ${id} is from Flickr`);
-            imageObj["sourceImage"] = getSourcePhoto(id).url;
-            imageObj["thumbnail"] = getSourcePhoto(id).thumbnail;
-            const flickrData = await getFlickrPhotoInfo(id, 'flickr.photos.getInfo');
-            const flickrExifData = await getFlickrPhotoInfo(id, 'flickr.photos.getExif');
-            for (const table of importconfig.photoimportconfig.tables) {
-                for (const column of table.columns) {
-                    const isCollectionProp = column.applies_to == "collection" ? true : false;
-
-                    if (isCollectionProp) {
-                        // The selected properties container is not shown and property applies to a 
-                        // collection so ignore properties that apply to the selected image
-                        continue;
-                    }
-
-                    if (column.hasOwnProperty("valuemap")) {
-                        const value = await getFlickrPropertyValue(column.name, column.datasources, column.userinterface.multivalue, flickrData, flickrExifData);
-                        if (column.valuemap.hasOwnProperty(value)) {
-                            imageObj[column.name] = column.valuemap[value];
-                        }
-                        else {
-                            imageObj[column.name] = value;
-                        }
-                    }
-                    else {
-                        imageObj[column.name] = await getFlickrPropertyValue(column.name, column.datasources, column.userinterface.multivalue, flickrData, flickrExifData);
-                    }
-                }
-            }
-        }
-
-        imageData[id] = imageObj;
-    }
-
-    console.log('Populated image data: ');
-    for (const key in imageData) {
-        if (imageData.hasOwnProperty(key)) {
-            const value = imageData[key];
-            console.log(`Key: ${key}, Value:`, value);
-        }
-    }
+    });
 }
 
 async function readAndParseExifData(photo) {
@@ -608,7 +707,10 @@ export function getPhotoCollection() {
 
 export async function clearPhotoCollection() {
     // Move collectionThumbnails back to source photos and clear the collection.
-    await handleRemovedNodes(collectionThumbnails);
+    const removedNodesArray = Array.from(collectionThumbnails);
+    for (const removedNode of removedNodesArray) {
+        await handleRemovedNode(removedNode);
+    }
     collectionThumbnails.length = 0;
     imageData = {};
     collectionData = {};

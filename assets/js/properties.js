@@ -638,7 +638,7 @@ export function createPropertiesFields() {
     const collectionform = document.getElementById('group-properties-form');
 
     for (const table of importconfig.photoimportconfig.tables) {
-        console.log(`Table: ${table.table}`);
+        console.log(`Creating fields for database table: ${table.table}`);
 
         // Loop through columns within the current table
         for (const column of table.columns) {

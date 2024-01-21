@@ -8,7 +8,7 @@ include_once(dirname(dirname(__FILE__)) . '/php/submit-page.php');
 include_once(dirname(dirname(__FILE__)) . '/php/contributor-nav.php');
 include_once(dirname(dirname(__FILE__)) . '/php/reviewer-nav.php');
 include_once(dirname(dirname(__FILE__)) . '/php/collection_for_review_list.php');
-include_once(dirname(dirname(__FILE__)) . '/php/sort_photos.php');
+include_once(dirname(dirname(__FILE__)) . '/php/sort_and_save.php');
 
 // side-bar-nav.php
 $nav = isset($_GET['nav']) ? $_GET['nav'] : 'home';

@@ -2,7 +2,8 @@
  * @file main-content.js
  */
 
-import { displayThumbnailsFromSourcePhotos, initializeSortableGrid } from "./thumbnails.js";
+import { initializeSortableGrid } from "./thumbnails.js";
+import { initPhotoSelection } from "./photo-selection.js";
 import { initializeResizer } from "./resizer.js";
 import { fetchSpeciesList, initializeSpeciesInput, initializeCollectionSpeciesInput } from "./species-selection.js";
 import { initializeCollectionData, getCollectionThumbnails } from "./collection-data.js";
@@ -12,7 +13,7 @@ import { initSubmitPage as initializeSubmitPage } from "./submit-page.js";
 import { initWelcome } from "./side-bar-nav.js";
 import { getCollectionsForReview} from "./collections-for-review.js";
 import { getSourcePhotos } from "./source-photo-data.js";
-import { initPhotoSort } from "./sort-photos.js";
+import { initPhotoSort } from "./sort-and-save.js";
 
 /**
  * @function init
@@ -31,7 +32,7 @@ export function initMainContent() {
         mainContentArea.classList.remove('row-layout');
         mainContentArea.classList.add('column-layout');
         initializeSortableGrid('thumbnail-grid','select-photos-message', Object.entries(getSourcePhotos()));
-        displayThumbnailsFromSourcePhotos();
+        initPhotoSelection();
     }
 
     if (mainContentArea.querySelector('#collection-container')) {

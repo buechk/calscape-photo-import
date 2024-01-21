@@ -5,7 +5,7 @@
  * Selection of photos from the file system or from a Flickr
  * api service URL are supported. 
  */
-import { displayThumbnails } from './thumbnails.js'
+import { displayThumbnails, displayThumbnailsFromSourcePhotos } from './thumbnails.js'
 
 const fileModal = document.getElementById('fileModal');
 const flickrModal = document.getElementById('flickrModal');
@@ -20,6 +20,10 @@ const selectFromFlickrLink = document.getElementById('selectFromFlickrLink');
 
 const fileInput = document.getElementById('fileInput');
 const flickrUrl = document.getElementById('flickrUrl');
+
+export function initPhotoSelection() {
+    displayThumbnailsFromSourcePhotos();
+}
 
 // EVENT LISTENERS
 
