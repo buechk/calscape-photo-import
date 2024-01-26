@@ -11,23 +11,14 @@ define('SUBMIT', <<<HTML
       <thead>
         <tr>
           <th>Select</th>
+          <th>Species</th>
           <th>Caption</th>
           <th>Date</th>
-          <th>Species</th>
-          <th>Collection</th>
+          <th>Collection Name</th>
         </tr>
       </thead>
       <tbody id="review-table-body">
         <!-- JS will populate this -->
-        <!-- sample text -->
-        <tr>
-            <td>Box</td>
-          <td>User's caption</td>
-          <td>User's date</td>
-          <td>User's species</td>
-          <td>User's collection name</td>
-        </tr>
-        <!-- end -->
       </tbody>
     </table>
     </div>

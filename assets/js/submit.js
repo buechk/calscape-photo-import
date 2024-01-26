@@ -117,12 +117,20 @@ function saveCollection(collection) {
             console.log('Collection saved to file: ', data.filename);
             displayStatusMessage(`The photo collection, "${collection['collection-name']}", has been submitted for review.\nThank you for your photo contribution.`, false, -1, true);
             clearPhotoCollection();
+            clearTable();
         })
         .catch(error => {
             // Handle network errors or other exceptions
             console.error('Error:', error);
             displayStatusMessage(`Error submitting photo collection, "${collection['collection-name']}": ${error.message}`, true);
         });
+}
+
+export function clearTable() {
+    const tableBody = document.getElementById('review-table-body');
+    if (tableBody) {
+        tableBody.innerHTML = '';
+    }
 }
 
 
