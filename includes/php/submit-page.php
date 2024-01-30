@@ -6,6 +6,7 @@ define('SUBMIT', <<<HTML
     
 <div class="table-container">
   <h1 id="table-title">Review Your Submissions</h1>
+  <h2 id="collection-name"></h2>
   <div class="review-section">
     <table id="review-table">
       <thead>
@@ -14,7 +15,6 @@ define('SUBMIT', <<<HTML
           <th>Species</th>
           <th>Caption</th>
           <th>Date</th>
-          <th>Collection Name</th>
         </tr>
       </thead>
       <tbody id="review-table-body">

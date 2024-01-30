@@ -6,6 +6,10 @@ export function initSubmitPage() {
     const tableBody = document.getElementById('review-table-body');
     tableBody.innerHTML = ''; // Clear the table body
 
+    const collectionNameElement = document.getElementById('collection-name');
+    collectionNameElement.textContent = collectionData['collection-name'];
+
+
      // Iterate over each photo and create a row
      Object.values(collectionData.photos).forEach((photo, index) => {
         const photoRow = document.createElement('tr');
@@ -36,13 +40,13 @@ export function initSubmitPage() {
         cell.textContent = escapeHtml(photo.DateTimeOriginal);
         photoRow.appendChild(cell);
 
-        // Add cell for collection name
-        cell = document.createElement('td');
-        cell.textContent = escapeHtml(collectionData['collection-name']);
-        photoRow.appendChild(cell);
+        // // Add cell for collection name
+        // cell = document.createElement('td');
+        // cell.textContent = escapeHtml(collectionData['collection-name']);
+        // photoRow.appendChild(cell);
 
         checkBox.addEventListener('change', function() {
-            collectionData.photos[photoId].isSelected = this.checked; //is this correct? 
+            collectionData.photos[photoId].isSelected = this.checked;
         });
 
         tableBody.appendChild(photoRow);

@@ -94,6 +94,41 @@ function submit(collection) {
         });
 }
 
+// code to change submit function to only submit checked items in the table
+
+    // function submit(collection) {
+    //     const uploadPromises = [];
+    
+    //     for (const photoId in collection.photos) {
+    //         const photo = collection.photos[photoId];
+    
+    //         // Check if the photo is selected
+    //         if (photo.isSelected) {
+    //             const species = (collection["collection-type"] === 'species') ? collection["collection-species"] : photo["selected-species"];
+    //             const source = photo["sourceImage"];
+    //             const tn = photo["thumbnail"];
+    
+    //             const uploadPromise = new Promise((resolve, reject) => {
+    //                 uploadFile(source, tn, species, (filename, thumbnail) => {
+    //                     photo["FileName"] = filename;
+    //                     photo["thumbnail"] = thumbnail;
+    //                     resolve();
+    //                 });
+    //             });
+    
+    //             uploadPromises.push(uploadPromise);
+    //         }
+    //     }
+    
+    //     Promise.all(uploadPromises)
+    //         .then(() => {
+    //             saveCollection(collection);
+    //         })
+    //         .catch(error => {
+    //             console.error('Error during file uploads:', error);
+    //         });
+    // }
+
 function saveCollection(collection) {
     // Convert the collection object to JSON
     const jsonData = JSON.stringify(collection, null, 2);

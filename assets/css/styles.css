@@ -536,10 +536,9 @@ header {
 
 .container {
     max-width: 960px;
-    margin-left: 20%;
+    margin-left: 15%;
     background-color: #fff;
     padding: 20px;
-
 }
 
 .table-container {
@@ -648,19 +647,6 @@ th {
     margin-left: 8px;
 }
 
-#submit-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.container {
-    max-width: 960px;
-    margin-left: 20%;
-    background-color: #fff;
-    padding: 20px;
-
-}
-
 .table-container {
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -692,7 +678,7 @@ th {
 }
 
 
-#submit-button-container {
+/* #submit-button-container {
     display: block;
     text-align: center;
     margin-left: auto;
@@ -743,7 +729,7 @@ th {
 #submit-btn:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-}
+} */
 
 #status-area {
     position: absolute;
