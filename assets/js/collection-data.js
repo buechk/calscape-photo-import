@@ -5,7 +5,7 @@ import { removeSourcePhoto, storeSourcePhoto, getSourcePhoto } from "./source-ph
 import { importconfig, createPropertiesFields } from "./properties.js";
 import { updateSpeciesChoice } from "./species-selection.js";
 import { displayStatusMessage } from "./status.js";
-import { ROLE } from "./side-bar-nav.js";
+import { ROLE, Mode } from "./side-bar-nav.js";
 import { createThumbnailContainer, setupMutationObserver } from "./thumbnails.js";
 
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
@@ -184,14 +184,16 @@ const mutationQueue = [];
 let isProcessing = false;
 
 async function handleRemovedNode(removedNode) {
-    console.log('Child element removed:', removedNode);
+    console.log('Child element removed from collection grid:', removedNode);
     const id = removedNode.id;
     const imageObj = imageData[id];
 
     if (imageObj) {
         try {
-            await storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle);
-            console.log('Source photo stored: ', id, imageObj.CaptionTitle);
+            if (ROLE === Mode.CONTRIBUTE) {
+                await storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle);
+                console.log('Source photo stored: ', id, imageObj.CaptionTitle);
+            }
         } catch (error) {
             console.error('Error storing source photo:', error);
         }
@@ -200,6 +202,9 @@ async function handleRemovedNode(removedNode) {
 
 async function handleAddedNode(addedNode) {
     try {
+        if (addedNode.classList.contains('calscape-existing')) {
+            return;
+        }
         console.log('Child element added', addedNode);
         await populateThumbnailProperties(addedNode.id);
         console.log('Thumbnail properties populated successfully.');
@@ -616,7 +621,7 @@ export async function setPhotoCollection(data) {
 
             const fileName = photo.thumbnail;
             const captionText = photo.CaptionTitle;
-            const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
+            const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=collection-photo`;
             const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText);
             addCollectionThumbnail(tc);
         }

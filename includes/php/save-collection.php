@@ -16,7 +16,7 @@ if ($decodedData === null) {
 }
 
 // Define the path to save the collection
-$collectionPath = $collectionReviewDirectory;
+$collectionPath = COLLECTIONS_REVIEW_DIR;
 
 // Ensure the directory exists
 if (!file_exists($collectionPath)) {

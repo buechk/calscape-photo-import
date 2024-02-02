@@ -124,7 +124,7 @@ export function setupMutationObserver(targetGrid, gridArray, callback) {
 
     // Function to update the contents of the array with the current order of elements
     function updateGridArray() {
-        console.log("Sync'ing grid array with grid contents: ", targetGrid.querySelectorAll('.tcontainer'));
+        console.log(`Sync'ing ${targetGrid.id} grid array with grid contents`);
         gridArray.length = 0; // Clear the existing array
         gridArray.push(...Array.from(targetGrid.querySelectorAll('.tcontainer')));
     }
@@ -270,7 +270,7 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText) {
     // Create a div for the caption
     const caption = document.createElement('div');
     caption.classList.add('caption');
-    caption.innerText = captionText;
+    caption.innerHTML = captionText;
     tcontainer.appendChild(caption);
 
     tcontainer.id = uniqueIdentifier;
@@ -305,8 +305,8 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     const photo = speciesPhotos[photoID];
                     console.log(`Processing photo: ${photo.FileName}`);
                     const fileName = photo.FileName;
-                    const captionText = photo.CaptionTitle;
-                    const turl = `/includes/php/thumbnail.php?fileName=${fileName}`;
+                    const captionText = `${photo.CaptionTitle}`;
+                    const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
                     const tc = createThumbnailContainer(photoID, turl, captionText);
                     tc.classList.add('calscape-existing');
                     tc.draggable = true;

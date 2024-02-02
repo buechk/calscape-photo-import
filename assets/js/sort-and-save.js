@@ -3,8 +3,8 @@
  * 
  * Sort collection photos into existing Calscape photos
  */
-import { getPhotoById, getPhotoCollection, validatePhotoCollection } from "./collection-data.js";
-import { displayThumbnailsFromCalscape, initializeSortableGrid } from "./thumbnails.js";
+import { getImageData, getPhotoCollection, validatePhotoCollection } from "./collection-data.js";
+import { displayThumbnailsFromCalscape, initializeSortableGrid, setupMutationObserver } from "./thumbnails.js";
 import { displayStatusMessage } from "./status.js";
 let calscapePhotos = {};
 
@@ -32,23 +32,39 @@ export async function initPhotoSort() {
     initializeSortableGrid('thumbnail-calscape-grid', 'calscape-drag-and-drop-message', Object.entries(calscapePhotos), false);
 
     const calscapePhotoGrid = document.getElementById('thumbnail-calscape-grid');
-    setupMutationObserver(calscapePhotoGrid);
+    setupMutationObserver(calscapePhotoGrid, calscapeThumbnails, processMutation);
 
-    const collection = getPhotoCollection();
-    const species = collection["collection-type"] === 'species' ? collection["collection-species"] : '';
-    if (species !== '') {
-        await fetchExistingPhotos(species);
-        displayThumbnailsFromCalscape(calscapePhotos);
-    }
+    displayCalscapePhotos();
 
     const saveButton = document.getElementById('save-button');
-    saveButton.addEventListener('click', function (event) {
+    saveButton.addEventListener('click', async function (event) {
         const delayDuration = 500; // milliseconds
         // Wait for the autosave to complete (adjust the delay if needed)
-        setTimeout(() => {
-            displayStatusMessage(`Saving "${collection['collection-species']}" photos to Calscape...`);
+        setTimeout(async () => {
             const saveData = prepareSaveData();
-            // save();
+
+            // Count the number of new photos being added
+            let count = 0;
+
+            for (const key in saveData.photos) {
+                if (saveData.photos[key].hasOwnProperty('sourceImage')) {
+                    count++;
+                }
+            }
+            const message = count === 1 ? `Saving ${count} new photo to Calscape...` : `Saving ${count} new photos to Calscape...`;
+            displayStatusMessage(message);
+
+            const result = await save(saveData);
+            if (result) {
+                const resultMessage = getSaveStatus(result);
+                displayStatusMessage(`${resultMessage}`, false, -1, true);
+                displayCalscapePhotos(true);
+                saveButton.disabled = true;
+            }
+            else {
+                displayStatusMessage(`Error saving photos.`, true);
+            }
+
             // Convert the collectionData object to a JSON string with proper indentation
             const jsonString = JSON.stringify(saveData, null, 2);
             console.log(jsonString);
@@ -56,40 +72,74 @@ export async function initPhotoSort() {
     });
 }
 
-// Function to set up the observer
-function setupMutationObserver(targetElement) {
-    const observer = new MutationObserver(async function (mutations) {
-        /*
-        for (const mutation of mutations) {
-            const { addedNodes, removedNodes } = mutation;
+async function displayCalscapePhotos(refresh = false) {
+    const calscapePhotoGrid = document.getElementById('thumbnail-calscape-grid');
 
-            if (addedNodes.length > 0) {
-                addedNodes.forEach(function (addedNode) {
-                    console.log('Child element added', addedNode);
+    const collection = getPhotoCollection();
+    const species = collection["collection-type"] === 'species' ? collection["collection-species"] : '';
 
-                    const foundPhoto = getPhotoById(addedNode.id);                  
-                    if (foundPhoto) {
-                      console.log("Photo added to Calscape photos:", foundPhoto);
-                      calscapePhotos[id] = foundPhoto;
-                    } else {
-                      console.log("Unable to add photo to Calscape photos. Photo not found in collection.", addedNode.id);
-                    }
-                });
-            }
-        
-            if (removedNodes.length > 0) {
-                console.log("Removed nodes should not occur.")
-            } 
+    if (species !== '') {
+        if (refresh || calscapeThumbnails.length === 0) {
+            clearCalscapePhotos();
+            await fetchExistingPhotos(species);
+            displayThumbnailsFromCalscape(calscapePhotos);
         }
-        */
+        else {
+            // add collection thumbnails to group grid
+            calscapeThumbnails.forEach(function (thumbnail) {
+                calscapePhotoGrid.appendChild(thumbnail);
+            });
+        }
+    }
+}
 
-        // sync up calscapeThumbnail order with target element order.
-        calscapeThumbnails = Array.from(targetElement.querySelectorAll('.tcontainer'));
-    });
+function getSaveStatus(jsonResponse) {
+    // Assuming jsonResponse is the JSON-decoded response from PHP
+    // You may get it through an AJAX call or however you're communicating with the PHP backend
 
-    const config = { childList: true };
+    let statusMessage = '';
 
-    observer.observe(targetElement, config);
+    if (jsonResponse.success) {
+        // Success message
+        console.log("Save operation successful!");
+
+        // Print messages
+        for (let message of jsonResponse.messages) {
+            console.log(message);
+        }    
+
+        const newPhotosAdded = jsonResponse.new_succeeded.length;
+        const existingPhotosUpdated = jsonResponse.update_succeeded.length;
+        const newPhotosFailed = jsonResponse.new_failed.length;
+        const existingPhotosUpdateFailed = jsonResponse.update_failed.length;
+
+
+        statusMessage += `Added ${jsonResponse.new_succeeded.length} new ${newPhotosAdded === 1 ? 'photo' : 'photos'}. `;
+
+        // Check if any existing photos had their positions updated
+        if (existingPhotosUpdated > 0) {
+            statusMessage += `Updated positions for ${existingPhotosUpdated} existing ${existingPhotosUpdated === 1 ? 'photo' : 'photos'}. `;
+        }
+
+        // Check if there were any failed attempts to add new photos
+        if (newPhotosFailed > 0) {
+            statusMessage += `Failed to add ${newPhotosFailed} new ${newPhotosFailed === 1 ? 'photo' : 'photos'}. `;
+        }
+
+        // Check if there were any failed attempts to update positions of existing photos
+        if (existingPhotosUpdateFailed > 0) {
+            statusMessage += `Failed to update positions for ${existingPhotosUpdateFailed} existing ${existingPhotosUpdateFailed === 1 ? 'photo' : 'photos'}. `;
+        }
+    } else {
+        // Failure message
+        console.error("Save operation failed!");
+
+        // Print error messages
+        for (let message of jsonResponse.messages) {
+            console.error(message);
+        }
+    }
+       return statusMessage;
 }
 
 async function fetchExistingPhotos(speciesName) {
@@ -139,7 +189,7 @@ function prepareSaveData() {
             photo = findPhotoById(calscapePhotos, tcontainer.id);
         }
         else {
-            photo = getPhotoById(tcontainer.id);
+            photo = getImageData(tcontainer.id);
         }
         if (photo !== undefined) {
             saveData["photos"][order] = photo;
@@ -152,11 +202,37 @@ function prepareSaveData() {
     return saveData;
 }
 
+async function save(saveData) {
+    try {
+        const response = await fetch("/includes/php/save-to-db.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(saveData), // Automatically converts the object to JSON
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("HTTP error! Status:", response.status);
+            return false;
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error("Error:", error);
+        return false;
+    }
+}
+
+
 function populateCalscapePhotos(speciesName, results) {
     results.forEach(result => {
         const plantID = result.ID;
         const photoOrder = result.plant_photo_order !== null ? result.plant_photo_order : result.plant_photo_calphotos_order;
-        const photoID = result.photo_id
+        const photoID = result.photo_id;
 
         if (!(speciesName in calscapePhotos)) {
             calscapePhotos[speciesName] = {};
@@ -168,30 +244,11 @@ function populateCalscapePhotos(speciesName, results) {
             "id": photoID,
             "CaptionTitle": result.Copyright,
             "Artist": result.Artist,
-            "FileName": result.FileName
+            "FileName": result.FileName,
+            "plant_photo_order": result.plant_photo_order,
+            "plant_photo_calphotos_order": result.plant_photo_calphotos_order
         };
     });
-}
-
-async function save(speciesName) {
-    try {
-        const response = await fetch("/includes/php/save-to-db.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: speciesName,
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Save to Calscape data: ", data);
-    } catch (error) {
-        console.error("Error:", error);
-    }
 }
 
 function findPhotoById(speciesData, photoId) {
@@ -207,4 +264,80 @@ function findPhotoById(speciesData, photoId) {
     // If no matching photo is found, return null
     return null;
 }
+
+function deletePhoto(photoIdToDelete) {
+    const speciesKey = Object.keys(calscapePhotos)[0];
+
+    if (calscapePhotos.photos) {
+        Object.keys(calscapePhotos[speciesKey].photos).forEach(key => {
+            const photo = calscapePhotos.photos[key];
+            if (photo && photo.id === photoIdToDelete) {
+                delete calscapePhotos[speciesKey].photos[key];
+                console.log(`Photo with ID ${photoIdToDelete} deleted successfully from Calscape photos.`);
+            }
+        });
+    } else {
+        console.log("No photos found.");
+    }
+}
+
+
+function handleRemovedNode(removedNode) {
+    try {
+        console.log('Child element removed from Calscape photos', addedNode);
+        if (removedNode.classList.contains("calscape-existing")) {
+            return;
+        }
+
+        deletePhoto(removedNode.id);
+
+        console.log("Photo removed from Calscape photos:", getImageData(removedNode.id));
+
+    } catch (error) {
+        console.error('Error processing removed node:', error);
+    }
+}
+
+async function handleAddedNode(addedNode) {
+    try {
+        console.log('Child element added to Calscape photos', addedNode);
+        if (addedNode.classList.contains("calscape-existing")) {
+            return;
+        }
+
+        // Find collection imageData photo and add it to calscapePhotos
+        const collectionPhoto = getImageData(addedNode.id);
+        if (collectionPhoto) {
+            const speciesKey = Object.keys(calscapePhotos)[0];
+            const addedPhotoID = Object.keys(calscapePhotos[speciesKey].photos).length + 1;
+
+            calscapePhotos[speciesKey].photos[addedPhotoID] = collectionPhoto;
+            console.log("Photo added to Calscape photos:", calscapePhotos[speciesKey].photos[addedPhotoID]);
+        } else {
+            console.log("Unable to add photo to Calscape photos. Photo not found in collection.", addedNode.id);
+        }
+    } catch (error) {
+        console.error('Error processing added node:', error);
+    }
+}
+
+export function processMutation(mutation) {
+    mutation.addedNodes.forEach((addedNode) => {
+        handleAddedNode(addedNode);
+    });
+}
+
+export function getCalscapeThumbnails() {
+    return calscapeThumbnails;
+}
+
+export async function clearCalscapePhotos() {
+    const removedNodesArray = Array.from(calscapeThumbnails);
+    for (const removedNode of removedNodesArray) {
+        await handleRemovedNode(removedNode);
+    }
+    calscapeThumbnails.length = 0;
+    calscapePhotos = {};
+}
+
 

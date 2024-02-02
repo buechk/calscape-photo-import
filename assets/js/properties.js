@@ -251,14 +251,14 @@ export const importconfig = {
                         ]
                     },
                     {
-                        "name": "Ranking",
+                        "name": "QualityRanking",
                         "datasources": {
                             "flickr": "photo.exif[tag='Rating'].raw._content",
                             "jpeg": "EXIF.xmp.Rating"
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Ranking - 0 (worst) to 5 (best)",
+                            "label": "Quality ranking - 0 (worst) to 5 (best)",
                             "placeholder": "Enter 0 to 5",
                             "default": "",
                             "roles": {

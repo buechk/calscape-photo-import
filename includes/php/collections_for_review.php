@@ -2,11 +2,11 @@
 include_once(dirname(dirname(__FILE__)).'/php/common.php');
 
 // Check if the directory exists
-if (is_dir($collectionReviewDirectory)) {
+if (is_dir(COLLECTIONS_REVIEW_DIR)) {
     $collections = [];
 
     // Scan the directory for JSON files
-    $jsonFiles = glob($collectionReviewDirectory . '/*.json');
+    $jsonFiles = glob(COLLECTIONS_REVIEW_DIR . '/*.json');
 
     // Extract collection name, file path, and count photos from JSON files
     foreach ($jsonFiles as $jsonFile) {

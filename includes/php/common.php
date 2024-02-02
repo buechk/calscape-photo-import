@@ -7,12 +7,34 @@ $username = "root";
 $password = "Edw8rdpm!";
 $database = "calsca6_calscape";
 
+/*
+// Kristy's Database connection parameters
+$hostname = "localhost:3306";
+$username = "root";
+$password = "Edw8rdpm!";
+$database = "calsca6_calscape";
+*/
+
+/*
+// AWS Server Database connection parameters
+$hostname = "calscape-photo-test-db-instance.cjoscaq8s13i.us-west-1.rds.amazonaws.com:3306";
+$username = "photo_admin";
+$password = "calscapephoto";
+$database = "calsca6_demo";	
+*/
+
 $dbManager = new DatabaseManager($hostname, $username, $password, $database);
 
-// File upload
+// Calscape photo directories
 define('ALL_IMAGES_DIR', '../../public/ExtData/allimages/');
 define('BIG_IMAGES_DIR', ALL_IMAGES_DIR . '900/');
 define('PHOTOS_DIR', ALL_IMAGES_DIR . 'Photos/');
+
+// Collection directories
+define('COLLECTIONS_ROOT', '../../public/ExtData/collections/');
+define('COLLECTIONS_REVIEW_DIR', COLLECTIONS_ROOT . 'review/');
+define('COLLECTION_PHOTOS_DIR', COLLECTIONS_ROOT . 'photos/');
+define('COLLECTION_THUMBNAILS_DIR', COLLECTIONS_ROOT . 'thumbnails/');
 
 // Thumbnail Dimension
 //define('THUMBNAIL_WIDTH', 90);
@@ -20,8 +42,10 @@ define('PHOTOS_DIR', ALL_IMAGES_DIR . 'Photos/');
 define('THUMBNAIL_WIDTH', 150);
 define('THUMBNAIL_HEIGHT', 150);
 
-// Collection directory
-$collectionReviewDirectory = '../../public/ExtData/collections/review/';
+define('FILETYPE_CALSCAPE_PHOTO', 'calscape-photo');
+define('FILETYPE_CALSCAPE_THUMBNAIL', 'calscape-thumbnail');
+define('FILETYPE_COLLECTION_PHOTO', 'collection-photo');
+define('FILETYPE_COLLECTION_THUMBNAIL', 'collection-thumbail');
 
 // Query to get all species
 $speciesquery = "SELECT species FROM plants WHERE disabled = 0 and is_biozone = 0 ORDER BY species";
@@ -72,7 +96,7 @@ function resizedCoor($imgWidth, $imgHeight, $targetWidth = THUMBNAIL_WIDTH, $tar
             $newHeight = $targetHeight;
         }
     }
-    
+
     return array('width' => intval($newWidth), 'height' => intval($newHeight), 'left' => $offsetLeft, 'top' => $offsetTop);
 }
 
@@ -168,5 +192,76 @@ function createThumbnail(
                 return $bln;
         }
         return ($saveToFile ? '' : false);
+    }
+}
+
+function getPlantID($species)
+{
+    global $dbManager;
+    $plantID = '';
+
+    try {
+        // Get the ID for a species from the plants table
+        $query = "SELECT ID FROM plants WHERE species = ?";
+        $params = ['s', $species];
+
+        $result = $dbManager->executeQuery($query, $params);
+
+        // Check if the query was successful
+        if ($result) {
+            $row = $result->fetch_assoc();
+
+            // Check if a row was found
+            if ($row) {
+                $plantID = $row["ID"];
+            } else {
+                // Handle the case where no row is returned (plant not found)
+                throw new Exception("Plant not found for species: $species");
+            }
+        } else {
+            // Handle the case where the query failed
+            throw new Exception("Error in query: $query");
+        }
+    } catch (Exception $e) {
+        $errorResponse = ["error" => $e->getMessage()];
+        echo json_encode($errorResponse);
+    } finally {
+        $dbManager->closeConnection();
+    }
+
+    return $plantID === '' ? false : $plantID;
+}
+
+function moveFile($sourceFilePath, $destinationDirectory, $destinationFileName)
+{
+    // Ensure the destination directory exists
+    if (!file_exists($destinationDirectory)) {
+        mkdir($destinationDirectory, 0777, true);
+    }
+
+    $destinationFilePath = $destinationDirectory . $destinationFileName;
+
+    // Move the file
+    if (rename($sourceFilePath, $destinationFilePath)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function copyFile($sourceFilePath, $destinationDirectory, $destinationFileName)
+{
+    // Ensure the destination directory exists
+    if (!file_exists($destinationDirectory)) {
+        mkdir($destinationDirectory, 0777, true);
+    }
+
+    $destinationFilePath = $destinationDirectory . $destinationFileName;
+
+    // Copy the file
+    if (copy($sourceFilePath, $destinationFilePath)) {
+        return true;
+    } else {
+        return false;
     }
 }

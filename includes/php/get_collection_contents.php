@@ -4,7 +4,7 @@ include_once(dirname(dirname(__FILE__)) . '/php/common.php');
 // Ensure the filename is provided
 if (isset($_GET['filename'])) {
     $filename = $_GET['filename'];
-    $filepath = $collectionReviewDirectory . '/' . $filename;
+    $filepath = COLLECTIONS_REVIEW_DIR . '/' . $filename;
 
     // Check if the file exists
     if (file_exists($filepath)) {

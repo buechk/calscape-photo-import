@@ -42,18 +42,18 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
     $path_parts = pathinfo($_FILES['file']['name']);
     $fileExtension = $path_parts['extension'];
     $filename = str_replace(' ', '_', $rootname) . '_' . uniqid() . '.' . $fileExtension;
-    $targetPath = BIG_IMAGES_DIR . $filename;
+    $targetPath = COLLECTION_PHOTOS_DIR . $filename;
     $thumbnailFile = 'thumbnail_' . $filename;
-    $thumbnailPath = PHOTOS_DIR . $thumbnailFile; // Adjust thumbnail prefix as needed
+    $thumbnailPath = COLLECTION_THUMBNAILS_DIR . $thumbnailFile; // Adjust thumbnail prefix as needed
 
     // Ensure the target directories exists
-    if (!file_exists(BIG_IMAGES_DIR)) {
-        mkdir(BIG_IMAGES_DIR, 0777, true);
+    if (!file_exists(COLLECTION_PHOTOS_DIR)) {
+        mkdir(COLLECTION_PHOTOS_DIR, 0777, true);
     }
 
     // Ensure the target directories exists
-    if (!file_exists(PHOTOS_DIR)) {
-        mkdir(PHOTOS_DIR, 0777, true);
+    if (!file_exists(COLLECTION_THUMBNAILS_DIR)) {
+        mkdir(COLLECTION_THUMBNAILS_DIR, 0777, true);
     }
 
     // Move the uploaded file to the server

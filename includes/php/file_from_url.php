@@ -48,11 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rootname = $_POST['rootname'];
 
     // Save the original image
-    $responseOriginal = saveFile($rootname, BIG_IMAGES_DIR, $imageUrl);
+    $responseOriginal = saveFile($rootname, COLLECTION_PHOTOS_DIR, $imageUrl);
 
     // Save the thumbnail image only if the original image was saved successfully
     if ($responseOriginal['success'] === true) {
-        $responseThumbnail = saveFile($rootname, PHOTOS_DIR, $imageThumbnail);
+        $responseThumbnail = saveFile($rootname, COLLECTION_THUMBNAILS_DIR, $imageThumbnail);
 
         // Combine responses and return
         $combinedResponse = [

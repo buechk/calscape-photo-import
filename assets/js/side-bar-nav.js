@@ -7,8 +7,9 @@ import { initMainContent } from "./main-content.js";
 import { clearPhotoCollection, getCollectionThumbnails, savePhotoCollection, validateLeavePage } from "./collection-data.js";
 import { saveSelectedProperties } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
+import { getCalscapeThumbnails } from "./sort-and-save.js";
 
-const Mode = {
+export const Mode = {
     UNSPECIFIED: 'unspecified',
     CONTRIBUTE: 'contributor',
     REVIEW: 'reviewer'
@@ -22,7 +23,7 @@ $(document).ready(function () {
         event.preventDefault();
 
         if (ROLE !== Mode.CONTRIBUTE) {
-            if (getCollectionThumbnails().length > 0) {
+            if (getCollectionThumbnails().length > 0 || getCalscapeThumbnails().length > 0) {
                 if (!confirm("Changes made to the current collection will not be saved if you switch to Contribute mode. \
                 \n\r\Press OK to switch to Contribute or Cancel to remain in Review mode.")) {
                     return;
