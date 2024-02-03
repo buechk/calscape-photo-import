@@ -16,7 +16,7 @@ export function displayStatusMessage(message, isError = false, autoDismissTime =
     const statusMessage = statusArea.querySelector('.status-message');
 
     statusMessage.className = `status-message ${statusClass}`;
-    statusMessage.querySelector('#status-text').textContent = message;
+    statusMessage.querySelector('#status-text').innerHTML = message;
 
     // Show the status area
     showStatus(autoDismissTime);

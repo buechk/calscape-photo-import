@@ -717,8 +717,19 @@ export async function clearPhotoCollection() {
         await handleRemovedNode(removedNode);
     }
     collectionThumbnails.length = 0;
-    imageData = {};
+    imageData = {};  
     collectionData = {};
+
+    const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+    if (thumbnailGroupGrid != null) {
+        const tcontainers = thumbnailGroupGrid.querySelectorAll('.tcontainer');
+        tcontainers.forEach(tcontainer => {
+            tcontainer.remove();
+        });
+
+        const dropMessage = document.getElementById('drag-and-drop-message')
+        dropMessage.style.display = 'block';
+    }
 }
 
 export function validateLeavePage() {
@@ -790,13 +801,49 @@ function checkRequiredData(collectionData, requiredColumns) {
     return missingData;
 }
 
-export function validatePhotoCollection() {
+export async function getUserIDfromEmail(email) {
+    let userID = '';
+    try {
+        const response = await fetch("/includes/php/get_user_id.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: email,
+        });
+
+        const jsonResponse = await response.json();
+
+        if (!jsonResponse.success) {
+            console.log(jsonResponse.message);
+            return false;
+        }
+
+        userID = jsonResponse.userID;
+        console.log(`userID for ${email}: ${userID}`);
+    } catch (error) {
+        console.error("Error:", error);
+        return false;
+    }
+
+    return userID;
+}
+
+export async function validatePhotoCollection() {
     // Verify there is at least one photo in the collection
     if (!collectionData.hasOwnProperty("photos") || Object.keys(collectionData.photos).length === 0) {
         console.log('Validation failure: Empty collection. There must be at least 1 photo in the collection');
         displayStatusMessage(`There must be at least 1 photo in the collection.`, true, -1, true);
         return false;
     }
+
+    // validate user email
+    if (! await getUserIDfromEmail(collectionData["user_id"])) {
+        const message = `A Calscape user account with email ${collectionData["user_id"]} was not found.\n\nPlease create a user account in <a href="https://calscape.org/" target="_blank">https://calscape.org/</a> before continuing.`;
+        displayStatusMessage(message, true);
+        return false;
+    }
+
 
     const requiredColumns = getRequiredColumnsForRole(importconfig, ROLE);
 

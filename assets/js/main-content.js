@@ -18,7 +18,7 @@ import { initPhotoSort } from "./sort-and-save.js";
 /**
  * @function init
  */
-export function initMainContent() {
+export async function initMainContent() {
     const mainContentArea = document.getElementById('main-content');
 
     if (mainContentArea.querySelector("#welcome")) {
@@ -59,7 +59,7 @@ export function initMainContent() {
     }
 
     if (mainContentArea.querySelector('#submit-button')) {
-        initializeSubmitPage();
+        await initializeSubmitPage();
         initializeSubmitContribute()
     }
 

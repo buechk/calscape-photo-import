@@ -310,7 +310,7 @@ export const importconfig = {
                         "datasources": {},
                         "applies_to": "collection",
                         "userinterface": {
-                            "label": "Calscape user ID",
+                            "label": "Calscape email",
                             "default": "",
                             "roles": {
                                 "contributor": {

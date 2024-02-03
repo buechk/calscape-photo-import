@@ -179,8 +179,8 @@ export function initializeSubmitContribute() {
     const submitButton = document.getElementById('submit-button');
     submitButton.addEventListener('click', function (event) {
         // Wait for the autosave to complete (adjust the delay if needed)
-        setTimeout(() => {
-            if (validatePhotoCollection()) {
+        setTimeout(async () => {
+            if (await validatePhotoCollection()) {
                 const collection = getPhotoCollection();
                 displayStatusMessage(`Submitting "${collection['collection-name']}" for review...`);
                 submit(collection);

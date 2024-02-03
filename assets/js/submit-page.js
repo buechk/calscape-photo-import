@@ -1,7 +1,7 @@
 import { getPhotoCollection } from "./collection-data.js";
 import { clearTable } from './submit.js';
 
-export function initSubmitPage() {
+export async function initSubmitPage() {
     const collectionData = getPhotoCollection();
     const tableBody = document.getElementById('review-table-body');
     tableBody.innerHTML = ''; // Clear the table body

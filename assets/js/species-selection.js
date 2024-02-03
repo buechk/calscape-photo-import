@@ -2,7 +2,6 @@
  * @file
  * Enable user to select plant species in which to assign photos
  */
-import { getPhotoCollection } from "./collection-data.js";
 import { getSelectedThumbnailCount } from "./thumbnails.js";
 
 let specieslist = [];

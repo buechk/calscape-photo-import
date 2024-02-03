@@ -223,8 +223,7 @@ function getPlantID($species)
             throw new Exception("Error in query: $query");
         }
     } catch (Exception $e) {
-        $errorResponse = ["error" => $e->getMessage()];
-        echo json_encode($errorResponse);
+        throw $e;
     } finally {
         $dbManager->closeConnection();
     }

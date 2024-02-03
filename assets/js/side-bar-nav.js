@@ -7,7 +7,7 @@ import { initMainContent } from "./main-content.js";
 import { clearPhotoCollection, getCollectionThumbnails, savePhotoCollection, validateLeavePage } from "./collection-data.js";
 import { saveSelectedProperties } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
-import { getCalscapeThumbnails } from "./sort-and-save.js";
+import { clearCalscapePhotos, getCalscapeThumbnails } from "./sort-and-save.js";
 
 export const Mode = {
     UNSPECIFIED: 'unspecified',
@@ -24,12 +24,13 @@ $(document).ready(function () {
 
         if (ROLE !== Mode.CONTRIBUTE) {
             if (getCollectionThumbnails().length > 0 || getCalscapeThumbnails().length > 0) {
-                if (!confirm("Changes made to the current collection will not be saved if you switch to Contribute mode. \
+                if (!confirm("Changes made to the selected collection during this Review session will not be saved if you switch to Contribute mode. \
                 \n\r\Press OK to switch to Contribute or Cancel to remain in Review mode.")) {
                     return;
                 }
             }
             clearPhotoCollection(); // user is switching roles so clear the current collection
+            clearCalscapePhotos();
         }
         
         const targetMenu = $(this).data('menu');
@@ -48,7 +49,7 @@ $(document).ready(function () {
                     return;
                 }
             }
-            clearPhotoCollection();
+            clearPhotoCollection(); // user is switching roles so clear the current collection
         }
 
         const targetMenu = $(this).data('menu');
@@ -108,10 +109,10 @@ function fetchContent(page, append = false) {
         url: '/includes/php/side-bar-nav.php?nav=' + page,
         method: 'GET',
         dataType: 'html',
-        success: function (data) {
+        success: async function (data) {
             // Replace the main content with the fetched data
             $('#main-content').html(data);
-            initMainContent();
+            await initMainContent();
 
             //comment updateNavigationBar(page) to show all options on home page
             //update navigation bar based on the fetched page
