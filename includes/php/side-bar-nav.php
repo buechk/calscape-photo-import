@@ -25,7 +25,7 @@ function generateNavBar($nav)
         echo '<nav id="left-nav">';
         echo '<ul>';
         // Add other navigation items here
-        echo '<li><a href="?nav=select-photos">Select Photos</a></li>';
+        echo '<li><a id="select-photos" href="?nav=select-photos">Select Photos</a></li>';
         echo '<li><a href="?nav=create-collection">Create Collection</a></li>';
         echo '<li><a href="?nav=set-properties">Set Properties</a></li>';
         echo '<li><a href="?nav=submit-for-review">Submit for Review</a></li>';

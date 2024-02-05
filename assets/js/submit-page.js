@@ -27,12 +27,12 @@ export async function initSubmitPage() {
 
         // Add cell for species
         cell = document.createElement('td');
-        cell.textContent = escapeHtml(collectionData['collection-species']);
+        cell.innerHTML = escapeHtml(collectionData['collection-species']);
         photoRow.appendChild(cell);
 
         // Add cell for caption
         cell = document.createElement('td');
-        cell.textContent = escapeHtml(photo.CaptionTitle);
+        cell.innerHTML = escapeHtml(photo.CaptionTitle);
         photoRow.appendChild(cell);
 
         // Add cell for date

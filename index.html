@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../assets/css/styles.css" />
     <link rel="stylesheet" type="text/css" href="../assets/css/home-styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,16 +22,17 @@
         <nav id="left-nav">
             <ul>
                 <li id="welcome-link"><a data-page="home">Welcome</a></li>
-                <li><a href="#" data-page="select-photos">Select photos</a>
+                <li><a href="#" id="select-photos" data-page="select-photos">Select photos</a>
                     <ul class="submenu">
                         <li><a href="#" data-page="select-photos" id="selectFilesLink">Select files...</a></li>
-                        <li><a href="#" data-page="select-photos" id="selectFromFlickrLink">Select from Flickr...</a></li>
+                        <li><a href="#" data-page="select-photos" id="selectFromFlickrLink">Select from Flickr...</a>
+                        </li>
                     </ul>
                 </li>
                 <li><a href="#" data-page="create-collection">Create collection</a></li>
                 <li><a href="#" data-page="set-properties">Set properties</a></li>
                 <li><a href="#" data-page="submit-for-review">Submit</a></li>
-            </ul>   
+            </ul>
         </nav>
 
         <div id="status-area" style="display: none;" data-dismiss-on-nav=false>
@@ -78,6 +80,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script type="module" src="../assets/js/photo-selection.js"></script>
     <script type="module" src="../assets/js/side-bar-nav.js"></script>
     <script type="module" src="../assets/js/thumbnails.js"></script>

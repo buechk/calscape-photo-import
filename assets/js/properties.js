@@ -45,7 +45,7 @@ export const importconfig = {
                         "userinterface": {
                             "label": "Caption description",
                             "default": "",
-                            "textarea": true,
+                            "richtext": true,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -92,7 +92,7 @@ export const importconfig = {
                         "userinterface": {
                             "label": "Image description",
                             "default": "",
-                            "textarea": true,
+                            "richtext": true,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -332,6 +332,9 @@ export const importconfig = {
     }
 }
 
+// Create a Map to store Quill instances
+const quillInstances = new Map();
+
 // Auto Expand textarea according to length of text
 let autoExpand = (selector, direction) => {
 
@@ -490,7 +493,7 @@ export function saveSelectedProperties() {
                 const propertiesForm = document.getElementById('properties-form');
 
                 // Iterate through the input elements of the properties form
-                const inputElements = propertiesForm.querySelectorAll('input, select, textarea');
+                const inputElements = propertiesForm.querySelectorAll('input, select, textarea, .quill-container');
                 inputElements.forEach(input => {
                     if (input.classList.contains('multivalue-input')) {
                         // Handle multivalue inputs
@@ -504,12 +507,30 @@ export function saveSelectedProperties() {
                         const value = input.value.trim();
                         if (property && value !== '') {
                             currentImageObj[property] = currentImageObj[property] || [];
-                            
+
                             if (!currentImageObj[property].includes(value)) {
                                 currentImageObj[property].push(value);
                             }
                         }
-                    } else {
+                    }
+                    else if (input.classList.contains('quill-container')) {
+                        const propertyName = input.id;
+
+                        // Get the HTML content of the Quill editor
+                        const quillInstance = quillInstances.get(input.id);
+                        if (quillInstance) {
+                            // Get the content of the Quill editor
+                            const htmlContent = quillInstance.root.innerHTML;
+
+                            // Now, htmlContent contains the HTML representation of the editor's contents
+                            console.log(`Quill content for ${propertyName}: `, htmlContent);
+                            currentImageObj[propertyName] = htmlContent;
+                        }
+                        else {
+                            console.error('Quill instance not found for property: ', propertyName);
+                        }
+                    }
+                    else {
                         // If it's not a multivalue input, set the value directly
                         const property = input.id;
                         if (property !== '') {
@@ -546,6 +567,18 @@ function saveProperties(inputElement) {
                     imageData[tcontainerId][propertyName] = propertyValue;
                 } else {
                     delete imageData[tcontainerId][propertyName];
+                }
+            }
+            else if (inputElement.classList.contains('ql-editor') || inputElement.classList.contains('quill-container')) {
+                const propertyName = inputElement.parentElement.id.replace('-ql', '');
+                const propertyValue = inputElement.innerHTML;
+
+                // Get the HTML content of the Quill editor
+                if (propertyName && propertyValue) {
+                    imageData[tcontainerId][propertyName] = propertyValue;
+                }
+                else {
+                    console.error('Quill instance not found for property: ', propertyName);
                 }
             }
         }
@@ -591,8 +624,20 @@ export function showSelectedProperties(event) {
                             });
                         }
                         else {
-                            input.value = propertyvalue;
-                            input.disabled = input.readOnly;
+                            if (input.classList.contains('quill-container')) {
+                                // Get the HTML content of the Quill editor
+                                const quillInstance = quillInstances.get(input.id);
+                                if (quillInstance) {
+                                    // Set the content of the Quill editor
+                                    const delta = quillInstance.clipboard.convert(propertyvalue);
+                                    quillInstance.setContents(delta, 'api');
+                                    quillInstance.enable(input.readOnly);
+                                }
+                            }
+                            else {
+                                input.value = propertyvalue;
+                                input.disabled = input.readOnly;
+                            }
                         }
                     }
                     else {
@@ -625,6 +670,14 @@ export function clearPropertiesFields() {
         form.querySelectorAll('.input-container').forEach(input => {
             input.remove(); // Clear the input field
         });
+
+        // Disable the Quill editors
+        form.querySelectorAll('.quill-container').forEach(container => {
+            const quillInstance = quillInstances.get(container.id);
+            if (quillInstance) {
+                quillInstance.enable(false);
+            }
+        });
     }
 }
 
@@ -643,7 +696,7 @@ export function createPropertiesFields() {
         // Loop through columns within the current table
         for (const column of table.columns) {
             const uiconfig = column.userinterface.roles[ROLE];
-            const isTextArea = column.userinterface.textarea ? true : false;
+            const isRichText = column.userinterface.richtext ? true : false;
             const hasPicklist = column.hasOwnProperty('picklist') ? true : false;
             const isCollectionProp = column.applies_to == "collection" ? true : false;
 
@@ -725,14 +778,38 @@ export function createPropertiesFields() {
 
                 formgroup.appendChild(clone);
             }
+            else if (isRichText) {
+                // Create a div element to serve as the Quill container
+                const quillContainer = document.createElement('div');
+                quillContainer.classList.add('quill-container');
+                quillContainer.classList.add('auto-expand-input');
+                quillContainer.id = column.name;
+                quillContainer.required = uiconfig.required;
+
+                const snowContainer = document.createElement('div');
+                snowContainer.classList.add('ql-editor');
+                snowContainer.id = column.name + "-ql";
+                snowContainer.required = uiconfig.required;
+
+                quillContainer.appendChild(snowContainer);
+
+                // Append the Quill container
+                formgroup.appendChild(quillContainer);
+
+                // Create a Quill instance and associate it with the container
+                const quill = new Quill(snowContainer, {
+                    theme: 'snow',  // theme/style
+                    placeholder: column.userinterface.hasOwnProperty("placeholder") ? column.userinterface.placeholder : "",
+                    readOnly: uiconfig.readonly, // Set readOnly based on the uiconfig value
+                });
+
+                // Store the Quill instance in the Map
+                quillInstances.set(quillContainer.id, quill);
+            }
             else {
-                // Create a text input element
                 let field;
-                if (isTextArea) {
-                    field = document.createElement('textarea');
-                    field.classList.add('auto-expand-input');
-                }
-                else if (hasPicklist) {
+
+                if (hasPicklist) {
                     // Create a select element
                     field = document.createElement("select");
                     const blankOption = document.createElement("option");
@@ -790,7 +867,7 @@ export function createPropertiesFields() {
 // Delay duration in milliseconds (e.g., 500 milliseconds)
 const delayDuration = 500;
 
-$(document).on('focusout', '#properties-form input, #properties-form select, #properties-form textarea', function (event) {
+$(document).on('focusout', '#properties-form input, #properties-form select, #properties-form textarea, #properties-form .quill-container', function (event) {
     // Clear any previous timeouts to prevent multiple executions
     if (this.timer) {
         clearTimeout(this.timer);

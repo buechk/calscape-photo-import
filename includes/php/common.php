@@ -5,7 +5,7 @@ include_once('DatabaseManager.php');
 $hostname = "localhost:3306";
 $username = "root";
 $password = "Edw8rdpm!";
-$database = "calsca6_calscape";
+$database = "calsca6_demo";
 
 /*
 // Kristy's Database connection parameters

@@ -159,15 +159,20 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(78, 160, 219, 0.241); /* Light blue background */
+    background-color: rgba(78, 160, 219, 0.241);
+    /* Light blue background */
     color: black;
     padding: 12px;
     border-radius: 5px;
     cursor: pointer;
-    text-align: center; /* Center the text */
-    font-size: 14px; /* Slightly larger font size */
-    border: 1px dashed white; /* Semi-transparent white border */
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3); /* Light shadow */
+    text-align: center;
+    /* Center the text */
+    font-size: 14px;
+    /* Slightly larger font size */
+    border: 1px dashed white;
+    /* Semi-transparent white border */
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    /* Light shadow */
 }
 
 .tcontainer .thumbnail {
@@ -242,6 +247,7 @@ body {
     border-radius: 3px;
     flex: 5;
     padding: 10px 10px;
+    margin-bottom: 0;
 }
 
 .colltype-choice {
@@ -630,11 +636,11 @@ th {
     box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
 
-#submit-button:disabled{
-    background-color: #cccccc; 
-    color: #666666; 
-    border: 1px solid #999999; 
-    cursor: not-allowed; 
+#submit-button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    border: 1px solid #999999;
+    cursor: not-allowed;
 }
 
 .permissions-checkbox {
@@ -752,13 +758,17 @@ th {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px; /* Adjust the padding as needed */
-    border: 1px solid #ccc; /* Optional: add a border for better separation */
+    padding: 10px;
+    /* Adjust the padding as needed */
+    border: 1px solid #ccc;
+    /* Optional: add a border for better separation */
 }
 
 #status-text {
-    flex-grow: 1; /* Allow the text to take up available space */
-    margin-right: 10px; /* Adjust the margin as needed */
+    flex-grow: 1;
+    /* Allow the text to take up available space */
+    margin-right: 10px;
+    /* Adjust the margin as needed */
 }
 
 /* Styles for success messages */
@@ -809,3 +819,28 @@ th {
     margin-left: auto;
 }
 
+/* Style the Quill toolbar */
+.ql-toolbar {
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    /* Add a border or adjust as needed */
+}
+
+/* Style the Quill container */
+.quill-container {
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #fff;
+    margin-bottom: 0;
+    position: relative;
+}
+
+/* Style the Quill editor area */
+.ql-editor {
+    height: 150px;
+    padding: 3px 4px;
+}

@@ -3,6 +3,7 @@
  */
 
 import { setPhotoCollection } from "./collection-data.js";
+import { clearCalscapePhotos } from "./sort-and-save.js";
 
 export async function getCollectionsForReview() {
     await fetch('/includes/php/collections_for_review.php')
@@ -82,6 +83,7 @@ function selectCollection(fileName) {
         })
         .then(jsonData => {
             console.log("Collection: " + fileName + ":", jsonData);
+            clearCalscapePhotos();
             setPhotoCollection(jsonData);
 
             // Trigger a click on the "review-collection" li element
