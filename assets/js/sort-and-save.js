@@ -244,6 +244,7 @@ function populateCalscapePhotos(speciesName, results) {
         calscapePhotos[speciesName]["photos"][photoOrder] = {
             "id": photoID,
             "CaptionTitle": result.Copyright != null ? result.Copyright : result.CaptionTitle,
+            "CopyrightNotice": result.CopyrightNotice,
             "Artist": result.Artist,
             "FileName": result.FileName,
             "plant_photo_order": result.plant_photo_order,

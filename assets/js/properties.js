@@ -190,15 +190,16 @@ export const importconfig = {
                         "userinterface": {
                             "label": "Copyright Notice",
                             "default": "",
+                            "placeholder": "Copyright owner year(s)",
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
-                                    "required": false,
+                                    "required": true,
                                     "visible": true
                                 },
                                 "reviewer": {
                                     "readonly": false,
-                                    "required": false,
+                                    "required": true,
                                     "visible": true
                                 }
                             }
@@ -213,16 +214,16 @@ export const importconfig = {
                         "multi_apply": true,
                         "userinterface": {
                             "label": "Copyright Category",
-                            "default": "",
+                            "default": "3",
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
-                                    "required": false,
+                                    "required": true,
                                     "visible": true
                                 },
                                 "reviewer": {
                                     "readonly": false,
-                                    "required": false,
+                                    "required": true,
                                     "visible": true
                                 }
                             }

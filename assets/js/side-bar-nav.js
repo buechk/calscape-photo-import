@@ -8,6 +8,7 @@ import { clearPhotoCollection, getCollectionThumbnails, savePhotoCollection, val
 import { saveSelectedProperties } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
 import { clearCalscapePhotos, getCalscapeThumbnails } from "./sort-and-save.js";
+import { clearSourcePhotos } from "./source-photo-data.js";
 
 export const Mode = {
     UNSPECIFIED: 'unspecified',
@@ -31,6 +32,7 @@ $(document).ready(function () {
             }
             clearPhotoCollection(); // user is switching roles so clear the current collection
             clearCalscapePhotos();
+            clearSourcePhotos();
         }
         
         const targetMenu = $(this).data('menu');
@@ -50,6 +52,7 @@ $(document).ready(function () {
                 }
             }
             clearPhotoCollection(); // user is switching roles so clear the current collection
+            clearSourcePhotos();
         }
 
         const targetMenu = $(this).data('menu');

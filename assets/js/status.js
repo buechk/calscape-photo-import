@@ -24,7 +24,7 @@ export function displayStatusMessage(message, isError = false, autoDismissTime =
 
 export function dismissStatusOnNavigation() {
     var statusArea = document.getElementById('status-area');
-    if (statusArea.dataset.dismissOnNav) {
+    if (statusArea.dataset.dismissOnNav === 'true') {
         dismissStatus();
     }
 }

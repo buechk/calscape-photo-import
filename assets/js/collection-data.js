@@ -620,9 +620,10 @@ export async function setPhotoCollection(data) {
             imageData[uniqueIdentifier] = { ...photo };
 
             const fileName = photo.thumbnail;
-            const captionText = photo.CaptionTitle;
+            const captionText = photo.CopyrightNotice;
+            const altText = photo.CaptionTitle;
             const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=collection-photo`;
-            const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText);
+            const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText, altText);
             addCollectionThumbnail(tc);
         }
     }
@@ -854,7 +855,7 @@ export async function validatePhotoCollection() {
 
     if (missingRequiredData.length > 0) {
         console.log('Missing required data:', missingRequiredData);
-        displayStatusMessage(`The following fields require input values: ${missingRequiredData.join('\r\n')}`, true)
+        displayStatusMessage(`The following fields require input values: ${missingRequiredData.join('\r\n')}`, true, -1, false)
         return false;
     } else {
         console.log('All required data is present.');

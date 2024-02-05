@@ -255,7 +255,7 @@ async function displayImagesFromFlickr(photosApiUrl) {
     displayThumbnailsFromSourcePhotos();
 }
 
-export function createThumbnailContainer(uniqueIdentifier, url, captionText) {
+export function createThumbnailContainer(uniqueIdentifier, url, captionText, alttext) {
     // Create a container for the thumbnail and its caption and id
     const tcontainer = document.createElement('div');
     tcontainer.classList.add('tcontainer');
@@ -306,6 +306,7 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     console.log(`Processing photo: ${photo.FileName}`);
                     const fileName = photo.FileName;
                     const captionText = `${photo.CaptionTitle}`;
+                    const altText = `${photo.CopyrightNotice}`
                     const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
                     const tc = createThumbnailContainer(photoID, turl, captionText);
                     tc.classList.add('calscape-existing');
@@ -332,7 +333,7 @@ export function displayThumbnailsFromSourcePhotos() {
         const url = photo.thumbnail != undefined ? photo.thumbnail : photo.url;
         const captionText = photo.caption;
 
-        const tcontainer = createThumbnailContainer(uniqueIdentifier, url, captionText);
+        const tcontainer = createThumbnailContainer(uniqueIdentifier, url, captionText, captionText);
 
         thumbnailGrid.appendChild(tcontainer);
     }
