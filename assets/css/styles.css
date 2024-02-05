@@ -83,7 +83,7 @@ body {
 }
 
 .source-photos-container,
-.collections_for_review-container,
+.collections-for-review-container,
 .calscape-photos-container {
     margin-right: 10px;
 }
@@ -843,4 +843,16 @@ th {
 .ql-editor {
     height: 150px;
     padding: 3px 4px;
+}
+
+.table-actions-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px;
+}
+
+/* Style for the selected count */
+.selected-count {
+    margin-right: auto; /* Pushes the delete button to the right */
 }

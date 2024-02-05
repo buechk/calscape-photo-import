@@ -5,6 +5,11 @@
 import { setPhotoCollection } from "./collection-data.js";
 import { clearCalscapePhotos } from "./sort-and-save.js";
 
+export function initCollectionsforReview() {
+    initTableActions();
+    getCollectionsForReview();
+}
+
 export async function getCollectionsForReview() {
     await fetch('/includes/php/collections_for_review.php')
         .then(response => response.json())
@@ -13,10 +18,23 @@ export async function getCollectionsForReview() {
             collectionList.innerHTML = '';
 
             // Display each collection in a row
-            collections.forEach(collection => {
+            collections.forEach((collection, index) => {
                 const row = document.createElement('tr');
 
-                // Create cells for name, type, and species
+                const checkBoxCell = document.createElement('td');
+                const checkBox = document.createElement('input');
+                checkBox.type = 'checkbox';
+                checkBox.classList.add('collection-checkbox');
+                checkBox.id = `select-collection-${index}`;
+                checkBox.name = `select_collection_${index}`;
+                checkBox.addEventListener('change', function () {
+                    updateDeleteButtonState();
+                    updateSelectedCount();
+                });
+
+                checkBox.checked = false;
+                checkBoxCell.appendChild(checkBox);
+
                 const nameCell = document.createElement('td');
                 const speciesCell = document.createElement('td');
                 const contributorCell = document.createElement('td');
@@ -51,6 +69,7 @@ export async function getCollectionsForReview() {
                 fileNameHiddenCell.style.display = 'none';
 
                 // Append cells to the row
+                row.appendChild(checkBoxCell);
                 row.appendChild(nameCell);
                 row.appendChild(speciesCell);
                 row.appendChild(contributorCell);
@@ -94,3 +113,63 @@ function selectCollection(fileName) {
             console.error('Fetch error:', error);
         });
 }
+
+function initTableActions() {
+    const selectAllCheckbox = document.getElementById('select-all');
+    const deleteButton = document.getElementById('delete-button');
+
+    // Select all checkboxes when the "Select All" checkbox is clicked
+    selectAllCheckbox.addEventListener('change', function () {
+        const collectionCheckboxes = document.querySelectorAll('.collection-checkbox');
+        collectionCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+
+        updateSelectedCount();
+        updateDeleteButtonState();
+    });
+
+    // Handle Delete button click
+    deleteButton.addEventListener('click', function () {
+        const collectionCheckboxes = document.querySelectorAll('.collection-checkbox');
+        const selectedCollectionIds = Array.from(collectionCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.closest('tr').dataset.collectionId);
+
+        // Display a confirmation dialog (you can use a library like SweetAlert for a nicer UI)
+        const isConfirmed = confirm(`Are you sure you want to delete ${selectedCollectionIds.length} selected collection(s)?`);
+
+        if (isConfirmed) {
+            // Perform deletion action (you need to implement this)
+            deleteCollections(selectedCollectionIds);
+        }
+    });
+
+    // Initial state
+    updateDeleteButtonState();
+    updateSelectedCount();
+};
+
+// Function to delete collections (you need to implement this)
+function deleteCollections(collectionIds) {
+    // Use AJAX to send a request to the server for deletion
+    // Update the table dynamically and handle success/errors
+    // Optionally provide an "Undo" option
+}
+
+// Enable the Delete button when at least one checkbox is checked
+function updateDeleteButtonState() {
+    const deleteButton = document.getElementById('delete-button');
+    const collectionCheckboxes = document.querySelectorAll('.collection-checkbox');
+    deleteButton.disabled = !Array.from(collectionCheckboxes).some(checkbox => checkbox.checked);
+}
+
+// Update the selected count text
+function updateSelectedCount() {
+    const selectedCountElement = document.getElementById('selected-count');
+    const collectionCheckboxes = document.querySelectorAll('.collection-checkbox');
+    const selectedCount = Array.from(collectionCheckboxes).filter(checkbox => checkbox.checked).length;
+    selectedCountElement.textContent = `${selectedCount} collection${selectedCount !== 1 ? 's' : ''} selected`;
+}
+
+

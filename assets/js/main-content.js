@@ -11,7 +11,7 @@ import { initializeSubmitContribute } from "./submit.js";
 import { clearPropertiesFields } from "./properties.js";
 import { initSubmitPage as initializeSubmitPage } from "./submit-page.js";
 import { initWelcome } from "./side-bar-nav.js";
-import { getCollectionsForReview} from "./collections-for-review.js";
+import { initCollectionsforReview} from "./collections-for-review.js";
 import { getSourcePhotos } from "./source-photo-data.js";
 import { initPhotoSort } from "./sort-and-save.js";
 
@@ -64,7 +64,7 @@ export async function initMainContent() {
     }
 
     if (mainContentArea.querySelector('#collections_for_review-container')) {
-        getCollectionsForReview();
+        initCollectionsforReview();
     }
 
     if (mainContentArea.querySelector('#calscape-photos-container')) {
