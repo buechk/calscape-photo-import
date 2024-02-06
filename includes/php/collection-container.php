@@ -26,7 +26,7 @@ define('COLLECTION_CONTAINER', <<<HTML
                     </div>
                     <div>
                         <input type="radio" id="garden-choice" name="collection-type" value="garden" />
-                        <label for="garden-choice">Garden: <i>Photos of different species such as garden
+                        <label for="garden-choice">Garden: <i>Photos of various species such as garden
                             images</i></label>
                     </div>
                 </fieldset>
