@@ -4,6 +4,7 @@
 
 import { setPhotoCollection } from "./collection-data.js";
 import { clearCalscapePhotos } from "./sort-and-save.js";
+import { displayStatusMessage } from "./status.js";
 
 export function initCollectionsforReview() {
     initTableActions();
@@ -128,20 +129,44 @@ function initTableActions() {
         updateSelectedCount();
         updateDeleteButtonState();
     });
+    /*
+        // Handle Delete button click
+        deleteButton.addEventListener('click', function () {
+            const collectionCheckboxes = document.querySelectorAll('.collection-checkbox');
+            const selectedCollectionFiles = Array.from(collectionCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.closest('tr').find('a').data('filename'));
+    
+            // Now you have the selected data-filename values
+            console.log(selectedFilenames);
+    
+            // Display a confirmation dialog (you can use a library like SweetAlert for a nicer UI)
+            const isConfirmed = confirm(`Are you sure you want to delete ${selectedCollectionIds.length} selected collection(s)?`);
+    
+            if (isConfirmed) {
+                // Perform deletion action (you need to implement this)
+                deleteCollections(selectedCollectionFiles);
+            }
+        });
+    */
 
-    // Handle Delete button click
-    deleteButton.addEventListener('click', function () {
-        const collectionCheckboxes = document.querySelectorAll('.collection-checkbox');
-        const selectedCollectionIds = Array.from(collectionCheckboxes)
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.closest('tr').dataset.collectionId);
+    $('#delete-button').on('click', function () {
+        // Find all selected checkboxes
+        var selectedCheckboxes = $('input.collection-checkbox:checked');
+
+        // Get the data-filename values
+        var selectedFilenames = [];
+        selectedCheckboxes.each(function() {
+            var filename = $(this).closest('tr').find('a').data('filename');
+            selectedFilenames.push(filename);
+        });
 
         // Display a confirmation dialog (you can use a library like SweetAlert for a nicer UI)
-        const isConfirmed = confirm(`Are you sure you want to delete ${selectedCollectionIds.length} selected collection(s)?`);
+        const isConfirmed = confirm(`Are you sure you want to delete ${selectedFilenames.length} selected collection(s)?`);
 
         if (isConfirmed) {
             // Perform deletion action (you need to implement this)
-            deleteCollections(selectedCollectionIds);
+            deleteCollections(Array.from(selectedFilenames));
         }
     });
 
@@ -150,11 +175,48 @@ function initTableActions() {
     updateSelectedCount();
 };
 
-// Function to delete collections (you need to implement this)
-function deleteCollections(collectionIds) {
+// Function to delete collections
+function deleteCollections(fileNames) {
+
     // Use AJAX to send a request to the server for deletion
-    // Update the table dynamically and handle success/errors
-    // Optionally provide an "Undo" option
+    // Construct the URL with the filename parameter
+
+    // Serialize the array of filenames
+    const serializedFileNames = fileNames.join(',');
+    const url = `/includes/php/delete_collections.php?filenames=${encodeURIComponent(serializedFileNames)}`;
+   
+    // Make a fetch request
+    fetch(url)
+        .then(async response => {
+            // Check if the response is successful (status code 200)
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            // Parse the JSON response
+            return await response.json();
+        })
+        .then(response => {
+            // Print messages
+            for (let message of response.messages) {
+                console.log(message);
+            }
+            if (response.success) {
+                const message = fileNames.length === 1 ? `${fileNames.length} collection deleted.` : `${fileNames.length} collections deleted.`
+                displayStatusMessage(message, false, -1, true);
+                fileNames.forEach(function (filename) {
+                    var trElement = $('#collection-table').find('a[data-filename="' + filename + '"]').closest('tr');
+                    // Now you have the tr element associated with the filename
+                    // You can remove it from the table using jQuery's remove method
+                    trElement.remove();
+                });
+                updateSelectedCount();
+            }
+        })
+        .catch(error => {
+            // Handle errors
+            console.error('Fetch error:', error);
+        });
 }
 
 // Enable the Delete button when at least one checkbox is checked
