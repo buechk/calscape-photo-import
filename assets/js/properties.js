@@ -39,8 +39,8 @@ export const importconfig = {
                     {
                         "name": "CaptionDescription",
                         "datasources": {
-                            "flickr": "",
-                            "jpeg": ""
+                            "flickr": "photo.description._content",
+                            "jpeg": "EXIF.ImageDescription"
                         },
                         "userinterface": {
                             "label": "Caption description",
@@ -84,79 +84,6 @@ export const importconfig = {
                         }
                     },
                     {
-                        "name": "ImageDescription",
-                        "datasources": {
-                            "flickr": "photo.description._content",
-                            "jpeg": "EXIF.ImageDescription"
-                        },
-                        "userinterface": {
-                            "label": "Image description",
-                            "default": "",
-                            "richtext": true,
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                }
-                            }
-                        }
-
-                    },
-                    {
-                        "name": "LandscaperName",
-                        "datasources": {
-                            "flickr": "",
-                            "jpeg": ""
-                        },
-                        "multi_apply": true,
-                        "userinterface": {
-                            "label": "Landscaper name",
-                            "default": "",
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "name": "LandscapeDesigner",
-                        "datasources": {
-                            "flickr": "",
-                            "jpeg": ""
-                        },
-                        "multi_apply": true,
-                        "userinterface": {
-                            "label": "Landscaper designer",
-                            "default": "",
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                }
-                            }
-                        }
-                    },
-                    {
                         "name": "Artist",
                         "datasources": {
                             "flickr": ["photo.exif.[tag='Artist'].raw._content", "photo.owner.realname"],
@@ -181,14 +108,13 @@ export const importconfig = {
                         }
                     },
                     {
-                        "name": "CopyrightNotice",
+                        "name": "ImageDescription",
                         "datasources": {
                             "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
                             "jpeg": "EXIF.Copyright"
                         },
-                        "multi_apply": true,
                         "userinterface": {
-                            "label": "Copyright Notice",
+                            "label": "Copyright",
                             "default": "",
                             "placeholder": "Copyright owner year(s)",
                             "roles": {
@@ -214,7 +140,6 @@ export const importconfig = {
                         "multi_apply": true,
                         "userinterface": {
                             "label": "Copyright Category",
-                            "default": "3",
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -252,6 +177,32 @@ export const importconfig = {
                         ]
                     },
                     {
+                        "name": "CopyrightNotice",
+                        "datasources": {
+                            "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
+                            "jpeg": "EXIF.Copyright"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Copyright Notice",
+                            "default": "",
+                            "richtext": true,
+                            "placeholder": "Optional extended copyright information",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
                         "name": "QualityRanking",
                         "datasources": {
                             "flickr": "photo.exif[tag='Rating'].raw._content",
@@ -261,6 +212,54 @@ export const importconfig = {
                         "userinterface": {
                             "label": "Quality ranking - 0 (worst) to 5 (best)",
                             "placeholder": "Enter 0 to 5",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "LandscaperName",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Landscaper name",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "LandscapeDesigner",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Landscaper designer",
                             "default": "",
                             "roles": {
                                 "contributor": {
@@ -521,8 +520,8 @@ export function saveSelectedProperties() {
                         const quillInstance = quillInstances.get(input.id);
                         if (quillInstance) {
                             // Get the content of the Quill editor
-                            const htmlContent = quillInstance.root.innerHTML;
-
+                            const htmlContent = quillInstance.root.innerHTML !== '<p><br></p>' ? quillInstance.root.innerHTML : '';
+  
                             // Now, htmlContent contains the HTML representation of the editor's contents
                             console.log(`Quill content for ${propertyName}: `, htmlContent);
                             currentImageObj[propertyName] = htmlContent;
@@ -572,7 +571,7 @@ function saveProperties(inputElement) {
             }
             else if (inputElement.classList.contains('ql-editor') || inputElement.classList.contains('quill-container')) {
                 const propertyName = inputElement.parentElement.id.replace('-ql', '');
-                const propertyValue = inputElement.innerHTML;
+                const propertyValue = inputElement.innerHTML !== '<p><br></p>' ? inputElement.innerHTML : '';
 
                 // Get the HTML content of the Quill editor
                 if (propertyName && propertyValue) {

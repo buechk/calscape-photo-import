@@ -264,7 +264,7 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText, alt
     const thumbnail = document.createElement('img');
     thumbnail.classList.add('thumbnail');
     thumbnail.src = url; // Set the source URL
-    thumbnail.alt = captionText; // Set alt text for accessibility
+    thumbnail.alt = alttext; // Set alt text for accessibility
     tcontainer.appendChild(thumbnail);
 
     // Create a div for the caption
@@ -305,10 +305,10 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     const photo = speciesPhotos[photoID];
                     console.log(`Processing photo: ${photo.FileName}`);
                     const fileName = photo.FileName;
-                    const captionText = `${photo.CaptionTitle}`;
-                    const altText = `${photo.CopyrightNotice}`
+                    const captionText = `${photo.Copyright}`;
+                    const altText = photo.CaptionTitle !== null ? removeHtmlTags(`${photo.CaptionTitle}`) : `${photo.Copyright}`;
                     const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
-                    const tc = createThumbnailContainer(photoID, turl, captionText);
+                    const tc = createThumbnailContainer(photoID, turl, captionText, altText);
                     tc.classList.add('calscape-existing');
                     tc.draggable = true;
                     thumbnailGrid.appendChild(tc);
@@ -473,6 +473,17 @@ function toggleSelection(event) {
     if (selectedThumbnails.length != 1) {
         clearPropertiesFields();
     }
+}
+
+function removeHtmlTags(html) {
+    // Create a temporary DOM element
+    var tempDiv = document.createElement('div');
+
+    // Set the HTML content of the temporary element
+    tempDiv.innerHTML = html;
+
+    // Retrieve the text content (without HTML tags)
+    return tempDiv.textContent || tempDiv.innerText || '';
 }
 
 const mainContentArea = document.getElementById('main-content');

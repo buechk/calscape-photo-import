@@ -60,6 +60,8 @@ function getPhotos($plantID)
             photo.ImageDescription AS Copyright,
             photo.CopyrightNotice,
             photo.Artist as Artist,
+            photo.CaptionTitle,
+            photo.CaptionDescription,
             plant_photo.photo_order AS plant_photo_order,
             NULL AS plant_photo_calphotos_order
         FROM plants
@@ -74,6 +76,8 @@ function getPhotos($plantID)
             plant_photo_calphotos.copyright AS Copyright,
             plant_photo_calphotos.copyright_full as ImageDescription,
             plant_photo_calphotos.author as Artist,
+            null AS CaptionTitle,
+            null AS CaptionDescription,
             NULL AS plant_photo_order,
             plant_photo_calphotos.photo_order AS plant_photo_calphotos_order
         FROM plants
