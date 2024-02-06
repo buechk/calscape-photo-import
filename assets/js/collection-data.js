@@ -601,12 +601,13 @@ function saveCollectionProperties(inputElement) {
     }
 }
 
-export async function setPhotoCollection(data) {
+export async function setPhotoCollection(data, filename = null) {
     await clearPhotoCollection();
     collectionData["collection-name"] = data["collection-name"];
     collectionData["collection-type"] = data["collection-type"];
     collectionData["collection-species"] = data["collection-species"];
     collectionData["user_id"] = data["user_id"];
+    collectionData["filename"] = filename;
     imageData = {};
 
     const photos = data['photos'];

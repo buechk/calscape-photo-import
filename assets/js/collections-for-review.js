@@ -104,7 +104,7 @@ function selectCollection(fileName) {
         .then(jsonData => {
             console.log("Collection: " + fileName + ":", jsonData);
             clearCalscapePhotos();
-            setPhotoCollection(jsonData);
+            setPhotoCollection(jsonData, fileName);
 
             // Trigger a click on the "review-collection" li element
             $('#review-collection a').click();

@@ -20,7 +20,7 @@ $(document).ready(function () {
     // Load default content on page load
     fetchContent('home');
 
-    $(document).on('click', '#contributeButton', function (event) {
+    $(document).on('click', '#contributeButton', async function (event) {
         event.preventDefault();
 
         if (ROLE !== Mode.CONTRIBUTE) {
@@ -30,7 +30,7 @@ $(document).ready(function () {
                     return;
                 }
             }
-            clearPhotoCollection(); // user is switching roles so clear the current collection
+            await clearPhotoCollection(); // user is switching roles so clear the current collection
             clearCalscapePhotos();
             clearSourcePhotos();
         }

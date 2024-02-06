@@ -168,6 +168,9 @@ async function prepareSaveData() {
 
     const collection = getPhotoCollection();
 
+    // Persistently save any changes to the properties of the collection made by the reviewer
+    saveCollection(collection);
+
     saveData["species"] = collection["collection-type"] === 'species' ? collection["collection-species"] : '';
     saveData["collection-type"] = collection["collection-type"];
     saveData["user_id"] = await getUserIDfromEmail(collection["user_id"]);
@@ -228,6 +231,37 @@ async function save(saveData) {
     }
 }
 
+function saveCollection(collection) {
+    // Convert the collection object to JSON
+    const jsonData = JSON.stringify(collection, null, 2);
+    const fileName = collection.filename;
+
+    // Construct the URL with the optional fileName parameter
+    const url = `/includes/php/save-collection.php${fileName ? `?fileName=${fileName}` : ''}`;
+
+    // Make an AJAX request to save the collection
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: jsonData,
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json(); // Parse response as JSON
+        })
+        .then(data => {
+            // Handle the response (if needed)
+            console.log('Collection saved to file: ', data.filename);
+        })
+        .catch(error => {
+            // Handle network errors or other exceptions
+            console.error('Error:', error);
+        });
+}
 
 function populateCalscapePhotos(speciesName, results) {
     results.forEach(result => {

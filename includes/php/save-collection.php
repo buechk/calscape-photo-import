@@ -23,18 +23,24 @@ if (!file_exists($collectionPath)) {
     mkdir($collectionPath, 0777, true);
 }
 
-// Generate a unique filename based on property values
-$filename = str_replace(' ', '_', sprintf(
-    '%s_%s_%s_%s_%s.json',
-    $decodedData['user_id'],
-    $decodedData['collection-name'],
-    $decodedData['collection-type'],
-    $decodedData['collection-species'],
-    uniqid())
-);
+// Check if a fileName is provided in the request
+$filename = isset($_GET['fileName']) ? $_GET['fileName'] : null;
 
-// Concatenate the filename with the collectionPath
-$filename = $collectionPath . $filename;
+// If fileName is not provided, generate a unique filename
+if (!$filename) {
+    // Generate a unique filename based on property values
+    $filename = str_replace(' ', '_', sprintf(
+        '%s_%s_%s_%s_%s.json',
+        $decodedData['user_id'],
+        $decodedData['collection-name'],
+        $decodedData['collection-type'],
+        $decodedData['collection-species'],
+        uniqid())
+    );
+    
+    // Concatenate the filename with the collectionPath
+    $filename = $collectionPath . $filename;
+}
 
 // Save the JSON data to the file
 file_put_contents($filename, $data);
