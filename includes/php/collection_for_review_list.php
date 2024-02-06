@@ -6,7 +6,7 @@ define('COLLECTIONS_FOR_REVIEW', <<<HTML
     <!-- Add a text element to display the selected count -->
     <div class ="table-actions-container"> 
         <div id="selected-count" class="selected-count">0 collections selected</div>
-        <button id="delete-button">Delete selected</button>
+        <button id="delete-button"><i class="fas fa-trash-alt"></i></button>
     </div>
     <table id="collection-table">
     <thead>
