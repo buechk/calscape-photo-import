@@ -7,7 +7,7 @@
 import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
 import { showSelectedProperties } from './properties.js';
 import { clearPropertiesFields } from "./properties.js";
-import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum } from './flickr-API.js';
+import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum, getPhotoSizes } from './flickr-API.js';
 import { displayStatusMessage } from "./status.js";
 
 const flickrUrl = document.getElementById('flickrUrl');
@@ -49,13 +49,13 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
         selectedClass: 'selected',
         onEnd: function (/**Event*/evt) {
             const draggedItem = evt.item;
-            
+
             // Check if the dragged item or any ancestor has the calscape-existing class
             const isNoDragOut = (
                 draggedItem.classList.contains('calscape-existing') ||
                 draggedItem.closest('.calscape-existing') !== null
             );
-    
+
             if (isNoDragOut && evt.to !== evt.from) {
                 // Cancel the drop action if the item has calscape-existing class and is being dropped into a different grid
                 evt.from.insertBefore(draggedItem, evt.from.children[evt.oldIndex]);
@@ -230,11 +230,26 @@ async function displayImagesFromFlickr(photosApiUrl) {
                     const t_url = `https://farm${farmId}.staticflickr.com/${serverId}/${photoId}_${secret}_q.jpg`;
                     console.log("Photo title:", title);
                     console.log("Image URL:", t_url);
+                    /*
+                    // Fetch photo sizes
+                    const sizes = await getPhotoSizes(photoId);
+                    // Find the object in the sizes array with label "Large"
+                    const largeSize = sizes.find(size => size.label === "Large");
+                    if (largeSize !== undefined) {  // ignore photos that don't have a Large size.
+                        // Extract the width and height from the largeSize object
+                        const width = largeSize.width;
+                        const height = largeSize.height;
 
+                        // Store photo information
+                        const l_url = t_url.replace("_q.", "_b.");
+                        storeSourcePhoto(photoId, l_url, t_url, title, width, height);
+                    }
+                    */
                     // Store photo information
                     const l_url = t_url.replace("_q.", "_b.");
                     storeSourcePhoto(photoId, l_url, t_url, title);
                 }
+
             } else {
                 // Handle the case where no photos were found for the given ID
                 displayStatusMessage("No photos found for the given user/album ID.", false, -1, true);
@@ -255,7 +270,7 @@ async function displayImagesFromFlickr(photosApiUrl) {
     displayThumbnailsFromSourcePhotos();
 }
 
-export function createThumbnailContainer(uniqueIdentifier, url, captionText, alttext) {
+export function createThumbnailContainer(uniqueIdentifier, url, captionText, alttext, width, height) {
     // Create a container for the thumbnail and its caption and id
     const tcontainer = document.createElement('div');
     tcontainer.classList.add('tcontainer');
@@ -272,6 +287,13 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText, alt
     caption.classList.add('caption');
     caption.innerHTML = captionText;
     tcontainer.appendChild(caption);
+
+    if (width !== undefined && height != undefined) {
+        const size = document.createElement('div');
+        size.classList.add('caption');
+        size.innerHTML = `Size: ${width}x${height}`;
+        tcontainer.appendChild(size);
+    }
 
     tcontainer.id = uniqueIdentifier;
 
@@ -332,8 +354,10 @@ export function displayThumbnailsFromSourcePhotos() {
         const photo = sourcePhotos[uniqueIdentifier];
         const url = photo.thumbnail != undefined ? photo.thumbnail : photo.url;
         const captionText = photo.caption;
+        const width = photo.width;
+        const height = photo.height;
 
-        const tcontainer = createThumbnailContainer(uniqueIdentifier, url, captionText, captionText);
+        const tcontainer = createThumbnailContainer(uniqueIdentifier, url, captionText, captionText, width, height);
 
         thumbnailGrid.appendChild(tcontainer);
     }

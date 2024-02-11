@@ -40,7 +40,7 @@ function generateUniqueIdentifier() {
     return `${timestamp}-${random}`;
 }
 
-export function storeSourcePhoto(id, photo, thumbnail, caption) {
+export function storeSourcePhoto(id, photo, thumbnail, caption, width, height) {
     return new Promise((resolve, reject) => {
         if (photo instanceof File) {
             if (id === null) {
@@ -48,15 +48,26 @@ export function storeSourcePhoto(id, photo, thumbnail, caption) {
             }
             const reader = new FileReader();
             reader.onload = function () {
-                sourcePhotos[id] = {
-                    url: reader.result,
-                    caption: caption,
-                    file: photo
+                const img = new Image();
+                img.onload = function () {
+                    sourcePhotos[id] = {
+                        url: reader.result,
+                        caption: caption,
+                        file: photo,
+                        width: img.width,
+                        height: img.height
+                    };
+                    resolve({
+                        id: id,
+                        caption: caption,
+                        width: img.width,
+                        height: img.height
+                    });
                 };
-                resolve({
-                    id: id,
-                    caption: caption,
-                });
+                img.onerror = function (error) {
+                    reject(error);
+                };
+                img.src = reader.result;
             };
             reader.onerror = function (error) {
                 reject(error);
@@ -69,12 +80,16 @@ export function storeSourcePhoto(id, photo, thumbnail, caption) {
                 url: photo,
                 thumbnail: thumbnail,
                 caption: caption,
+                width: width,
+                height: height
             };
             console.log(`Stored photo with identifier: ${id}, ${sourcePhotos[id].url}`);
             resolve({
                 id: id,
                 caption: caption,
-                thumbnail: thumbnail
+                thumbnail: thumbnail,
+                width: width,
+                height: height
             });
         }
     });

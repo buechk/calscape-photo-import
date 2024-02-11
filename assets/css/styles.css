@@ -175,28 +175,34 @@ body {
     /* Light shadow */
 }
 
-.tcontainer .thumbnail {
-    width: 150px;
-    height: 150px;
-    border: 1px solid #ccc;
-    background-size: cover;
-    background-position: center;
+.tcontainer {
+    margin: auto;
 }
 
-.tcontainer .caption {
-    width: 150px;
-    /* Set the width to match the thumbnail */
+.tcontainer .thumbnail {
+    max-width: 100%; /* Allow the largest dimension to adjust automatically */
+    height: 150px; /* Set the height to a fixed value */
+    object-fit: cover; /* Scale the image proportionally to cover the entire container */
+    object-position: 50% 50%; /* Center the image within its container */
+}
+
+.tcontainer {
+    box-sizing: border-box; /* Include padding and borders in the element's dimensions */
+    border: 1px solid #ccc;
+}
+
+.tcontainer.selected {
+    border: 3px solid #007bff;
+    border-width: 3px; /* Increase border width for selected items */
+}
+
+.caption {
+    width: 150px; /* Set the width to match the thumbnail */
     font-size: 12px;
     font-weight: bold;
     margin-top: 5px;
     text-align: center;
     word-wrap: break-word;
-}
-
-.tcontainer.selected {
-    width: 156px;
-    height: 200px;
-    border: 3px solid #007bff;
 }
 
 .label {
@@ -854,7 +860,8 @@ th {
 
 /* Style for the selected count */
 .selected-count {
-    margin-right: auto; /* Pushes the delete button to the right */
+    margin-right: auto;
+    /* Pushes the delete button to the right */
 }
 
 #delete-button {
@@ -862,42 +869,50 @@ th {
     border: none;
     cursor: pointer;
     padding: 0;
-    transition: box-shadow 0.2s ease; /* Add a transition for smoother effect */
+    transition: box-shadow 0.2s ease;
+    /* Add a transition for smoother effect */
 }
 
 #delete-button i {
-    color: red; /* Customize the color of the trash can icon */
-    font-size: 18px; /* Adjust the size of the icon as needed */
+    color: red;
+    /* Customize the color of the trash can icon */
+    font-size: 18px;
+    /* Adjust the size of the icon as needed */
 }
 
 /* Hover effect */
 #delete-button:hover i {
-    color: darkred; /* Change the color on hover */
+    color: darkred;
+    /* Change the color on hover */
 }
 
 /* Focus effect */
 #delete-button:focus:not(:focus-visible) {
-    outline: none; /* Remove outline if focus is not via keyboard */
+    outline: none;
+    /* Remove outline if focus is not via keyboard */
     box-shadow: none;
 }
 
 #delete-button:focus-visible i {
-    outline: none; /* Remove the default focus outline */
-    box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.5); /* Add a box shadow to indicate focus */
+    outline: none;
+    /* Remove the default focus outline */
+    box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.5);
+    /* Add a box shadow to indicate focus */
 }
 
 /* Active effect */
 #delete-button:active i {
-    transform: translateY(1px); /* Move the icon down slightly on click */
+    transform: translateY(1px);
+    /* Move the icon down slightly on click */
 }
 
 /* Disabled state */
 #delete-button:disabled {
-    cursor: not-allowed; /* Change cursor to indicate button is disabled */
+    cursor: not-allowed;
+    /* Change cursor to indicate button is disabled */
 }
 
 #delete-button:disabled i {
-    opacity: 0.5; /* Reduce opacity of icon when button is disabled */
+    opacity: 0.5;
+    /* Reduce opacity of icon when button is disabled */
 }
-
-

@@ -59,3 +59,10 @@ export async function searchPhotosByAlbum(albumId) {
         throw error; // Rethrow the error for handling at a higher level
     }
 }
+
+export async function getPhotoSizes(photoId) {
+    // Make API request to get photo sizes
+    const response = await fetch(`https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=${apiKey}&photo_id=${photoId}&format=json&nojsoncallback=1`);
+    const data = await response.json();
+    return data.sizes.size;
+}
