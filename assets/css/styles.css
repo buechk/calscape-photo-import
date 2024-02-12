@@ -65,7 +65,7 @@ body {
     /* Use flex container */
     width: 100%;
     height: 100vh;
-    padding: 10px;
+    padding: 10px 0px;
     box-sizing: border-box;
 }
 
@@ -78,14 +78,14 @@ body {
 }
 
 .left-container {
-    padding: 10px;
     flex-grow: 1;
 }
 
 .source-photos-container,
 .collections-for-review-container,
-.calscape-photos-container {
-    margin-right: 10px;
+.calscape-photos-container,
+.collection-container {
+    margin: 10px;
 }
 
 .thumbnail-scroll-container,
@@ -105,7 +105,8 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
     padding: 20px;
-    background-color: #eee;
+    background-color: #f2f2f2;
+;
     min-height: 250px;
     height: 100%;
     /* Takes the full height of the thumbnail-scroll-container */
@@ -175,10 +176,6 @@ body {
     /* Light shadow */
 }
 
-.tcontainer {
-    margin: auto;
-}
-
 .tcontainer .thumbnail {
     max-width: 100%; /* Allow the largest dimension to adjust automatically */
     height: 150px; /* Set the height to a fixed value */
@@ -189,6 +186,11 @@ body {
 .tcontainer {
     box-sizing: border-box; /* Include padding and borders in the element's dimensions */
     border: 1px solid #ccc;
+    display: flex;
+    /* justify-content: center; */ /* Horizontally center the content */
+    flex-direction: column;
+    align-items: center; /* Center children horizontally */
+    margin: auto;
 }
 
 .tcontainer.selected {
@@ -851,26 +853,21 @@ th {
     padding: 3px 4px;
 }
 
-.table-actions-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 8px;
-}
-
 /* Style for the selected count */
 .selected-count {
     margin-right: auto;
-    /* Pushes the delete button to the right */
+    margin-left: 10px;
+    /* Pushes the action buttons to the right */
 }
 
 #delete-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    padding: 0;
+    padding: 10px; /* Add padding around the text and icon */
     transition: box-shadow 0.2s ease;
     /* Add a transition for smoother effect */
+    margin-right: 20px;
 }
 
 #delete-button i {
@@ -916,3 +913,80 @@ th {
     opacity: 0.5;
     /* Reduce opacity of icon when button is disabled */
 }
+
+#photo-actions-container {
+    order: -1; /* This will make photo-actions-container appear above main-content */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10 px;
+}
+
+.flex-container-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Take full width available */
+}
+
+.expand-button {
+    background-color: transparent; /* Transparent background */
+    color: #323131; /* Subtle gray text color */
+    border: none; /* Remove button border */
+    padding: 10px; /* Add padding around the text and icon */
+    cursor: pointer; /* Show pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color change */
+    margin-right: 20px;
+    border-radius: 8px;
+
+    /* Center the icon vertically */
+    display: flex;
+    align-items: center;
+}
+
+.expand-button:hover {
+    background-color: #f0f0f0; /* Light gray background on hover */
+}
+
+.expand-button i {
+    margin-right: 5px; /* Add spacing between icon and text */
+}
+
+/* Style the text */
+.expand-button span {
+    font-size: 14px; /* Font size */
+    font-weight: normal; /* Bold font weight */
+}
+
+#expand-button:disabled {
+    color: #bfbfbf;
+    cursor: not-allowed;
+}
+
+.expand-wrapper {
+    position: relative; /* Position wrapper relative for absolute positioning of text */
+}
+
+.expand-text {
+    position: absolute;
+    bottom: -20px; /* Position text below the button */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.expand-wrapper:hover .expand-text {
+    display: block; /* Show text when wrapper is hovered over */
+    opacity: 1; /* Optionally set opacity to fade in the text */
+    white-space: nowrap;
+    background-color: #979494;
+    color: white;
+    padding: 5px;
+}
+
+.selected-count,
+.expand-wrapper {
+    display: inline-block; /* Display side by side */
+    vertical-align: middle; /* Align vertically */
+}
+

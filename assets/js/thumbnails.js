@@ -106,6 +106,36 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
         // Hide the drop message
         dropMessage.style.display = 'none';
     });
+
+    document.getElementById('expand-button').addEventListener('click', function () {
+        const imageLinks = [];
+        
+        // Clear existing anchor elements
+        const existingAnchors = document.querySelectorAll('a[data-lightbox="image-group"]');
+        existingAnchors.forEach(anchor => anchor.remove());
+        
+        selectedThumbnails.forEach(function (tcontainer, index) {
+            const image = tcontainer.querySelector('.thumbnail');
+            const imageUrl = image.src.replace('_q.jpg', '_b.jpg'); // Get full-size image URL
+            const caption = tcontainer.innerText;
+    
+            // Create anchor element
+            const anchor = document.createElement('a');
+            anchor.setAttribute('href', imageUrl);
+            anchor.setAttribute('data-lightbox', 'image-group'); // Use the same group for all images
+            anchor.setAttribute('data-title', caption) // Set a title for each image
+            document.body.appendChild(anchor); // Append anchor to the body
+    
+            imageLinks.push(anchor); // Push anchor element to array
+        });
+    
+        if (imageLinks.length > 0) {
+            // Trigger click event on the first anchor element to start Lightbox2
+            imageLinks[0].click();
+        } else {
+            alert('No images selected.');
+        }
+    });
 }
 
 // Function to set up the observer
@@ -378,6 +408,7 @@ function clearSelections() {
         tc.classList.remove('selected');
     }
     selectedThumbnails.length = 0; // Clear the array
+    updateSelectedCount();
 }
 
 /** 
@@ -497,6 +528,7 @@ function toggleSelection(event) {
     if (selectedThumbnails.length != 1) {
         clearPropertiesFields();
     }
+    updateSelectedCount(selectedThumbnails.length);
 }
 
 function removeHtmlTags(html) {
@@ -508,6 +540,18 @@ function removeHtmlTags(html) {
 
     // Retrieve the text content (without HTML tags)
     return tempDiv.textContent || tempDiv.innerText || '';
+}
+
+// Update the selected count text
+function updateSelectedCount(selectedCount) {
+    const selectedCountElement = document.getElementById('selected-photos-count');
+    selectedCountElement.textContent = `${selectedCount} photo${selectedCount !== 1 ? 's' : ''} selected`;
+
+    // also enable or disable expand button
+    const expand = document.getElementById('expand-button');
+    if (expand !== null) {
+        expand.disabled = selectedCount < 1;
+    }
 }
 
 const mainContentArea = document.getElementById('main-content');

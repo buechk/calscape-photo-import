@@ -5,7 +5,8 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../assets/css/styles.css" />
     <link rel="stylesheet" type="text/css" href="../assets/css/home-styles.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/lightbox.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
@@ -44,9 +45,22 @@
             </div>
         </div>
 
-        <main id="main-content">
-            <!-- The content area to be dynamically updated -->
-        </main>
+        <div class="flex-container-column">
+            <div id="photo-actions-container" class="actions-container" style="display: block;">
+                <div id="selected-photos-count" class="selected-count">0 photos selected</div>
+                <div class="expand-wrapper">
+                    <button id="expand-button" class="expand-button">
+                        <i class="fa-solid fa-expand"></i>
+                        <span>Expand</span>
+                    </button>
+                    <span class="expand-text">Expand selected</span>
+                </div>
+            </div>
+
+            <main id="main-content">
+                <!-- The content area to be dynamically updated -->
+            </main>
+        </div>
     </div>
 
     <!-- Template for multivalue properties -->
@@ -78,11 +92,12 @@
         </div>
     </div>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsonata/jsonata.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="../assets/js/lightbox.js"></script>
     <script type="module" src="../assets/js/photo-selection.js"></script>
     <script type="module" src="../assets/js/side-bar-nav.js"></script>
     <script type="module" src="../assets/js/thumbnails.js"></script>

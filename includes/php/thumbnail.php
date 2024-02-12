@@ -22,7 +22,6 @@ switch ($fileType) {
         $rootPath = '';
         break;
 }
-$rootPath = ($fileType === FILETYPE_CALSCAPE_PHOTO) ? BIG_IMAGES_DIR : COLLECTION_THUMBNAILS_DIR;
 
 // Check if $fileName is set
 if ($fileName) {

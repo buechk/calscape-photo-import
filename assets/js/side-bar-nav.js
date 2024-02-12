@@ -34,7 +34,7 @@ $(document).ready(function () {
             clearCalscapePhotos();
             clearSourcePhotos();
         }
-        
+
         const targetMenu = $(this).data('menu');
         const nav = $(this).data('nav');
         fetchMenu(targetMenu, nav);
@@ -120,6 +120,8 @@ function fetchContent(page, append = false) {
             //comment updateNavigationBar(page) to show all options on home page
             //update navigation bar based on the fetched page
             updateNavigationBar(page);
+
+            updateSelectedPhotoActions(page);
         },
         error: function (error) {
             console.error('Error fetching content:', error);
@@ -159,6 +161,19 @@ function updateNavigationBar(currentPage) {
     }
 
     dismissStatusOnNavigation();
+}
+
+function updateSelectedPhotoActions(currentPage) {
+    const photoActionsElem = document.getElementById('photo-actions-container');
+    if (photoActionsElem !== null) {
+        if (currentPage === 'home' || 
+        currentPage === 'submit-for-review' || 
+        currentPage === 'select-collection') {
+            photoActionsElem.style.display = 'none';
+        } else {
+            photoActionsElem.style.display = 'block';
+        }
+    }
 }
 
 function openSelectionDialog(id) {
