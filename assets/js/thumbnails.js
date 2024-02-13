@@ -16,6 +16,7 @@ const flickrUrl = document.getElementById('flickrUrl');
 let selectedThumbnails = [];
 let firstSelectedThumbnailThumbnailGrid = null; // Added variable for 'thumbnail-grid'
 let firstSelectedThumbnailThumbnailGroupGrid = null; // Added variable for 'thumbnail-group-grid'
+let firstSelectedThumbnailThumbnailCalscapeGrid = null; // Added variable for 'thumbnail-calscape-grid'
 
 export function getSelectedThumbnailCount() {
     const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
@@ -109,26 +110,26 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
 
     document.getElementById('expand-button').addEventListener('click', function () {
         const imageLinks = [];
-        
+
         // Clear existing anchor elements
         const existingAnchors = document.querySelectorAll('a[data-lightbox="image-group"]');
         existingAnchors.forEach(anchor => anchor.remove());
-        
+
         selectedThumbnails.forEach(function (tcontainer, index) {
             const image = tcontainer.querySelector('.thumbnail');
             const imageUrl = image.src.replace('_q.jpg', '_b.jpg'); // Get full-size image URL
             const caption = tcontainer.innerText;
-    
+
             // Create anchor element
             const anchor = document.createElement('a');
             anchor.setAttribute('href', imageUrl);
             anchor.setAttribute('data-lightbox', 'image-group'); // Use the same group for all images
             anchor.setAttribute('data-title', caption) // Set a title for each image
             document.body.appendChild(anchor); // Append anchor to the body
-    
+
             imageLinks.push(anchor); // Push anchor element to array
         });
-    
+
         if (imageLinks.length > 0) {
             // Trigger click event on the first anchor element to start Lightbox2
             imageLinks[0].click();
@@ -411,10 +412,6 @@ function clearSelections() {
     updateSelectedCount();
 }
 
-/** 
- *  Function to toggle selection state
-*/
-
 function toggleSelection(event) {
     // Check if the click event originated from within the selected-properties-container
     const isWithinSelectedProperties = event.target.closest('#selected-properties-container');
@@ -429,7 +426,9 @@ function toggleSelection(event) {
         return;
     }
 
-    if (event.target.id !== 'thumbnail-group-grid' && event.target.id !== 'thumbnail-grid') {
+    if (event.target.id !== 'thumbnail-group-grid' &&
+        event.target.id !== 'thumbnail-grid' &&
+        event.target.id !== 'thumbnail-calscape-grid') {
         // The clicked element is a child of the parent <div>
         const clickedElement = event.target;
 
@@ -448,8 +447,22 @@ function toggleSelection(event) {
 
         const thumbnailGrid = document.getElementById('thumbnail-grid');
         const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
+        const thumbnailCalscapeGrid = document.getElementById('thumbnail-calscape-grid');
 
         if (tcontainer !== undefined) {
+            // Determine the grid name based on the clicked grid
+            let gridName;
+            if (tcontainer.parentNode === thumbnailGrid) {
+                gridName = 'normal';
+            } else if (tcontainer.parentNode === thumbnailGroupGrid) {
+                gridName = 'group';
+            } else if (tcontainer.parentNode === thumbnailCalscapeGrid) {
+                gridName = 'calscape';
+            }
+            else {
+                console.error("Thumbnail clicked in unkown grid",tcontainer.parentNode);
+            }
+
             if (event.ctrlKey || event.metaKey) {
                 // Ctrl or Cmd key is pressed, toggle selection without clearing others
                 if (selectedThumbnails.includes(tcontainer)) {
@@ -464,55 +477,47 @@ function toggleSelection(event) {
                     tcontainer.classList.add('selected');
                     selectedThumbnails.push(tcontainer);
                 }
-            } else if (event.shiftKey) {
-                // Shift key is pressed, implement contiguous multi-select
+            } else if (event.shiftKey) {   // Shift key is pressed, implement contiguous multi-select
+                // Clear previous selections if no Ctrl/Cmd key is pressed
+                clearSelections();
 
-                // Remember first selected thumbnail for future shift-click 
-                const gridName = tcontainer.parentNode === thumbnailGroupGrid ? 'group' : 'normal';
+                // Determine the range between the first selected and the current one
+                let startIndex;
+                let endIndex;
+
                 if (gridName === 'normal') {
-                    if (firstSelectedThumbnailThumbnailGrid === null) {
-                        firstSelectedThumbnailThumbnailGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-grid'
-                    }
+                    startIndex = [...thumbnailGrid.children].indexOf(firstSelectedThumbnailThumbnailGrid);
+                    endIndex = [...thumbnailGrid.children].indexOf(tcontainer);
                 } else if (gridName === 'group') {
-                    if (firstSelectedThumbnailThumbnailGroupGrid === null) {
-                        firstSelectedThumbnailThumbnailGroupGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-group-grid'
-                    }
+                    startIndex = [...thumbnailGroupGrid.children].indexOf(firstSelectedThumbnailThumbnailGroupGrid);
+                    endIndex = [...thumbnailGroupGrid.children].indexOf(tcontainer);
+                } else if (gridName === 'calscape') {
+                    startIndex = [...thumbnailCalscapeGrid.children].indexOf(firstSelectedThumbnailThumbnailCalscapeGrid);
+                    endIndex = [...thumbnailCalscapeGrid.children].indexOf(tcontainer);
                 }
 
-                const firstSelectedThumbnail = gridName === 'normal' ? firstSelectedThumbnailThumbnailGrid : firstSelectedThumbnailThumbnailGroupGrid;
+                // Ensure startIndex is less than endIndex
+                if (startIndex > endIndex) {
+                    [startIndex, endIndex] = [endIndex, startIndex];
+                }
 
-                if (firstSelectedThumbnail === null) {
-                    // No previous first selected thumbnail, set the first one
-                    firstSelectedThumbnail = tcontainer;
-                } else {
-                    // Determine the range between the first selected and the current one
-                    const firstSelectedIndex = [...(gridName === 'normal' ? thumbnailGrid : thumbnailGroupGrid).children].indexOf(firstSelectedThumbnail);
-                    const currentIndex = [...(gridName === 'normal' ? thumbnailGrid : thumbnailGroupGrid).children].indexOf(tcontainer);
-
-                    // Determine the start and end indexes for the range
-                    const startIndex = Math.min(firstSelectedIndex, currentIndex);
-                    const endIndex = Math.max(firstSelectedIndex, currentIndex);
-
-                    // Clear previous selections
-                    clearSelections();
-
-                    // Select the thumbnails in the determined range
-                    for (let i = startIndex; i <= endIndex; i++) {
-                        const tc = [...(gridName === 'normal' ? thumbnailGrid : thumbnailGroupGrid).children][i];
-                        tc.classList.add('selected');
-                        selectedThumbnails.push(tc);
-                    }
+                for (let i = startIndex; i <= endIndex; i++) {
+                    const tc = (gridName === 'normal') ? thumbnailGrid.children[i] :
+                        ((gridName === 'group') ? thumbnailGroupGrid.children[i] : thumbnailCalscapeGrid.children[i]);
+                    tc.classList.add('selected');
+                    selectedThumbnails.push(tc);
                 }
             } else {
                 // No modifier key is pressed, clear previous selections and select the current one
                 clearSelections();
 
                 // Remember first selected thumbnail for future shift-click 
-                const gridName = tcontainer.parentNode === thumbnailGroupGrid ? 'group' : 'normal';
                 if (gridName === 'normal') {
-                    firstSelectedThumbnailThumbnailGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-grid'
+                    firstSelectedThumbnailThumbnailGrid = tcontainer;
                 } else if (gridName === 'group') {
-                    firstSelectedThumbnailThumbnailGroupGrid = tcontainer; // Set the first selected thumbnail for 'thumbnail-group-grid'
+                    firstSelectedThumbnailThumbnailGroupGrid = tcontainer;
+                } else if (gridName === 'calscape') {
+                    firstSelectedThumbnailThumbnailCalscapeGrid = tcontainer;
                 }
 
                 // Add new selection
