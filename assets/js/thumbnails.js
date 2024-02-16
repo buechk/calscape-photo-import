@@ -64,6 +64,11 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
         }
     };
 
+    lightbox.option({
+        'resizeDuration': 200,
+        'alwaysShowNavOnTouchDevices': true,
+    });
+
     const sortablegrid = new Sortable(dropTarget, sortableGridOptions);
     console.log("Initializing sortable grid: ", sortablegrid);
 
@@ -358,7 +363,7 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     const photo = speciesPhotos[photoID];
                     console.log(`Processing photo: ${photo.FileName}`);
                     const fileName = photo.FileName;
-                    const captionText = `${photo.Copyright}`;
+                    const captionText = photo.CaptionTitle !== null ? `${photo.CaptionTitle}<br><br>${photo.Copyright}` : `${photo.Copyright}`;
                     const altText = photo.CaptionTitle !== null ? removeHtmlTags(`${photo.CaptionTitle}`) : `${photo.Copyright}`;
                     const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
                     const tc = createThumbnailContainer(photoID, turl, captionText, altText);
@@ -402,7 +407,7 @@ export function displayThumbnailsFromSourcePhotos() {
 /**
  * Clear all selections
  */
-function clearSelections() {
+export function clearSelections() {
     // Clear previous selections
     for (let i = 0; i < selectedThumbnails.length; i++) {
         const tc = selectedThumbnails[i];
@@ -548,7 +553,7 @@ function removeHtmlTags(html) {
 }
 
 // Update the selected count text
-function updateSelectedCount(selectedCount) {
+function updateSelectedCount(selectedCount =  0) {
     const selectedCountElement = document.getElementById('selected-photos-count');
     selectedCountElement.textContent = `${selectedCount} photo${selectedCount !== 1 ? 's' : ''} selected`;
 

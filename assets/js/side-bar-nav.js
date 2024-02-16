@@ -9,6 +9,7 @@ import { saveSelectedProperties } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
 import { clearCalscapePhotos, getCalscapeThumbnails } from "./sort-and-save.js";
 import { clearSourcePhotos } from "./source-photo-data.js";
+import { clearSelections } from "./thumbnails.js";
 
 export const Mode = {
     UNSPECIFIED: 'unspecified',
@@ -82,6 +83,9 @@ export function initNavigation() {
         // save current values before replacing page content
         savePhotoCollection();
         saveSelectedProperties();
+
+        // remove grid selections before navigating
+        clearSelections();  
 
         if (event.target.id === 'save' || event.target.id === 'submit')
             // Validate required fields before leaving

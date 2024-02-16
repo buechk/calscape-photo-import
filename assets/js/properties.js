@@ -107,7 +107,7 @@ export const importconfig = {
                             }
                         }
                     },
-                    {
+                    { 
                         "name": "ImageDescription",
                         "datasources": {
                             "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
@@ -116,7 +116,7 @@ export const importconfig = {
                         "userinterface": {
                             "label": "Copyright",
                             "default": "",
-                            "placeholder": "Copyright owner year(s)",
+                            "placeholder": `Copyright owner year(s). For example, Copyright Ron Smith 2024`,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,

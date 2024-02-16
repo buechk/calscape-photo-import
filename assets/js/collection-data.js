@@ -621,7 +621,7 @@ export async function setPhotoCollection(data, filename = null) {
             imageData[uniqueIdentifier] = { ...photo };
 
             const fileName = photo.FileName;
-            const captionText = photo.ImageDescription; // This is treated as a short copyright in Calscape
+            const captionText = `${photo.CaptionTitle}<br><br>${photo.ImageDescription}`; // This is treated as a short copyright in Calscape
             const altText = photo.CaptionTitle;
             const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=collection-photo`;
             const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText, altText);
