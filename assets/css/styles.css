@@ -841,7 +841,6 @@ th {
 .quill-container {
     top: 0;
     left: 0;
-    z-index: 1;
     background-color: #fff;
     margin-bottom: 0;
     position: relative;
@@ -851,6 +850,7 @@ th {
 .ql-editor {
     height: 150px;
     padding: 3px 4px;
+    overflow: visible;
 }
 
 /* Style for the selected count */

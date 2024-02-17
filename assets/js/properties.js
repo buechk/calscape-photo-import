@@ -107,7 +107,7 @@ export const importconfig = {
                             }
                         }
                     },
-                    { 
+                    {
                         "name": "ImageDescription",
                         "datasources": {
                             "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
@@ -521,7 +521,7 @@ export function saveSelectedProperties() {
                         if (quillInstance) {
                             // Get the content of the Quill editor
                             const htmlContent = quillInstance.root.innerHTML !== '<p><br></p>' ? quillInstance.root.innerHTML : '';
-  
+
                             // Now, htmlContent contains the HTML representation of the editor's contents
                             console.log(`Quill content for ${propertyName}: `, htmlContent);
                             currentImageObj[propertyName] = htmlContent;
@@ -632,6 +632,22 @@ export function showSelectedProperties(event) {
                                     const delta = quillInstance.clipboard.convert(propertyvalue);
                                     quillInstance.setContents(delta, 'api');
                                     quillInstance.enable(input.readOnly);
+
+                                    // Find the input field inside the Quill editor
+                                    const linkInput = document.querySelector('.ql-tooltip input[type="text"]');
+
+                                    // Remove the disabled attribute
+                                    if (linkInput) {
+                                        linkInput.removeAttribute('disabled');
+
+                                        // Listen for input event to handle clearing of input field
+                                        linkInput.addEventListener('input', function () {
+                                            // Update placeholder text if input field is empty
+                                            if (!this.value.trim()) {
+                                                this.setAttribute('placeholder', `https://calscape.org/`);
+                                            }
+                                        });
+                                    }
                                 }
                             }
                             else {
@@ -796,9 +812,12 @@ export function createPropertiesFields() {
                 // Append the Quill container
                 formgroup.appendChild(quillContainer);
 
+                const SELECTOR_CONTAINER = '.quill-container';
+
                 // Create a Quill instance and associate it with the container
                 const quill = new Quill(snowContainer, {
                     theme: 'snow',  // theme/style
+                    bounds: SELECTOR_CONTAINER,
                     placeholder: column.userinterface.hasOwnProperty("placeholder") ? column.userinterface.placeholder : "",
                     readOnly: uiconfig.readonly, // Set readOnly based on the uiconfig value
                 });
