@@ -32,7 +32,7 @@ define('SUBMIT', <<<HTML
   
   </div>
     <div id="submit-button-container">
-        <button type=" button" class="button" id="submit-button" disabled>Submit</button>
+        <button type="button" class="button" id="submit-button" disabled>Submit</button>
     </div>
 
   <script>

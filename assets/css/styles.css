@@ -596,14 +596,12 @@ th {
 }
 
 
-#submit-button-container {
+#submit-button-container, #save-button-container {
     display: block;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
+
 }
 
-#submit-button {
+#submit-button, #save-button {
     appearance: none;
     background-color: #516d3d;
     border: none;
@@ -625,26 +623,27 @@ th {
     white-space: nowrap;
 }
 
-#submit-button:focus:not(:focus-visible):not(.focus-visible) {
+#submit-button:focus:not(:focus-visible):not(.focus-visible),
+#save-button:focus:not(:focus-visible):not(.focus-visible) {
     box-shadow: none;
     outline: none;
 }
 
-#submit-button:hover {
+#submit-button:hover, #save-button:hover {
     background-color: #6A8855;
 }
 
-#submit-button:focus {
+#submit-button:focus, #save-button:focus {
     box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
     outline: none;
 }
 
-#submit-button:active {
+#submit-button:active, #save-button:active {
     background-color: #6A8855;
     box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
 }
 
-#submit-button:disabled {
+#submit-button:disabled, #save-button:disabled  {
     background-color: #cccccc;
     color: #666666;
     border: 1px solid #999999;
@@ -821,10 +820,6 @@ th {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-#save-button-container {
-    margin-left: auto;
 }
 
 /* Style the Quill toolbar */
