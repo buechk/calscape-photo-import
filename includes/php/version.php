@@ -1,6 +1,6 @@
 <?php
 
-define('VERSION', '1.0.0');
+define('VERSION', '1.0.0.0001');
 
 // Assuming $response is an array containing the data you want to send back
 $response = array(
