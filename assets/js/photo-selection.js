@@ -5,7 +5,9 @@
  * Selection of photos from the file system or from a Flickr
  * api service URL are supported. 
  */
-import { displayThumbnails, displayThumbnailsFromSourcePhotos } from './thumbnails.js'
+import { displayThumbnails, displayThumbnailsFromSourcePhotos } from './thumbnails.js';
+import { getSourcePhotos } from "./source-photo-data.js";
+import { initializeSortableGrid } from "./thumbnails.js";
 
 const fileModal = document.getElementById('fileModal');
 const flickrModal = document.getElementById('flickrModal');
@@ -22,6 +24,7 @@ const fileInput = document.getElementById('fileInput');
 const flickrUrl = document.getElementById('flickrUrl');
 
 export function initPhotoSelection() {
+    initializeSortableGrid('thumbnail-grid','select-photos-message', Object.entries(getSourcePhotos()));
     displayThumbnailsFromSourcePhotos();
 }
 

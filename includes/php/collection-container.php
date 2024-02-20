@@ -53,8 +53,7 @@ define('COLLECTION_CONTAINER', <<<HTML
         <div id="thumbnail-group-grid" class="thumbnail-grid">
 
         <div id="drag-and-drop-message" class="drag-and-drop-message">
-        In Contribute mode, after selecting Create Collection... Drag and drop source photo thumbnails here to add the photo to a collection.<br><br>
-         In Review mode, select an existing collection.
+        Drag and drop source photo thumbnails here to add photos to a collection.
         </div>
 
             </div>

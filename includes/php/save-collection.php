@@ -1,5 +1,5 @@
 <?php
-include_once(dirname(dirname(__FILE__)).'/php/common.php');
+include_once(dirname(dirname(__FILE__)) . '/php/common.php');
 
 // Get the JSON data from the request
 $data = file_get_contents('php://input');
@@ -29,18 +29,23 @@ $filename = isset($_GET['fileName']) ? $_GET['fileName'] : null;
 // If fileName is not provided, generate a unique filename
 if (!$filename) {
     // Generate a unique filename based on property values
-    $filename = str_replace(' ', '_', sprintf(
-        '%s_%s_%s_%s_%s.json',
-        $decodedData['user_id'],
-        $decodedData['collection-name'],
-        $decodedData['collection-type'],
-        $decodedData['collection-species'],
-        uniqid())
+    $filename = str_replace(
+        ' ',
+        '_',
+        sprintf(
+            '%s_%s_%s_%s_%s.json',
+            $decodedData['user_id'],
+            $decodedData['collection-name'],
+            $decodedData['collection-type'],
+            $decodedData['collection-species'],
+            uniqid()
+        )
     );
-    
-    // Concatenate the filename with the collectionPath
-    $filename = $collectionPath . $filename;
 }
+
+// Concatenate the filename with the collectionPath
+$filename = $collectionPath . $filename;
+
 
 // Save the JSON data to the file
 file_put_contents($filename, $data);
@@ -53,4 +58,3 @@ $response = [
 ];
 header('Content-Type: application/json');
 echo json_encode($response);
-?>

@@ -93,7 +93,7 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
                 // Reset the drop zone styling and redisplay the message
                 dropMessage.style.display = 'block';
             }
-        }, 100); // Adjust the delay as needed
+        }, 300); // Adjust the delay as needed
     });
 
     // Prevent the default behavior for dragover events
@@ -439,10 +439,10 @@ function toggleSelection(event) {
 
         let tcontainer;
         // Check if the clicked element is a thumbnail
-        if (clickedElement.classList.contains('thumbnail')) {
+        if (clickedElement.classList.contains('thumbnail') || clickedElement.classList.contains('caption')) {
             // Find the parent tcontainer
             tcontainer = clickedElement.parentNode;
-        } else if (clickedElement.classList.contains('thumbnail-container')) {
+        } else if (clickedElement.classList.contains('tcontainer')) {
             // The clicked element is already a tcontainer
             tcontainer = clickedElement;
         } else { // background clicked

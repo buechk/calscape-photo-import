@@ -52,7 +52,7 @@ export function storeSourcePhoto(id, photo, thumbnail, caption, width, height) {
                 img.onload = function () {
                     sourcePhotos[id] = {
                         url: reader.result,
-                        caption: caption,
+                        caption: caption ? caption: photo.name,
                         file: photo,
                         width: img.width,
                         height: img.height

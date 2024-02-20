@@ -29,6 +29,10 @@ let calscapeThumbnails = []; // Store calscape photo thumbnails as an array
 */
 
 export async function initPhotoSort() {
+    // initialize message to be displayed when grid is empty
+    const dropMessage = document.getElementById('drag-and-drop-message');
+    dropMessage.innerText = "The selected photos have been added to Calscape...Thank you"
+
     initializeSortableGrid('thumbnail-calscape-grid', 'calscape-drag-and-drop-message', Object.entries(calscapePhotos), false);
 
     const calscapePhotoGrid = document.getElementById('thumbnail-calscape-grid');
@@ -37,6 +41,8 @@ export async function initPhotoSort() {
     displayCalscapePhotos();
 
     const saveButton = document.getElementById('save-button');
+    saveButton.disabled = false;
+
     saveButton.addEventListener('click', async function (event) {
         const delayDuration = 500; // milliseconds
         // Wait for the autosave to complete (adjust the delay if needed)
@@ -62,6 +68,12 @@ export async function initPhotoSort() {
                 clearCalscapePhotos();
                 displayCalscapePhotos(true);
                 saveButton.disabled = true;
+            }
+            else if (result && !result.success) {
+                result.messages.forEach(message => {
+                    console.error(message);
+                });
+                displayStatusMessage(`Error saving photos.`, true);
             }
             else {
                 displayStatusMessage(`Error saving photos.`, true);
@@ -163,12 +175,18 @@ async function fetchExistingPhotos(speciesName) {
     }
 }
 
+function updateReviewStatus(collection) {
+    collection.status = "reviewed";
+    collection.reviewDate = new Date().toLocaleString();
+}
+
 async function prepareSaveData() {
     const saveData = {}
 
-    const collection = getPhotoCollection();
+    const collection = getPhotoCollection(true);
 
     // Persistently save any changes to the properties of the collection made by the reviewer
+    updateReviewStatus(collection);
     saveCollection(collection);
 
     saveData["species"] = collection["collection-type"] === 'species' ? collection["collection-species"] : '';
@@ -193,6 +211,7 @@ async function prepareSaveData() {
         }
         if (photo !== undefined) {
             saveData["photos"][order] = photo;
+            delete saveData["photos"][order].deleted; // removed deleted flag or database will complain
         } else {
             console.error("Photo not found. ID: ", tcontainer.id);
         }
@@ -216,7 +235,7 @@ async function save(saveData) {
             body: JSON.stringify(saveData), // Automatically converts the object to JSON
         });
 
-         const data = await response.json();
+        const data = await response.json();
 
         if (!response.ok) {
             console.error("HTTP error! Status:", response.status);
@@ -277,8 +296,8 @@ function populateCalscapePhotos(speciesName, results) {
 
         calscapePhotos[speciesName]["photos"][photoOrder] = {
             "id": photoID,
-            "CaptionTitle":  result.CaptionTitle,
-            "Copyright":  result.Copyright,
+            "CaptionTitle": result.CaptionTitle,
+            "Copyright": result.Copyright,
             "CopyrightNotice": result.CopyrightNotice,
             "Artist": result.Artist,
             "CaptionDescription": result.CaptionDescription,
@@ -350,6 +369,7 @@ async function handleAddedNode(addedNode) {
             const addedPhotoID = Object.keys(calscapePhotos[speciesKey].photos).length + 1;
 
             calscapePhotos[speciesKey].photos[addedPhotoID] = collectionPhoto;
+
             console.log("Photo added to Calscape photos:", calscapePhotos[speciesKey].photos[addedPhotoID]);
         } else {
             console.log("Unable to add photo to Calscape photos. Photo not found in collection.", addedNode.id);

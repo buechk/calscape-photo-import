@@ -116,7 +116,7 @@ export const importconfig = {
                         "userinterface": {
                             "label": "Copyright",
                             "default": "",
-                            "placeholder": `Copyright owner year(s). For example, Copyright Ron Smith 2024`,
+                            "placeholder": `Copyright owner year(s). Example: Copyright Ron Smith 2024`,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -447,37 +447,6 @@ function createInputField(value) {
 
 /**
  * Function to save the properties from the form to the image object
-
-export function saveSelectedProperties() {
-    const selectedIdElem = document.getElementById('selected-id');
-    if (selectedIdElem != null) {
-        const selectedId = selectedIdElem.textContent;
-        if (selectedId !== '') {
-            const currentImageObj = imageData[selectedId];
-            if (currentImageObj) { // Ensure you have a selected image object
-
-                // Get the form element
-                const propertiesForm = document.getElementById('properties-form');
-
-                // Iterate through the input elements of the properties form
-                const inputElements = propertiesForm.querySelectorAll('input, select, textarea');
-                inputElements.forEach(input => {
-                    const property = input.id;
-                    if (property !== '') {
-                        // If it's not an array, set the value directly
-                        currentImageObj[property] = input.value;
-                    }
-                });
-            } else {
-                console.log("No image object selected to save properties to.");
-            }
-        }
-    }
-}
- */
-
-/**
- * Function to save the properties from the form to the image object
  */
 export function saveSelectedProperties() {
     const selectedIdElem = document.getElementById('selected-id');
@@ -594,9 +563,10 @@ export function showSelectedProperties(event) {
         clearPropertiesFields();
 
         const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-        if (event.target.parentNode.parentNode == thumbnailGroupGrid) {
+        if (event.target.parentNode.parentNode == thumbnailGroupGrid ||
+            event.target.parentNode === thumbnailGroupGrid) {
             // get the saved image data for the selected thumbnail container
-            const tcontainerId = event.target.parentNode.id;
+            const tcontainerId = event.target.parentNode.parentNode === thumbnailGroupGrid ? event.target.parentNode.id : event.target.id;
             const imageObj = imageData[tcontainerId];
 
             // set selected id
@@ -607,62 +577,58 @@ export function showSelectedProperties(event) {
 
                 const input = document.getElementById(property);
                 if (input !== null && input !== undefined) {
-                    const propertyvalue = imageObj[property];
-                    if (propertyvalue !== undefined) {
-                        if (Array.isArray(propertyvalue)) {
-                            // create new controls to show all array values
-                            propertyvalue.map((value) => {
-                                if (value != undefined) {
-                                    const inputContainer = createInputField(value);
-                                    input.appendChild(inputContainer);
+                    const propertyvalue = imageObj[property] !== undefined ? imageObj[property] : '';
+                    if (Array.isArray(propertyvalue)) {
+                        // create new controls to show all array values
+                        propertyvalue.map((value) => {
+                            if (value != undefined) {
+                                const inputContainer = createInputField(value);
+                                input.appendChild(inputContainer);
+                            }
+                        });
+                        // enable/disable input fields acording to readonly configuration
+                        const multivalueInput = input.parentElement;
+                        multivalueInput.querySelectorAll('.multivalue-input').forEach(field => {
+                            field.disabled = input.readonly;
+                        });
+                    }
+
+                    else {
+                        if (input.classList.contains('quill-container')) {
+                            // Get the HTML content of the Quill editor
+                            const quillInstance = quillInstances.get(input.id);
+                            if (quillInstance) {
+                                // Set the content of the Quill editor
+                                const delta = quillInstance.clipboard.convert(propertyvalue);
+                                quillInstance.setContents(delta, 'api');
+                                quillInstance.enable(input.readOnly);
+
+                                // Find the input field inside the Quill editor
+                                const linkInput = document.querySelector('.ql-tooltip input[type="text"]');
+
+                                // Remove the disabled attribute
+                                if (linkInput) {
+                                    linkInput.removeAttribute('disabled');
+
+                                    // Listen for input event to handle clearing of link input field
+                                    linkInput.addEventListener('input', function () {
+                                        // Update placeholder text if input field is empty
+                                        if (!this.value.trim()) {
+                                            this.setAttribute('placeholder', `https://calscape.org/`);
+                                        }
+                                    });
                                 }
-                            });
-                            // enable/disable input fields acording to readonly configuration
-                            const multivalueInput = input.parentElement;
-                            multivalueInput.querySelectorAll('.multivalue-input').forEach(field => {
-                                field.disabled = input.readonly;
-                            });
+                            }
                         }
                         else {
-                            if (input.classList.contains('quill-container')) {
-                                // Get the HTML content of the Quill editor
-                                const quillInstance = quillInstances.get(input.id);
-                                if (quillInstance) {
-                                    // Set the content of the Quill editor
-                                    const delta = quillInstance.clipboard.convert(propertyvalue);
-                                    quillInstance.setContents(delta, 'api');
-                                    quillInstance.enable(input.readOnly);
-
-                                    // Find the input field inside the Quill editor
-                                    const linkInput = document.querySelector('.ql-tooltip input[type="text"]');
-
-                                    // Remove the disabled attribute
-                                    if (linkInput) {
-                                        linkInput.removeAttribute('disabled');
-
-                                        // Listen for input event to handle clearing of input field
-                                        linkInput.addEventListener('input', function () {
-                                            // Update placeholder text if input field is empty
-                                            if (!this.value.trim()) {
-                                                this.setAttribute('placeholder', `https://calscape.org/`);
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                            else {
-                                input.value = propertyvalue;
-                                input.disabled = input.readOnly;
-                            }
+                            input.value = propertyvalue;
+                            input.disabled = input.readOnly;
                         }
-                    }
-                    else {
-                        input.value = '';
-                        input.disabled = input.readOnly;
                     }
                 }
             }
         }
+        
         updateSpeciesChoice();
     }
 }

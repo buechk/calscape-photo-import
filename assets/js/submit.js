@@ -182,6 +182,7 @@ export function initializeSubmitContribute() {
         setTimeout(async () => {
             if (await validatePhotoCollection()) {
                 const collection = getPhotoCollection();
+                collection.status= "ready for review";
                 displayStatusMessage(`Submitting "${collection['collection-name']}" for review...`);
                 submit(collection);
                 // Convert the collectionData object to a JSON string with proper indentation

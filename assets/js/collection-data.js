@@ -6,7 +6,7 @@ import { importconfig, createPropertiesFields } from "./properties.js";
 import { updateSpeciesChoice } from "./species-selection.js";
 import { displayStatusMessage } from "./status.js";
 import { ROLE, Mode } from "./side-bar-nav.js";
-import { createThumbnailContainer, setupMutationObserver } from "./thumbnails.js";
+import { createThumbnailContainer, setupMutationObserver, initializeSortableGrid, displayThumbnailsFromSourcePhotos } from "./thumbnails.js";
 
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
@@ -156,17 +156,12 @@ export function addCollectionThumbnail(tcontainer) {
 
 export function initializeCollectionData() {
     const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-    /*
-        thumbnailGroupGrid.addEventListener('click', function (event) {
-            if (event.target.id === 'thumbnail-group-grid') {
-                // make sure thumbnail appears selected
-                const tcontainerId = document.getElementById("selected-id").textContent
-                if (tcontainerId != '') {
-                    document.getElementById(tcontainerId).classList.add('selected');
-                }
-            }
-        });
-    */
+
+    const dropMessage = document.getElementById('drag-and-drop-message');
+    dropMessage.innerText = "Drag and drop source photo thumbnails here photos to a collection"
+
+    initializeSortableGrid('thumbnail-group-grid', 'drag-and-drop-message', getCollectionThumbnails());
+
     setupMutationObserver(thumbnailGroupGrid, collectionThumbnails, processMutation);
 
     createPropertiesFields();
@@ -190,7 +185,8 @@ async function handleRemovedNode(removedNode) {
 
     if (imageObj) {
         try {
-            if (ROLE === Mode.CONTRIBUTE) {
+            imageObj.deleted = true;
+            if (ROLE == Mode.CONTRIBUTE) {
                 await storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle);
                 console.log('Source photo stored: ', id, imageObj.CaptionTitle);
             }
@@ -209,6 +205,9 @@ async function handleAddedNode(addedNode) {
         await populateThumbnailProperties(addedNode.id);
         console.log('Thumbnail properties populated successfully.');
         await removeSourcePhoto(addedNode.id);
+        if (document.querySelector('#source-photos-container')) {
+            displayThumbnailsFromSourcePhotos();
+        }
     } catch (error) {
         console.error('Error processing added node:', error);
     }
@@ -683,27 +682,30 @@ function getParentFieldsetId(element) {
 /**
  * @function
  * Return the collectionData ordered according to the thumbnail ordering,
- * filtered to remove delected thumbnails and remove the deleted property
- * from each photo object
+ * filtered to remove deleted thumbnails and remove the deleted property
+ * from each photo object.
+ * 
+ * @param {boolean} [restoreDeleted=false] If true, the deleted photos from imageData will
+ * be added in to the returned collection. But the deleted flag for these will be removed as well
  */
-export function getPhotoCollection() {
-    // Remove the 'deleted' property from each object in imageData
-    for (const key in imageData) {
-        if (imageData.hasOwnProperty(key)) {
-            delete imageData[key].deleted;
-        }
-    }
-
+export function getPhotoCollection(restoreDeleted = false, removeDeleted = false) {
     // Create a new array with the correct order based on collectionThumbnails
     const orderedImageData = collectionThumbnails.map(thumbnail => imageData[thumbnail.id]);
 
-    // Filter out the photos where deleted is true
-    const filteredImageData = Object.fromEntries(
-        Object.entries(orderedImageData).filter(([key, value]) => !value.deleted)
-    );
+    // Separate deleted photos if restoreDeleted is true
+    const deletedPhotos = Object.values(imageData).filter(photo => photo.deleted);
 
-    // Add the filtered photos to collectionData and return the whole package
-    collectionData.photos = filteredImageData;
+    // Concatenate deleted photos with non-deleted photos if restoreDeleted is true
+    const filteredImageData = restoreDeleted ? orderedImageData.concat(deletedPhotos) : orderedImageData;
+
+    // Remove the 'deleted' property from each photo
+    const cleanedImageData = removeDeleted ? filteredImageData.map(photo => {
+        const { deleted, ...cleanPhoto } = photo;
+        return cleanPhoto;
+    }) : filteredImageData;
+
+    // Add the filtered and cleaned photos to collectionData and return the whole package
+    collectionData.photos = cleanedImageData;
 
     if (collectionData["collection-type"] === 'garden') {
         collectionData["collection-species"] = '';
@@ -719,7 +721,7 @@ export async function clearPhotoCollection() {
         await handleRemovedNode(removedNode);
     }
     collectionThumbnails.length = 0;
-    imageData = {};  
+    imageData = {};
     collectionData = {};
 
     const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');

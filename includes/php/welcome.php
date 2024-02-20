@@ -57,4 +57,26 @@ define('WELCOME', <<<HTML
         </div>
     </div>
 </div>
+<footer>
+    <div class="version-info">
+        <div id="version"></div>
+        <div id="db_version"></div>
+    </div>
+    <div class="copyright">
+        <a href="https://www.cnps.org/" target="_blank">© California Native Plant Society. All rights reserved.</a>
+    </div>
+</footer>
+
+<script>
+// Fetch version from server
+fetch('/includes/php/version.php')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('version').innerText = "Photo Magician version: " + data.photo_magician_version;
+        document.getElementById('db_version').innerText = "Calscape version: " + data.calscape_version;
+    })
+    .catch(error => {
+        console.error('Error fetching version:', error);
+    });
+</script>
 HTML);

@@ -990,3 +990,24 @@ th {
     vertical-align: middle; /* Align vertically */
 }
 
+footer {
+    background-color: #f0f0f0; /* Subtle background color */
+    padding: 10px; /* Add padding for spacing */
+    text-align: center;
+}
+
+.version-info {
+    font-family: Arial, sans-serif; /* Use a common font */
+    color: #333; /* Dark text color */
+    font-size: 14px; /* Adjust font size */
+    text-align: left;
+}
+
+.version-info span {
+    display: block; /* Ensure each version number is on a new line */
+    margin-bottom: 5px; /* Add space between version numbers */
+}
+
+.copyright {
+    margin-top: 10px; /* Adjust as needed */
+}

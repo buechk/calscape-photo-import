@@ -21,16 +21,23 @@ class DatabaseManager
                 throw new \Exception("Error in preparing query: " . $this->mysqli->error);
             }
     
-            // Extract the type definition and values separately
-            $typeDefinition = array_shift($params);
-            $bindParams = [&$typeDefinition]; // First element is the type definition
+            // Initialize bindParams with an empty array
+            $bindParams = [];
     
-            foreach ($params as $param) {
-                $bindParams[] = &$param; // Pass each parameter by reference
+            // If $params is not empty, extract the type definition and values separately
+            if (!empty($params)) {
+                $typeDefinition = array_shift($params);
+                $bindParams[] = &$typeDefinition; // First element is the type definition
+    
+                foreach ($params as $param) {
+                    $bindParams[] = &$param; // Pass each parameter by reference
+                }
             }
     
             // Bind parameters and execute the statement
-            call_user_func_array([$stmt, 'bind_param'], $bindParams);
+            if (!empty($bindParams)) {
+                call_user_func_array([$stmt, 'bind_param'], $bindParams);
+            }
             $stmt->execute();
     
             // Check for execution errors
@@ -57,7 +64,8 @@ class DatabaseManager
                 $stmt->close();
             }
         }
-    }      
+    } 
+       
 
     public function closeConnection()
     {

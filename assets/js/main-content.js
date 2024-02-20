@@ -1,18 +1,15 @@
 /**
  * @file main-content.js
  */
-
-import { initializeSortableGrid } from "./thumbnails.js";
 import { initPhotoSelection } from "./photo-selection.js";
 import { initializeResizer } from "./resizer.js";
 import { fetchSpeciesList, initializeSpeciesInput, initializeCollectionSpeciesInput } from "./species-selection.js";
-import { initializeCollectionData, getCollectionThumbnails } from "./collection-data.js";
+import { initializeCollectionData } from "./collection-data.js";
 import { initializeSubmitContribute } from "./submit.js";
 import { clearPropertiesFields } from "./properties.js";
 import { initSubmitPage as initializeSubmitPage } from "./submit-page.js";
 import { initWelcome } from "./side-bar-nav.js";
 import { initCollectionsforReview} from "./collections-for-review.js";
-import { getSourcePhotos } from "./source-photo-data.js";
 import { initPhotoSort } from "./sort-and-save.js";
 
 /**
@@ -31,7 +28,6 @@ export async function initMainContent() {
     if (mainContentArea.querySelector('#source-photos-container')) {
         mainContentArea.classList.remove('row-layout');
         mainContentArea.classList.add('column-layout');
-        initializeSortableGrid('thumbnail-grid','select-photos-message', Object.entries(getSourcePhotos()));
         initPhotoSelection();
     }
 
@@ -41,7 +37,6 @@ export async function initMainContent() {
         mainContentArea.classList.add('row-layout');
         fetchSpeciesList();
         initializeCollectionSpeciesInput();
-        initializeSortableGrid('thumbnail-group-grid', 'drag-and-drop-message', getCollectionThumbnails());
         initializeCollectionData();
     }
 
