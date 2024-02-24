@@ -1,5 +1,5 @@
 <?php
-include_once(dirname(dirname(__FILE__)).'/php/common.php');
+include_once('common.php');
 
 // Check if the directory exists
 if (is_dir(COLLECTIONS_REVIEW_DIR)) {

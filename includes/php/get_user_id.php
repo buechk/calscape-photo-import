@@ -1,9 +1,9 @@
 <?php
-include_once(dirname(dirname(__FILE__)) . '/php/common.php');
+include_once('common.php');
 
 function getUserID($jsonData)
 {
-    global $dbManager; // Assuming $dbManager is an instance of DatabaseManager that includes a mysqli connection
+    global $dbManager;
 
     // Decode the JSON data to extract the speciesName
     $userEmail = $jsonData;

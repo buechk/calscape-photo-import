@@ -1,10 +1,11 @@
 <?php
-include_once(dirname(dirname(__FILE__)) . '/php/common.php');
+include_once('common.php');
 
 function getSpeciesPhotos($jsonData)
 {
-    global $dbManager; // Assuming $dbManager is an instance of DatabaseManager that includes a mysqli connection
-
+    include_once('common.php');
+    global $dbManager;
+    
     // Decode the JSON data to extract the speciesName
     $speciesName = $jsonData;
 

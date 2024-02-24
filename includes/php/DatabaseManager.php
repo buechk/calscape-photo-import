@@ -1,15 +1,31 @@
 <?php
+
 class DatabaseManager
 {
     private $mysqli;
 
-    public function __construct($hostname, $username, $password, $database)
+    public function __construct($dbConfig)
     {
-        $this->mysqli = new mysqli($hostname, $username, $password, $database);
+        $this->mysqli = new mysqli($dbConfig['hostname'], $dbConfig['username'], $dbConfig['password'], $dbConfig['database']);
 
         if ($this->mysqli->connect_error) {
             die("Connection failed: " . $this->mysqli->connect_error);
         }
+    }
+
+    public function beginTransaction()
+    {
+        return $this->mysqli->begin_transaction();
+    }
+
+    public function commit()
+    {
+        return $this->mysqli->commit();
+    }
+
+    public function rollback()
+    {
+        return $this->mysqli->rollback();
     }
 
     public function executeQuery($query, $params)
@@ -54,7 +70,7 @@ class DatabaseManager
             }
     
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Handle the exception (log, rethrow, etc.)
             // Optionally, you can rethrow the exception if you want it to be handled elsewhere
             throw $e;
@@ -65,7 +81,6 @@ class DatabaseManager
             }
         }
     } 
-       
 
     public function closeConnection()
     {

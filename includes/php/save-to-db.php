@@ -1,9 +1,10 @@
 <?php
-require_once(dirname(dirname(__FILE__)) . '/php/common.php');
+include_once('common.php');
 
 function createNewPhotoRecord($mysqli, $photo, $response)
 {
     global $newline;
+
     // Create arrays to hold column names and values
     $columnNames = [];
     $columnValues = [];
@@ -119,10 +120,8 @@ function copyPhotoFiles($photo, $response)
     return true;
 }
 
-function updateDatabase($jsonData)
+function updateDatabase($jsonData, $dbConfig)
 {
-    global $hostname, $username, $password, $database;
-
     $response =
         [
             "success" => true,
@@ -134,7 +133,8 @@ function updateDatabase($jsonData)
         ];
 
     // Create a database connection
-    $mysqli = new mysqli($hostname, $username, $password, $database);
+    $mysqli = new mysqli($dbConfig['hostname'], $dbConfig['username'], $dbConfig['password'], $dbConfig['database']);
+
 
     // Check the connection
     if ($mysqli->connect_error) {
@@ -274,7 +274,7 @@ function updateDatabase($jsonData)
 
 // Only execute the code if this script is not included but executed directly
 if (basename(__FILE__) == basename($_SERVER["SCRIPT_FILENAME"])) {
-    $response = updateDatabase(file_get_contents('php://input'));
+    $response = updateDatabase(file_get_contents('php://input'), $dbConfig);
 
     // Send the JSON response
     header('Content-Type: application/json');

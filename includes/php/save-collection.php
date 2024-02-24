@@ -1,5 +1,5 @@
 <?php
-include_once(dirname(dirname(__FILE__)) . '/php/common.php');
+include_once('common.php');
 
 // Get the JSON data from the request
 $data = file_get_contents('php://input');

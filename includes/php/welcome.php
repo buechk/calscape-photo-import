@@ -2,12 +2,13 @@
 // welcome.php
 
 define('WELCOME', <<<HTML
-<p id="welcome">Welcome to the Calscape Photo Manager, where your contributions play a pivotal role in expanding our botanical
-    knowledge. You can easily contribute to our platform by uploading plant photos. Whether you choose to upload images
-    from your computer or provide Flickr URLs, your contributions are invaluable.</p>
+<div id="welcome-container">
+    <p id="welcome">Welcome to the Calscape Photo Manager, where your contributions play a pivotal role in expanding our botanical
+        knowledge. You can easily contribute to our platform by uploading plant photos. Whether you choose to upload images
+        from your computer or provide Flickr URLs, your contributions are invaluable.</p>
 
-<h2>What would you like to do?</h2>
-
+    <h2>What would you like to do?</h2>
+</div>
 <div id="container">
     <div id="contribute-container">
         <h2 class="centered-text">Contribute Photos</h2>

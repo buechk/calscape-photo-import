@@ -1,28 +1,25 @@
 <?php
-include_once(dirname(dirname(__FILE__)).'/php/common.php');
+include_once('common.php');
 
-// Create a database connection
-$conn = new mysqli($hostname, $username, $password, $database);
+try {
+    // Query to get all species
+    $speciesquery = "SELECT species FROM " . TABLE_PLANTS . " WHERE disabled = 0 and is_biozone = 0 ORDER BY species";
 
-// Check the connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    $result = $dbManager->executeQuery($speciesquery, []);
 
-// SQL query
-// Execute the query
-$result = $conn->query($speciesquery);
-
-// Check if the query was successful
-if ($result) {
-    $species = array();
-    while ($row = $result->fetch_assoc()) {
-        $species[] = $row["species"];
+    // Check if the query was successful and if so return $species array
+    if ($result) {
+        $species = array();
+        while ($row = $result->fetch_assoc()) {
+            $species[] = $row["species"];
+        }
+        echo json_encode($species);
+    } else {
+        echo json_encode(["error" => "Error executing the query: " . $conn->error]);
     }
-    echo json_encode($species);
-} else {
-    echo json_encode(["error" => "Error executing the query: " . $conn->error]);
+} catch (Exception $e) {
+    echo "Failed to get species names: " . $e->getMessage() . "{$newline}";
+} finally {
+    // Close the connection regardless of success or failure
+    $dbManager->closeConnection();
 }
-
-// Close the database connection
-$conn->close();

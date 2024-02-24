@@ -1,5 +1,5 @@
 <?php
-include_once(dirname(dirname(__FILE__)) . '/php/common.php');
+include_once('common.php');
 
 function saveFile($rootname, $uploaddirectory, $imageUrl) {
     $pathParts = pathinfo($imageUrl);

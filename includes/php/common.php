@@ -1,29 +1,28 @@
 <?php
+include_once('config.php');
 include_once('DatabaseManager.php');
 
-// Database connection parameters
-$hostname = "localhost:3306";
-$username = "root";
-$password = "Edw8rdpm!";
-$database = "calsca6_demo";
+try {
+    $dbManager = new DatabaseManager($dbConfig);
+}
+catch (Exception $e) {
+    die("Unable to access the database: " . $e->getMessage());
+}
 
-/*
-// Kristy's Database connection parameters
-$hostname = "localhost:3306";
-$username = "root";
-$password = "Edw8rdpm!";
-$database = "calsca6_calscape";
-*/
+// Function to get the Calscape version dynamically
+function getCalscapeVersion()
+{
+    global $dbManager;
 
-/*
-// AWS Server Database connection parameters
-$hostname = "calscape-photo-test-db-instance.cjoscaq8s13i.us-west-1.rds.amazonaws.com:3306";
-$username = "photo_admin";
-$password = "calscapephoto";
-$database = "calsca6_demo";	
-*/
+    // Check if the table plant_images exists
+    $query = "SHOW TABLES LIKE 'plant_images'";
+    $result = $dbManager->executeQuery($query, []);
 
-$dbManager = new DatabaseManager($hostname, $username, $password, $database);
+    // If the table exists, it's Calscape version 2.0, otherwise 1.0
+    $calscapeVersion = ($result->num_rows > 0) ? '2.0' : '1.0';
+
+    return $calscapeVersion;
+}
 
 // Calscape photo directories
 define('ALL_IMAGES_DIR', '../../public/ExtData/allimages/');
@@ -47,8 +46,14 @@ define('FILETYPE_CALSCAPE_THUMBNAIL', 'calscape-thumbnail');
 define('FILETYPE_COLLECTION_PHOTO', 'collection-photo');
 define('FILETYPE_COLLECTION_THUMBNAIL', 'collection-thumbail');
 
-// Query to get all species
-$speciesquery = "SELECT species FROM plants WHERE disabled = 0 and is_biozone = 0 ORDER BY species";
+$version = getCalscapeVersion();
+
+if ($version === '1.0') {
+    define('TABLE_PLANTS', 'plants');
+}
+else if ($version === '2.0') {
+    define('TABLE_PLANTS', 'leg_plants');
+}
 
 $newline = (php_sapi_name() === 'cli') ? PHP_EOL : '<br>';
 
@@ -197,8 +202,11 @@ function createThumbnail(
 
 function getPlantID($species)
 {
-    global $dbManager;
+    include_once('config.php');
+
     $plantID = '';
+
+    global $dbManager;
 
     try {
         // Get the ID for a species from the plants table
