@@ -7,7 +7,7 @@ import { imageData } from "./collection-data.js";
 import { updateSpeciesChoice } from "./species-selection.js";
 import { ROLE } from "./side-bar-nav.js";
 
-export const importconfig = {
+const importconfig1 = {
     "photoimportconfig": {
         "tables": [
             {
@@ -330,6 +330,342 @@ export const importconfig = {
             }
         ]
     }
+}
+
+const importconfig2 = {
+    "photoimportconfig": {
+        "tables": [
+            {
+                "table": "plant_images",
+                "columns": [
+                    {
+                        "name": "ImageDescription",
+                        "datasources": {
+                            "flickr": "photo.title._content",
+                            "jpeg": "EXIF.ImageDescription"
+                        },
+                        "userinterface": {
+                            "label": "Image description",
+                            "default": "",
+                            "richtext": true,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    /*
+                    {
+                        "name": "CaptionDescription",
+                        "datasources": {
+                            "flickr": "photo.description._content",
+                            "jpeg": "EXIF.ImageDescription"
+                        },
+                        "userinterface": {
+                            "label": "Caption description",
+                            "default": "",
+                            "richtext": true,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    }, */
+                    {
+                        "name": "DateTimeOriginal",
+                        "datasources": {
+                            "flickr": "photo.dates.taken",
+                            "jpeg": "EXIF.DateTimeOriginal"
+                        },
+                        "userinterface": {
+                            "label": "Photo date",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Artist",
+                        "datasources": {
+                            "flickr": ["photo.exif.[tag='Artist'].raw._content", "photo.owner.realname"],
+                            "jpeg": "EXIF.Artist"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Artist",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    /*
+                    {
+                        "name": "ImageDescription",
+                        "datasources": {
+                            "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
+                            "jpeg": "EXIF.Copyright"
+                        },
+                        "userinterface": {
+                            "label": "Copyright",
+                            "default": "",
+                            "placeholder": `Copyright owner year(s). Example: Copyright Ron Smith 2024`,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "CopyrightCategory",
+                        "datasources": {
+                            "flickr": "photo.license",
+                            "jpeg": "EXIF.Copyright"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Copyright Category",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        },
+                        "valuemap": {
+                            "0": "All Rights Reserved (ARR)",
+                            "1": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+                            "2": "Attribution-NonCommercial (CC BY-NC)",
+                            "3": "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
+                            "4": "Attribution (CC BY)",
+                            "5": "Attribution-ShareAlike (CC BY-SA)",
+                            "6": "Attribution-NoDerivs (CC BY-ND)",
+                            "7": "Public Domain Dedication (CC0)",
+                            "8": "GNU Free Documentation License (GFDL)"
+                        },
+                        "picklist": [
+                            "All Rights Reserved (ARR)",
+                            "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+                            "Attribution-NonCommercial (CC BY-NC)",
+                            "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
+                            "Attribution (CC BY)",
+                            "Attribution-ShareAlike (CC BY-SA)",
+                            "Attribution-NoDerivs (CC BY-ND)",
+                            "Public Domain Dedication (CC0)",
+                            "GNU Free Documentation License (GFDL)"
+                        ]
+                    },*/
+                    {
+                        "name": "CopyrightNotice",
+                        "datasources": {
+                            "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
+                            "jpeg": "EXIF.Copyright"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Copyright Notice",
+                            "default": "",
+                            "richtext": true,
+                            "placeholder": "Optional extended copyright information",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    /*
+                    {
+                        "name": "QualityRanking",
+                        "datasources": {
+                            "flickr": "photo.exif[tag='Rating'].raw._content",
+                            "jpeg": "EXIF.xmp.Rating"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Quality ranking - 0 (worst) to 5 (best)",
+                            "placeholder": "Enter 0 to 5",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "LandscaperName",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Landscaper name",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "LandscapeDesigner",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Landscaper designer",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    */
+                    {
+                        "name": "Keywords",
+                        "datasources": {
+                            "flickr": "photo.tags.tag.raw",
+                            "jpeg": "EXIF.Copyright"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Keywords",
+                            "default": "",
+                            "multivalue": true,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true,
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    }
+                ]
+            } /*,
+            {
+                "table": "plant_photo",
+                "columns": [
+                    {
+                        "name": "user_id",
+                        "datasources": {},
+                        "applies_to": "collection",
+                        "userinterface": {
+                            "label": "Calscape email",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": true,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    }
+                ]
+            } */
+        ]
+    }
+}
+
+export let importconfig = null;
+
+export function setCalscapeVersion(version) {
+    importconfig = window.calscapeVersion == '1.0' ? importconfig1 : importconfig2;
 }
 
 // Create a Map to store Quill instances

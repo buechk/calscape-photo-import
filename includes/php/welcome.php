@@ -69,15 +69,8 @@ define('WELCOME', <<<HTML
 </footer>
 
 <script>
-// Fetch version from server
-fetch('/includes/php/version.php')
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('version').innerText = "Photo Magician version: " + data.photo_magician_version;
-        document.getElementById('db_version').innerText = "Calscape version: " + data.calscape_version;
-    })
-    .catch(error => {
-        console.error('Error fetching version:', error);
-    });
+
+    document.getElementById('version').innerText = "Photo Magician version: " + window.photoMagicianVersion;
+    document.getElementById('db_version').innerText = "Calscape version: " + window.calscapeVersion;
 </script>
 HTML);

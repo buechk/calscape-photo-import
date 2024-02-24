@@ -5,7 +5,7 @@
 
 import { initMainContent } from "./main-content.js";
 import { clearPhotoCollection, getCollectionThumbnails, savePhotoCollection, validateLeavePage } from "./collection-data.js";
-import { saveSelectedProperties } from "./properties.js"
+import { saveSelectedProperties, setCalscapeVersion } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
 import { clearCalscapePhotos, getCalscapeThumbnails } from "./sort-and-save.js";
 import { clearSourcePhotos } from "./source-photo-data.js";
@@ -17,7 +17,18 @@ export const Mode = {
     REVIEW: 'reviewer'
 };
 
-$(document).ready(function () {
+$(document).ready(async function () {
+    try {
+        const response = await fetch('/includes/php/version.php');
+        const data = await response.json();
+        window.calscapeVersion = data.calscape_version;
+        window.photoMagicianVersion = data.photo_magician_version;
+    } catch (error) {
+        console.error('Error fetching version:', error);
+    }
+
+    setCalscapeVersion(window.calscapeVersion);
+    
     // Load default content on page load
     fetchContent('home');
 
