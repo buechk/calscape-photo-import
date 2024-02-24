@@ -748,7 +748,7 @@ th {
     position: absolute;
     bottom: 10px;
     margin-top: 20px;
-    width: 100%;
+    width: 15%;
     z-index: 2;
 }
 
@@ -758,7 +758,6 @@ th {
     border-radius: 0px;
     padding: 10px;
     min-height: 50px;
-    width: 200px;
 }
 
 .status-message {
