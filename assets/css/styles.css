@@ -748,7 +748,7 @@ th {
     position: absolute;
     bottom: 10px;
     margin-top: 20px;
-    width: 15%;
+    width: 100%;
     z-index: 2;
 }
 
@@ -758,6 +758,7 @@ th {
     border-radius: 0px;
     padding: 10px;
     min-height: 50px;
+    width: 200px;
 }
 
 .status-message {
@@ -795,7 +796,6 @@ th {
     color: #721c24;
     /* Dark red text color */
     border: 1px solid #721c24;
-    ;
     /* Border color */
 }
 
