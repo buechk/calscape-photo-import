@@ -5,7 +5,7 @@
 
 import { initMainContent } from "./main-content.js";
 import { clearPhotoCollection, getCollectionThumbnails, savePhotoCollection, validateLeavePage } from "./collection-data.js";
-import { saveSelectedProperties, setCalscapeVersion } from "./properties.js"
+import { saveSelectedProperties, initProperties } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
 import { clearCalscapePhotos, getCalscapeThumbnails } from "./sort-and-save.js";
 import { clearSourcePhotos } from "./source-photo-data.js";
@@ -27,7 +27,7 @@ $(document).ready(async function () {
         console.error('Error fetching version:', error);
     }
 
-    setCalscapeVersion(window.calscapeVersion);
+    initProperties(window.calscapeVersion);
     
     // Load default content on page load
     fetchContent('home');

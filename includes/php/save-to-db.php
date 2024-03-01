@@ -102,7 +102,7 @@ function copyPhotoFiles($photo, $response)
         // copy thumbnail file from collection staging to Calscape photo directory
         $thumbnailFile = $photo['thumbnail'];
         $th_sourceFilePath = COLLECTION_THUMBNAILS_DIR . $thumbnailFile;
-        $th_destinationDirectory = PHOTOS_DIR;
+        $th_destinationDirectory = THUMBNAILS_DIR;
 
         if (copyFile($th_sourceFilePath, $th_destinationDirectory, $thumbnailFile)) {
             $response["messages"][] = "Thumbnail file $sourceFilePath moved to $destinationDirectory";

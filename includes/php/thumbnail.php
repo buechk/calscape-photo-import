@@ -10,7 +10,7 @@ switch ($fileType) {
         $rootPath = BIG_IMAGES_DIR;
         break;
     case FILETYPE_CALSCAPE_THUMBNAIL:
-        $rootPath = PHOTOS_DIR;
+        $rootPath = THUMBNAILS_DIR;
         break;
     case FILETYPE_COLLECTION_PHOTO:
         $rootPath = COLLECTION_PHOTOS_DIR;

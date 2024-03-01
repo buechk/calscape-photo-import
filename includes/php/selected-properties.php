@@ -5,13 +5,10 @@ define('SELECTED_PROPERTIES', <<<HTML
 <div id="selected-properties-container" class="outer-properties-container">
     <h2>Selected photo properties</h2>
     <div class="properties-scroll-container">
-        <h3>Properties apply to the selected photo</h3>
+        <h3 id='properties-for-selected-heading'>Properties apply to the selected photo</h3>
         <form id="properties-form">
             <div id="selected-species-container" class="form-group">
-                <label class="label" for="selected-species">
-                    <span class="required-asterisk">*</span>
-                     Species
-                </label>
+                <label class="label" for="selected-species"><span class="required-asterisk">*</span>Species</label>
                 <div class="species-container">
                     <input type="text" id="selected-species"
                         class="auto-expand-input" autocomplete="off" disabled required>

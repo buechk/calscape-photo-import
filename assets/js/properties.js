@@ -3,9 +3,10 @@
  *  Display properties of source photos and apply properties to Calscape photos. 
  * 
 */
-import { imageData } from "./collection-data.js";
+import { imageData, getImageData } from "./collection-data.js";
 import { updateSpeciesChoice } from "./species-selection.js";
 import { ROLE } from "./side-bar-nav.js";
+import { getSelectedThumbnails } from "./thumbnails.js";
 
 const importconfig1 = {
     "photoimportconfig": {
@@ -19,6 +20,7 @@ const importconfig1 = {
                             "flickr": "photo.title._content",
                             "jpeg": "EXIF.ImageDescription"
                         },
+                        "multi_apply": true,
                         "userinterface": {
                             "label": "Caption title",
                             "default": "",
@@ -42,6 +44,7 @@ const importconfig1 = {
                             "flickr": "photo.description._content",
                             "jpeg": "EXIF.ImageDescription"
                         },
+                        "multi_apply": true,
                         "userinterface": {
                             "label": "Caption description",
                             "default": "",
@@ -113,6 +116,7 @@ const importconfig1 = {
                             "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
                             "jpeg": "EXIF.Copyright"
                         },
+                        "multi_apply": true,
                         "userinterface": {
                             "label": "Copyright",
                             "default": "",
@@ -344,6 +348,7 @@ const importconfig2 = {
                             "flickr": "photo.title._content",
                             "jpeg": "EXIF.ImageDescription"
                         },
+                        "multi_apply": true,
                         "userinterface": {
                             "label": "Image description",
                             "default": "",
@@ -664,8 +669,11 @@ const importconfig2 = {
 
 export let importconfig = null;
 
-export function setCalscapeVersion(version) {
-    importconfig = window.calscapeVersion == '1.0' ? importconfig1 : importconfig2;
+let multiApplyProperties = null;
+
+export function initProperties(version) {
+    importconfig = version == '1.0' ? importconfig1 : importconfig2;
+    multiApplyProperties = getMultiApplyProperties();
 }
 
 // Create a Map to store Quill instances
@@ -764,27 +772,48 @@ function createInputField(value) {
     deleteBtn.innerText = 'X';
     deleteBtn.addEventListener('click', (event) => {
         const propertyValue = event.target.previousSibling.value;
-        const tcontainerId = document.getElementById("selected-id").textContent;
         const propertyName = event.target.parentElement.parentElement.id;
 
-        // Remove the property if it has no value
-        if (imageData[tcontainerId][propertyName]) {
-            const index = imageData[tcontainerId][propertyName].indexOf(propertyValue);
-            if (index !== -1) {
-                imageData[tcontainerId][propertyName].splice(index, 1);
+        const selectedIdElem = document.getElementById("selected-id");
+        const selectedIds = selectedIdElem.textContent.split(',').filter(Boolean); // Get an array of selected thumbnail IDs
+        selectedIds.forEach(tcontainerId => {
+            // Remove the property if it has no value
+            if (imageData[tcontainerId][propertyName]) {
+                const index = imageData[tcontainerId][propertyName].indexOf(propertyValue);
+                if (index !== -1) {
+                    imageData[tcontainerId][propertyName].splice(index, 1);
+                }
             }
-        }
+        });
 
         event.target.parentNode.innerHTML = '';
     });
+    
     inputContainer.appendChild(deleteBtn);
     return inputContainer;
+}
+
+export function saveSelectedProperties() {
+    const propertiesForm = document.getElementById('properties-form');
+    if (propertiesForm != null) {
+        const selectedIdElem = document.getElementById('selected-id');
+        if (selectedIdElem != null) {
+            const selectedIds = selectedIdElem.textContent.split(',').filter(Boolean); // Get an array of selected thumbnail IDs
+            if (selectedIds.length > 0) {
+                // Iterate through the input elements of the properties form
+                const inputElements = propertiesForm.querySelectorAll('input, select:not(.ql-header), textarea, .quill-container');
+                inputElements.forEach(input => {
+                    saveProperties(input);
+                });
+            }
+        }
+    }
 }
 
 /**
  * Function to save the properties from the form to the image object
  */
-export function saveSelectedProperties() {
+export function OldsaveSelectedProperties() {
     const selectedIdElem = document.getElementById('selected-id');
 
     if (selectedIdElem != null) {
@@ -799,17 +828,17 @@ export function saveSelectedProperties() {
 
                 // Iterate through the input elements of the properties form
                 const inputElements = propertiesForm.querySelectorAll('input, select, textarea, .quill-container');
-                inputElements.forEach(input => {
-                    if (input.classList.contains('multivalue-input')) {
+                inputElements.forEach(inputElement => {
+                    if (inputElement.classList.contains('multivalue-input')) {
                         // Handle multivalue inputs
-                        const container = input.closest('.multivalue-input-container');
+                        const container = inputElement.closest('.multivalue-input-container');
                         const innerContainer = container.querySelector('.multivalue-input-inner');
 
                         // Find the id from the multivalue-input-inner element
                         const property = innerContainer.id;
 
                         // Add the value to the multivalue array if it doesn't already exist
-                        const value = input.value.trim();
+                        const value = inputElement.value.trim();
                         if (property && value !== '') {
                             currentImageObj[property] = currentImageObj[property] || [];
 
@@ -818,11 +847,11 @@ export function saveSelectedProperties() {
                             }
                         }
                     }
-                    else if (input.classList.contains('quill-container')) {
-                        const propertyName = input.id;
+                    else if (inputElement.classList.contains('quill-container')) {
+                        const propertyName = inputElement.id;
 
                         // Get the HTML content of the Quill editor
-                        const quillInstance = quillInstances.get(input.id);
+                        const quillInstance = quillInstances.get(inputElement.id);
                         if (quillInstance) {
                             // Get the content of the Quill editor
                             const htmlContent = quillInstance.root.innerHTML !== '<p><br></p>' ? quillInstance.root.innerHTML : '';
@@ -837,9 +866,9 @@ export function saveSelectedProperties() {
                     }
                     else {
                         // If it's not a multivalue input, set the value directly
-                        const property = input.id;
+                        const property = inputElement.id;
                         if (property !== '') {
-                            currentImageObj[property] = input.value;
+                            currentImageObj[property] = inputElement.value;
                         }
                     }
                 });
@@ -856,117 +885,335 @@ export function saveSelectedProperties() {
  * @param {HTMLElement} inputElement - The input element to save.
  */
 function saveProperties(inputElement) {
-    if (inputElement) {
+    if (inputElement && !inputElement.disabled) {
         const selectedIdElem = document.getElementById('selected-id');
         if (selectedIdElem != null) {
-            const tcontainerId = selectedIdElem.textContent;
-            if (!imageData[tcontainerId]) {
-                imageData[tcontainerId] = {}; // Initialize image object if not exists
-            }
-            if (!inputElement.parentElement.parentElement.classList.contains("multivalue-input-container") &&
-                inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA") {
-                const propertyName = inputElement.id;
-                const propertyValue = inputElement.value;
+            const selectedIds = selectedIdElem.textContent.split(',').filter(Boolean); // Get an array of selected thumbnail IDs
+            selectedIds.forEach(tcontainerId => { // Iterate over each selected thumbnail ID
+                if (!imageData[tcontainerId]) {
+                    imageData[tcontainerId] = {}; // Initialize image object if not exists
+                }
 
-                if (propertyName && propertyValue) {
-                    imageData[tcontainerId][propertyName] = propertyValue;
-                } else {
-                    delete imageData[tcontainerId][propertyName];
+                if (inputElement.classList.contains('multivalue-input')) {
+                    // Handle multivalue inputs
+                    const container = inputElement.closest('.multivalue-input-container');
+                    const innerContainer = container.querySelector('.multivalue-input-inner');
+
+                    // Find the id from the multivalue-input-inner element
+                    const property = innerContainer.id;
+
+                    // Add the value to the multivalue array if it doesn't already exist
+                    const value = inputElement.value.trim();
+                    if (property && value !== '') {
+                        imageData[tcontainerId][property] = imageData[tcontainerId][property] || [];
+
+                        if (!imageData[tcontainerId][property].includes(value)) {
+                            imageData[tcontainerId][property].push(value);
+                        }
+                    }
+                }
+
+                else if (!inputElement.parentElement.parentElement.classList.contains("multivalue-input-container") &&
+                    (inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA" || inputElement.tagName === "SELECT")) {
+                    const propertyName = inputElement.id;
+                    const propertyValue = inputElement.value !== null ? inputElement.value : '';
+
+                    if (propertyName) {
+                        imageData[tcontainerId][propertyName] = propertyValue;
+                    }
+
+                } else if (inputElement.classList.contains('quill-container')) {
+                    const propertyName = inputElement.id;
+                    if (propertyName !== '') {
+                        // Get the HTML content of the Quill editor
+                        const quillInstance = quillInstances.get(inputElement.id);
+                        if (quillInstance) {
+                            if (quillInstance.root.contentEditable === "true") {
+                                // Get the content of the Quill editor
+                                const propertyValue = quillInstance.root.innerHTML !== '<p><br></p>' ? quillInstance.root.innerHTML : '';
+
+                                console.log(`Quill content for ${propertyName}: `, propertyValue);
+                                imageData[tcontainerId][propertyName] = propertyValue;
+                            }
+                        }
+                        else {
+                            console.error('Quill instance not found for property: ', propertyName);
+                        }
+                    }
+                }
+                else if (inputElement.classList.contains('ql-editor')) {
+                    const propertyName = inputElement.parentElement.id.replace('-ql', '');
+                    if (propertyName !== '') {
+                        if (inputElement.contentEditable === "true") {
+                            const propertyValue = inputElement.innerHTML !== '<p><br></p>' ? inputElement.innerHTML : '';
+
+                            console.log(`Quill content for ${propertyName}: `, propertyValue);
+                            imageData[tcontainerId][propertyName] = propertyValue;
+                        }
+                    }
+                }
+            });
+        }
+    }
+}
+
+function showSelectedProperties(tcontainer) {
+    if (document.querySelector('#selected-properties-container')) {
+        const tcontainerId = tcontainer.id;
+        const imageObj = imageData[tcontainerId];
+
+        // Iterate through the selected item's properties
+        for (const property in imageObj) {
+            const propertyvalue = imageObj[property] !== undefined ? imageObj[property] : '';
+            displayPropertyInputField(property, propertyvalue)
+        }
+
+        updateSpeciesChoice();
+    }
+}
+
+function displayPropertyInputField(property, propertyvalue, placeholder = '', disabled = false) {
+    // Display input field or UI control for modifying the property
+    const input = document.getElementById(property);
+    if (input !== null && input !== undefined) {
+        if (input.classList.contains('multivalue-input-inner')) {
+            // create new controls to show all array values
+            if (Array.isArray(propertyvalue)) {
+                propertyvalue.map((value) => {
+                    if (value != undefined) {
+                        const inputContainer = createInputField(value);
+                        input.appendChild(inputContainer);
+                    }
+                });
+            }
+            // enable/disable input fields according to readonly configuration
+            const multivalueInput = input.parentElement;
+            multivalueInput.querySelectorAll('.multivalue-input').forEach(field => {
+                field.disabled = input.readonly || disabled;
+            });
+
+            // Get the input-button-container element
+            const btncontainer = input.nextElementSibling;
+
+            if (btncontainer !== null) {
+                // Get the multivalue-input element inside the container
+                const btninput = btncontainer.querySelector('.multivalue-input');
+                if (btninput !== null && placeholder !== '') {
+                    btninput.placeholder = placeholder;
                 }
             }
-            else if (inputElement.classList.contains('ql-editor') || inputElement.classList.contains('quill-container')) {
-                const propertyName = inputElement.parentElement.id.replace('-ql', '');
-                const propertyValue = inputElement.innerHTML !== '<p><br></p>' ? inputElement.innerHTML : '';
 
+        }
+
+        else {
+            if (input.classList.contains('quill-container')) {
                 // Get the HTML content of the Quill editor
-                if (propertyName && propertyValue) {
-                    imageData[tcontainerId][propertyName] = propertyValue;
+                const quillInstance = quillInstances.get(input.id);
+                if (quillInstance) {
+                    // Set the content of the Quill editor
+                    const delta = quillInstance.clipboard.convert(propertyvalue);
+                    quillInstance.setContents(delta, 'api');
+                    quillInstance.enable(!(input.readOnly || disabled));
+                    if (placeholder !== '') {
+                        quillInstance.root.dataset.placeholder = placeholder
+                    }
+
+                    // Find the input field inside the Quill editor
+                    const linkInput = document.querySelector('.ql-tooltip input[type="text"]');
+
+                    // Remove the disabled attribute
+                    if (linkInput) {
+                        linkInput.removeAttribute('disabled');
+
+                        // Listen for input event to handle clearing of link input field
+                        linkInput.addEventListener('input', function () {
+                            // Update placeholder text if input field is empty
+                            if (!this.value.trim()) {
+                                this.setAttribute('placeholder', `https://calscape.org/`);
+                            }
+                        });
+                    }
+                }
+            }
+            else {
+                input.value = propertyvalue;
+                if (input.tagName === "SELECT") {
+                    const blankOption = input.querySelector('option[value=""]');
+                    if (blankOption) {
+                        blankOption.textContent = placeholder;
+                    }
                 }
                 else {
-                    console.error('Quill instance not found for property: ', propertyName);
+                    input.placeholder = placeholder;
                 }
+                input.disabled = input.readOnly || disabled;
             }
         }
     }
 }
 
 /**
- * Function to display the properties of the selected thumbnail
+ * Function to save the IDs of selected thumbnails in the 'selected-id' element.
+ * @param {Array} selectedThumbnails - Array of selected thumbnail objects.
  */
-export function showSelectedProperties(event) {
+function saveSelectedThumbnailIds(selectedThumbnails) {
+    const selectedIds = selectedThumbnails.map(tcontainer => tcontainer.id); // Extract IDs from selected thumbnails
+    const selectedIdElem = document.getElementById('selected-id');
+    if (selectedIdElem != null) {
+        selectedIdElem.textContent = selectedIds.join(','); // Save IDs as a comma-separated string in 'selected-id' element
+    }
+}
+
+export function showMultiSelectedProperties() {
     if (document.querySelector('#selected-properties-container')) {
+        // Check if the user has selected multiple thumbnails
+        const selectedThumbnails = getSelectedThumbnails();
+        const properties = {};
+
         saveSelectedProperties(); // save previously selected properties before clearing
         clearPropertiesFields();
+        const heading = document.getElementById('properties-for-selected-heading');
 
-        const thumbnailGroupGrid = document.getElementById('thumbnail-group-grid');
-        if (event.target.parentNode.parentNode == thumbnailGroupGrid ||
-            event.target.parentNode === thumbnailGroupGrid) {
-            // get the saved image data for the selected thumbnail container
-            const tcontainerId = event.target.parentNode.parentNode === thumbnailGroupGrid ? event.target.parentNode.id : event.target.id;
-            const imageObj = imageData[tcontainerId];
+        // set selected id
+        saveSelectedThumbnailIds(selectedThumbnails);
 
-            // set selected id
-            document.getElementById('selected-id').textContent = tcontainerId;
-
-            // Iterate through the selected item's properties
-            for (const property in imageObj) {
-
-                const input = document.getElementById(property);
-                if (input !== null && input !== undefined) {
-                    const propertyvalue = imageObj[property] !== undefined ? imageObj[property] : '';
-                    if (Array.isArray(propertyvalue)) {
-                        // create new controls to show all array values
-                        propertyvalue.map((value) => {
-                            if (value != undefined) {
-                                const inputContainer = createInputField(value);
-                                input.appendChild(inputContainer);
-                            }
-                        });
-                        // enable/disable input fields acording to readonly configuration
-                        const multivalueInput = input.parentElement;
-                        multivalueInput.querySelectorAll('.multivalue-input').forEach(field => {
-                            field.disabled = input.readonly;
-                        });
-                    }
-
-                    else {
-                        if (input.classList.contains('quill-container')) {
-                            // Get the HTML content of the Quill editor
-                            const quillInstance = quillInstances.get(input.id);
-                            if (quillInstance) {
-                                // Set the content of the Quill editor
-                                const delta = quillInstance.clipboard.convert(propertyvalue);
-                                quillInstance.setContents(delta, 'api');
-                                quillInstance.enable(input.readOnly);
-
-                                // Find the input field inside the Quill editor
-                                const linkInput = document.querySelector('.ql-tooltip input[type="text"]');
-
-                                // Remove the disabled attribute
-                                if (linkInput) {
-                                    linkInput.removeAttribute('disabled');
-
-                                    // Listen for input event to handle clearing of link input field
-                                    linkInput.addEventListener('input', function () {
-                                        // Update placeholder text if input field is empty
-                                        if (!this.value.trim()) {
-                                            this.setAttribute('placeholder', `https://calscape.org/`);
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                        else {
-                            input.value = propertyvalue;
-                            input.disabled = input.readOnly;
-                        }
-                    }
-                }
+        if (selectedThumbnails.length > 1) {
+            if (heading != null) {
+                heading.textContent = 'Properties apply to multiple selected photos'
             }
+            // Iterate over the selected thumbnails and get their properties
+            selectedThumbnails.forEach(tcontainer => {
+                // Extract the properties of each selected thumbnail
+                const imageObj = getImageData(tcontainer.id);
+                if (imageObj !== null && imageObj !== undefined) {
+                    properties[tcontainer.id] = imageObj;
+                }
+            });
+
+            // Display the common properties that can be modified for all selected thumbnails
+            showCommonProperties(properties);
+
+        } else if (selectedThumbnails.length === 1) {
+            if (heading != null) {
+                heading.textContent = 'Properties apply to the selected photo'
+            }
+
+            // Handle the case when only one thumbnail is selected
+            showSelectedProperties(selectedThumbnails[0]);
         }
-        
+
+        else {
+            // no thumbnails are selected
+            return;
+        }
+    }
+}
+
+function showCommonProperties(properties) {
+    const commonProperties = getCommonProperties(properties);
+
+    // Get the keys of the first selected thumbnail
+    const initialKeys = Object.keys(properties[Object.keys(properties)[0]]);
+
+    // Iterate over the values of the properties of the first selected thumbnail
+    initialKeys.forEach(property => {
+        const canModifyProperty = multiApplyProperties.includes(property) && commonProperties.includes(property);
+        const inconsistentValues = multiApplyProperties.includes(property) && !commonProperties.includes(property);
+
+        // Check if the property can be modified for all selected thumbnails
+        if (canModifyProperty) {
+            // Display the value and its input field for modification
+            const value = properties[Object.keys(properties)[0]][property];
+            displayPropertyInputField(property, value);
+
+        } else if (inconsistentValues) {
+            // Display the different values message and disable modifications
+            const placeholder = 'Selected photos have different values';
+            displayPropertyInputField(property, '', placeholder, true);
+
+        } else { // not a multi_apply field
+            // Display the can't multiApply message and disable modifications
+            const placeholder = 'Cannot apply to multiple selected photos';
+            displayPropertyInputField(property, '', placeholder, true);
+        }
+    });
+
+    // Update species field display depending on multi apply conditions
+    if (!commonProperties.includes('selected-species')) {
+        // Display the different values message and disable modifications
+        updateSpeciesChoice(false, 'Selected photos have different values');
+    }
+    else {
         updateSpeciesChoice();
     }
+}
+
+function getCommonProperties(properties) {
+    // Check if the property is common among all selected thumbnails
+    // Step 1: Extract all keys from the first object
+    const initialKeys = Object.keys(properties[Object.keys(properties)[0]]);
+
+    // Step 2: Loop through each key and compare values
+    const commonProperties = initialKeys.filter(key => {
+        // Get the value of the property in the first object
+        const firstValue = properties[Object.keys(properties)[0]][key];
+
+        // Check if the value is empty string, undefined, or an empty array
+        const isEmptyOrUndefined = value => {
+            if (Array.isArray(value)) {
+                return value.length === 0;
+            } else {
+                return value === "" || value === undefined;
+            }
+        };
+
+        // Check if all objects have the same value for this property
+        return Object.values(properties).every(obj => {
+            const propValue = obj[key];
+            if (Array.isArray(firstValue) && Array.isArray(propValue)) {
+                // Check if the arrays have the same length and contain the same elements
+                return firstValue.length === propValue.length && firstValue.every((element, index) => element === propValue[index]);
+            } else {
+                // Compare non-array values using strict equality
+                return isEmptyOrUndefined(firstValue) ? isEmptyOrUndefined(propValue) : propValue === firstValue;
+            }
+        });
+
+    });
+
+    // Step 3: Print keys with common values
+    console.log("Properties with common values:");
+    commonProperties.forEach(key => console.log(key));
+
+    return commonProperties;
+}
+
+function getMultiApplyProperties() {
+    const multiApplyColumns = [];
+
+    // Loop through each table in the tables array
+    importconfig.photoimportconfig.tables.forEach(table => {
+        // Loop through each column in the table
+        table.columns.forEach(column => {
+            // Check if the column has multi_apply set to true
+            if (column.multi_apply === true) {
+                // If it does, add its name to the multiApplyColumns array
+                multiApplyColumns.push(column.name);
+            }
+        });
+    });
+    return multiApplyColumns;
+}
+
+function getPlaceholder(property) {
+    for (const table of importconfig.photoimportconfig.tables) {
+        for (const column of table.columns) {
+            if (column.name == property && column.userinterface.hasOwnProperty("placeholder")) {
+                return column.userinterface.placeholder;
+            }
+        }
+    }
+    return null;
 }
 
 /**
@@ -980,9 +1227,20 @@ export function clearPropertiesFields() {
         document.getElementById('selected-id').textContent = '';
 
         // Iterate through all child elements of the form
-        form.querySelectorAll('textarea, input, select').forEach(input => {
+        form.querySelectorAll('textarea, input, select:not(.ql-header)').forEach(input => {
             input.value = ''; // Clear the input field
             input.disabled = true; // Disable the input field
+            if (input.tagName === "SELECT") {
+                const blankOption = input.querySelector('option[value=""]');
+                if (blankOption) {
+                    blankOption.textContent = "-- Please choose an option --";
+                }
+            }
+            else {
+
+                const placeholder = getPlaceholder(input.id);
+                input.placeholder = placeholder !== null ? placeholder : '';
+            }
         });
 
         form.querySelectorAll('.input-container').forEach(input => {
@@ -993,7 +1251,12 @@ export function clearPropertiesFields() {
         form.querySelectorAll('.quill-container').forEach(container => {
             const quillInstance = quillInstances.get(container.id);
             if (quillInstance) {
+                // Set the content of the Quill editor
+                const delta = quillInstance.clipboard.convert("");
+                quillInstance.setContents(delta, 'api');
                 quillInstance.enable(false);
+                const placeholder = getPlaceholder(container.id);
+                quillInstance.root.dataset.placeholder = placeholder !== null ? placeholder : '';
             }
         });
     }
@@ -1071,15 +1334,18 @@ export function createPropertiesFields() {
                     // Query for the input element within the found container
                     const userInput = container.querySelector('.multivalue-input');
 
-                    // save the new value to imageData
-                    const tcontainerId = document.getElementById("selected-id").textContent;
                     const propertyValue = userInput.value;
                     const propertyName = multiinput.id;
-                    if (!imageData[tcontainerId][propertyName]) {
-                        imageData[tcontainerId][propertyName] = [];
-                    }
-                    imageData[tcontainerId][propertyName].push(propertyValue);
 
+                    // save the new value to imageData
+                    const selectedIdElem = document.getElementById("selected-id");
+                    const selectedIds = selectedIdElem.textContent.split(',').filter(Boolean); // Get an array of selected thumbnail IDs
+                    selectedIds.forEach(tcontainerId => {
+                        if (!imageData[tcontainerId][propertyName]) {
+                            imageData[tcontainerId][propertyName] = [];
+                        }
+                        imageData[tcontainerId][propertyName].push(propertyValue);
+                    });
                     // Create a new input element
                     const inputContainer = createInputField(userInput.value);
 
@@ -1188,6 +1454,7 @@ export function createPropertiesFields() {
 // Delay duration in milliseconds (e.g., 500 milliseconds)
 const delayDuration = 500;
 
+// Autosave properties
 $(document).on('focusout', '#properties-form input, #properties-form select, #properties-form textarea, #properties-form .quill-container', function (event) {
     // Clear any previous timeouts to prevent multiple executions
     if (this.timer) {

@@ -1,7 +1,10 @@
 <?php
-// Calscape 2 UAT
+// Calscape photo directories
+define('ALL_IMAGES_DIR', '../../public/ExtData/allimages/');
+define('BIG_IMAGES_DIR', ALL_IMAGES_DIR . '900/');
+define('THUMBNAILS_DIR', ALL_IMAGES_DIR . 'Photos/');
 
-/*
+
 // Kristy's calsca6_calscape_demo
 $dbConfig = array(
     'hostname' => "localhost:3306",
@@ -9,7 +12,7 @@ $dbConfig = array(
     'password' => "Edw8rdpm!",
     'database' => "calsca6_demo"
 );
-*/
+
 
 /*
 // Kristy's calsca6_calscape
@@ -31,6 +34,7 @@ $dbConfig = array(
 );
 */
 
+/*
 // Calscape 2 UAT
 $dbConfig = array(
     'hostname' => "calscapeproduction.cdwkpn2rrvdl.us-west-1.rds.amazonaws.com",
@@ -38,4 +42,5 @@ $dbConfig = array(
     'password' => "ST|v7=g1-PD?3A9!ssp)6Zgt",
     'database' => "calscape"
 );
+*/
 

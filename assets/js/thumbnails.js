@@ -5,8 +5,7 @@
 **/
 
 import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
-import { showSelectedProperties } from './properties.js';
-import { clearPropertiesFields } from "./properties.js";
+import { showMultiSelectedProperties } from './properties.js';
 import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum, getPhotoSizes } from './flickr-API.js';
 import { displayStatusMessage } from "./status.js";
 
@@ -333,9 +332,6 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText, alt
 
     tcontainer.id = uniqueIdentifier;
 
-    // Listen for when a thumbnail is selected so properties can be updated
-    tcontainer.addEventListener('click', showSelectedProperties);
-
     return tcontainer;
 }
 
@@ -420,9 +416,10 @@ export function clearSelections() {
 function toggleSelection(event) {
     // Check if the click event originated from within the selected-properties-container
     const isWithinSelectedProperties = event.target.closest('#selected-properties-container');
+    const isWithinCollectionProperties = event.target.closest('#group-properties-container');
 
     // If it's within selected-properties-container, do not toggle the selection in thumbnailGroupGrid
-    if (isWithinSelectedProperties) {
+    if (isWithinSelectedProperties || isWithinCollectionProperties) {
         // reapply .selected to selected elements
         for (let i = 0; i < selectedThumbnails.length; i++) {
             const tc = selectedThumbnails[i];
@@ -535,10 +532,10 @@ function toggleSelection(event) {
         // clicked in grid causing all to be unselected
         clearSelections();
     }
-    if (selectedThumbnails.length != 1) {
-        clearPropertiesFields();
-    }
+
     updateSelectedCount(selectedThumbnails.length);
+
+    showMultiSelectedProperties(event);
 }
 
 function removeHtmlTags(html) {
@@ -562,6 +559,10 @@ function updateSelectedCount(selectedCount =  0) {
     if (expand !== null) {
         expand.disabled = selectedCount < 1;
     }
+}
+
+export function getSelectedThumbnails() {
+    return selectedThumbnails;
 }
 
 const mainContentArea = document.getElementById('main-content');

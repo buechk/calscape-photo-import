@@ -178,40 +178,44 @@ function filterData(data, searchText) {
     return data.filter((x) => x.toLowerCase().includes(searchText.toLowerCase()));
 }
 
-export function updateSpeciesChoice() {
-     // Get the radio buttons and the species-container element
-     const speciesChoice = document.getElementById('species-choice');
-     const gardenChoice = document.getElementById('garden-choice');
-     const collSpeciesContainer = document.getElementById('collection-species-container');
-     const selSpeciesContainer = document.getElementById('selected-species-container');
-     const collectionSpeciesInput = document.getElementById('collection-species');
-     const selectedSpeciesInput = document.getElementById('selected-species');
- 
-     if (speciesChoice.checked) {
-         if (collSpeciesContainer != null) {
-             collectionSpeciesInput.disabled = false;
-             collectionSpeciesInput.required = true;
-             collectionSpeciesInput.placeholder = 'type species name';
-         }
-         if (selSpeciesContainer != null) {
-             selectedSpeciesInput.disabled = true;
-             selectedSpeciesInput.value = '';
-             selectedSpeciesInput.required = false;
-             selectedSpeciesInput.placeholder = 'applied from collection';
-         }
-     } else if (gardenChoice.checked) {
-         if (collSpeciesContainer != null) {
-             collectionSpeciesInput.disabled = true;
-             collectionSpeciesInput.value = '';
-             collectionSpeciesInput.required = false;
-             collectionSpeciesInput.placeholder = 'not applicable';
-         }
-         if (selSpeciesContainer != null) {
-             selectedSpeciesInput.disabled = getSelectedThumbnailCount() < 1;
-             selectedSpeciesInput.placeholder = 'type species name';
-             selectedSpeciesInput.required = true;
-         }
-     }   
+export function updateSpeciesChoice(disable = false, placeholder = '') {
+    // Get the radio buttons and the species-container element
+    const speciesChoice = document.getElementById('species-choice');
+    const gardenChoice = document.getElementById('garden-choice');
+    const collSpeciesContainer = document.getElementById('collection-species-container');
+    const selSpeciesContainer = document.getElementById('selected-species-container');
+    const collectionSpeciesInput = document.getElementById('collection-species');
+    const selectedSpeciesInput = document.getElementById('selected-species');
+
+    if (speciesChoice.checked) {
+        if (collSpeciesContainer != null) {
+            collectionSpeciesInput.disabled = false;
+            collectionSpeciesInput.required = true;
+            collectionSpeciesInput.placeholder = 'type species name';
+        }
+        if (selSpeciesContainer != null) {
+            selectedSpeciesInput.disabled = true;
+            selectedSpeciesInput.value = '';
+            selectedSpeciesInput.required = false;
+            selectedSpeciesInput.placeholder = 'applied from collection';
+        }
+    } else if (gardenChoice.checked) {
+        if (collSpeciesContainer != null) {
+            collectionSpeciesInput.disabled = true;
+            collectionSpeciesInput.value = '';
+            collectionSpeciesInput.required = false;
+            collectionSpeciesInput.placeholder = 'not applicable';
+        }
+        if (selSpeciesContainer != null) {
+            selectedSpeciesInput.disabled = getSelectedThumbnailCount() < 1 || disable;
+            selectedSpeciesInput.placeholder = placeholder === '' ? 'type species name' : placeholder;
+            selectedSpeciesInput.required = true;
+
+            if (disable) {
+                selectedSpeciesInput.value = '';
+            }
+        }
+    }
 }
 
 // Add an event listener for radio button changes

@@ -24,11 +24,6 @@ function getCalscapeVersion()
     return $calscapeVersion;
 }
 
-// Calscape photo directories
-define('ALL_IMAGES_DIR', '../../public/ExtData/allimages/');
-define('BIG_IMAGES_DIR', ALL_IMAGES_DIR . '900/');
-define('PHOTOS_DIR', ALL_IMAGES_DIR . 'Photos/');
-
 // Collection directories
 define('COLLECTIONS_ROOT', '../../public/ExtData/collections/');
 define('COLLECTIONS_REVIEW_DIR', COLLECTIONS_ROOT . 'review/');
