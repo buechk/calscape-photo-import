@@ -27,7 +27,13 @@
 }
 
 #welcome-container {
-    padding: 10px;
+    width: 80ch;
+    margin: auto;
+    padding: 20px;
+    overflow-wrap: break-word;
+}
+#to-do-container{
+    padding-left:20px;
 }
 
 #container {

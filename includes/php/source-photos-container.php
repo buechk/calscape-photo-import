@@ -14,5 +14,6 @@ define('SOURCE_PHOTOS_CONTAINER', <<<HTML
             </div>
         </div>
     </div>
+    <a href="#" data-page="create-collection" class="next-button">Next</a>
 </div>
 HTML);

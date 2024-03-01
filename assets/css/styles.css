@@ -99,6 +99,18 @@ body {
     box-sizing: border-box;
 }
 
+/* styles for next and previous buttons */
+.next-button {
+    display: inline-block;
+    background-color: #516d3d;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+
 /* Style for the grid */
 #thumbnail-grid {
     display: grid;
