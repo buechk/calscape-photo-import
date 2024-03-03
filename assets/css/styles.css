@@ -214,7 +214,6 @@ body {
     width: 150px; /* Set the width to match the thumbnail */
     font-size: 12px;
     font-weight: bold;
-    margin-top: 5px;
     text-align: center;
     word-wrap: break-word;
 }
@@ -856,7 +855,7 @@ th {
 .ql-editor {
     height: 150px;
     padding: 3px 4px;
-    overflow: visible;
+    overflow: auto;
 }
 
 /* Style for the selected count */

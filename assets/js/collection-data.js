@@ -6,7 +6,7 @@ import { importconfig, createPropertiesFields } from "./properties.js";
 import { updateSpeciesChoice } from "./species-selection.js";
 import { displayStatusMessage } from "./status.js";
 import { ROLE, Mode } from "./side-bar-nav.js";
-import { createThumbnailContainer, setupMutationObserver, initializeSortableGrid, displayThumbnailsFromSourcePhotos } from "./thumbnails.js";
+import { createThumbnailContainer, setupMutationObserver, initializeSortableGrid, displayThumbnailsFromSourcePhotos, removeHtmlTags } from "./thumbnails.js";
 
 const FLICKR_APIKEY = "7941c01c49eb07af15d032e0731e9790";
 
@@ -620,8 +620,8 @@ export async function setPhotoCollection(data, filename = null) {
             imageData[uniqueIdentifier] = { ...photo };
 
             const fileName = photo.FileName;
-            const captionText = `${photo.CaptionTitle}<br><br>${photo.ImageDescription}`; // This is treated as a short copyright in Calscape
-            const altText = photo.CaptionTitle;
+            const captionText = `${photo.CaptionTitle}${photo.ImageDescription}`; // This is treated as a short copyright in Calscape
+            const altText = removeHtmlTags(`${photo.CaptionTitle}`);
             const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=collection-photo`;
             const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText, altText);
             addCollectionThumbnail(tc);

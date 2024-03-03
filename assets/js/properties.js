@@ -24,6 +24,7 @@ const importconfig1 = {
                         "userinterface": {
                             "label": "Caption title",
                             "default": "",
+                            "richtext": true,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -788,7 +789,7 @@ function createInputField(value) {
 
         event.target.parentNode.innerHTML = '';
     });
-    
+
     inputContainer.appendChild(deleteBtn);
     return inputContainer;
 }
@@ -1141,7 +1142,7 @@ function showCommonProperties(properties) {
     // Update species field display depending on multi apply conditions
     if (!commonProperties.includes('selected-species')) {
         // Display the different values message and disable modifications
-        updateSpeciesChoice(false, 'Selected photos have different values');
+        updateSpeciesChoice(true, 'Selected photos have different values');
     }
     else {
         updateSpeciesChoice();

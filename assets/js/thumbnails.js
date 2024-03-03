@@ -359,7 +359,7 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     const photo = speciesPhotos[photoID];
                     console.log(`Processing photo: ${photo.FileName}`);
                     const fileName = photo.FileName;
-                    const captionText = photo.CaptionTitle !== null ? `${photo.CaptionTitle}<br><br>${photo.Copyright}` : `${photo.Copyright}`;
+                    const captionText = photo.CaptionTitle !== null ? `${photo.CaptionTitle}${photo.Copyright}` : `${photo.Copyright}`;
                     const altText = photo.CaptionTitle !== null ? removeHtmlTags(`${photo.CaptionTitle}`) : `${photo.Copyright}`;
                     const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
                     const tc = createThumbnailContainer(photoID, turl, captionText, altText);
@@ -538,7 +538,7 @@ function toggleSelection(event) {
     showMultiSelectedProperties(event);
 }
 
-function removeHtmlTags(html) {
+export function removeHtmlTags(html) {
     // Create a temporary DOM element
     var tempDiv = document.createElement('div');
 
