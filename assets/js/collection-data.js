@@ -858,12 +858,56 @@ export async function validatePhotoCollection() {
 
     if (missingRequiredData.length > 0) {
         console.log('Missing required data:', missingRequiredData);
-        displayStatusMessage(`The following fields require input values: ${missingRequiredData.join('\r\n')}`, true, -1, false)
+        displayStatusMessage(`The following fields require input values: ${missingRequiredData.join('<br>')}`, true, -1, false)
         return false;
-    } else {
-        console.log('All required data is present.');
+    }
+
+    const failedConfiguredValidation = runConfiguredValidation(collectionData.photos);
+
+    if (failedConfiguredValidation.length > 0) {
+        console.log('Failed configured validation:', failedConfiguredValidation);
+        const errorMessages = failedConfiguredValidation.map(({ photoIndex, propertyName, errorMessage }) => 
+            `Photo ${photoIndex}: ${propertyName} - ${errorMessage}`
+        );
+        displayStatusMessage(`The following fields have invalid values:<br>${errorMessages.join('<br>')}`, true, -1, false);
+        return false;
+    }
+
+    else {
+        console.log('All required data is present and valid.');
         return true;
     }
+}
+
+/**
+ * @function
+ * Run any custom property validation
+ */
+function runConfiguredValidation(photos) {
+    const failedValidation = [];
+
+    if (!importconfig || !importconfig.photoimportconfig || !importconfig.photoimportconfig.tables) {
+        return failedValidation;
+    }
+
+    for (const table of importconfig.photoimportconfig.tables) {
+        if (!table.columns) continue;
+
+        for (const column of table.columns) {
+            const { name, validation } = column;
+            if (typeof validation === 'function') {
+                photos.forEach((photo, photoIndex) => {
+                    const propertyValue = photo[name];
+                    const result = validation(propertyValue);
+                    if (result !== true) {
+                        failedValidation.push({ photoIndex, propertyName: name, errorMessage: result });
+                    }
+                });
+            }
+        }
+    }
+
+    return failedValidation;
 }
 
 /**

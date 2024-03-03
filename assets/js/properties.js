@@ -214,6 +214,13 @@ const importconfig1 = {
                             "jpeg": "EXIF.xmp.Rating"
                         },
                         "multi_apply": true,
+                        "validation": function(value) {
+                            if (value >= 0 && value <= 5) {
+                                return true; // Validation passed
+                            } else {
+                                return 'The Quality Ranking value must be between 0 and 5'; // Validation failed
+                            }
+                        },
                         "userinterface": {
                             "label": "Quality ranking - 0 (worst) to 5 (best)",
                             "placeholder": "Enter 0 to 5",
@@ -1190,7 +1197,7 @@ function getCommonProperties(properties) {
 }
 
 function getMultiApplyProperties() {
-    const multiApplyColumns = [];
+    const multiApplyColumns = ['selected-species'];
 
     // Loop through each table in the tables array
     importconfig.photoimportconfig.tables.forEach(table => {
