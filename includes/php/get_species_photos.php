@@ -3,52 +3,67 @@ include_once('common.php');
 
 function getSpeciesPhotos($jsonData)
 {
-    include_once('common.php');
     global $dbManager;
-    
+
     // Decode the JSON data to extract the speciesName
     $speciesName = $jsonData;
 
-    if ($speciesName === null) {
-        // Handle the case where JSON decoding fails or speciesName is not set
-        $errorResponse = ["error" => "Invalid JSON payload. No species name given."];
+    try {
+        // Validate input
+        if ($speciesName === null) {
+            throw new Exception("Invalid JSON payload. No species name given.");
+        }
+
+        // Perform the first query to get the ID from the plants table
+        $query = "SELECT ID FROM plants WHERE species = ?";
+        $params = ['s', $speciesName];
+        $result = $dbManager->executeQuery($query, $params);
+
+        // Fetch the first row from the result set
+        $row = $result->fetch_assoc();
+
+        // Check if plant ID is found
+        if (!$row) {
+            throw new Exception("Plant not found for species: $speciesName");
+        }
+
+        $plantID = $row['ID'];
+
+        if ($plantID === null) {
+            throw new Exception("Plant ID is null for species: $speciesName");
+        }
+
+        // Perform query to get photos for the obtained ID
+        $results = getPhotos($plantID);
+
+
+        // Cleanse the data (if needed) and convert it to UTF-8
+        $data = mb_convert_encoding($results, 'UTF-8', 'UTF-8');
+
+        // Output the results as JSON
+        header('Content-Type: application/json');
+
+        // Encode the data to JSON with JSON_UNESCAPED_UNICODE option
+        echo json_encode([
+            'status' => 'success',
+            'data' => $data
+        ], JSON_UNESCAPED_UNICODE);
+
+        // Check for JSON encoding errors
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // Print out the error message
+            echo json_last_error_msg();
+        }
+    } catch (Exception $e) {
+        // Handle exceptions
+        $errorResponse = ["error" => $e->getMessage()];
+        header('Content-Type: application/json');
         echo json_encode($errorResponse);
-        return;
     }
-
-    // Perform the first query to get the ID from the plants table
-    $query = "SELECT ID FROM plants WHERE species = ?";
-    $params = ['s', $speciesName];
-
-    $result = $dbManager->executeQuery($query, $params);
-
-    // Fetch the first row from the result set
-    $row = $result->fetch_assoc();
-
-    if (!$row) {
-        // Handle the case where no row is returned (plant not found)
-        $errorResponse = ["error" => "Plant not found for species: $speciesName"];
-        echo json_encode($errorResponse);
-        return;
-    }
-
-    $plantID = $row['ID'];
-
-    if ($plantID === null) {
-        // Handle the case where the plant ID is null
-        $errorResponse = ["error" => "Plant ID is null for species: $speciesName"];
-        echo json_encode($errorResponse);
-        return;
-    }
-
-    // Perform the second query using the obtained ID
-    $results = getPhotos($plantID);
-
-    // Output the results as JSON
-    echo json_encode($results);
 }
 
-// Function to perform the second query
+
+// Get Calscape photos for the given plant id
 function getPhotos($plantID)
 {
     global $dbManager;
@@ -92,20 +107,39 @@ function getPhotos($plantID)
     // Execute the query and fetch results
     $result = $dbManager->executeQuery($query, $params);
 
-    return $result->fetch_all(MYSQLI_ASSOC);
+    // Fetch results
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+
+    // Check if data was fetched successfully
+    if ($data === false) {
+        // Log the error
+        error_log("Failed to fetch data from query: $query");
+
+        // Return an empty array or throw an exception as per your requirements
+        return [];
+    }
+
+    return $data;
 }
 
 // Only execute the code if this script is not included but executed directly
 if (basename(__FILE__) == basename($_SERVER["SCRIPT_FILENAME"])) {
-    $jsonData = file_get_contents('php://input');
+    // Extract the speciesName from the URL parameter
+    $speciesName = $_GET['speciesName'] ?? null;
 
     try {
-        getSpeciesPhotos($jsonData);
+        // Validate input
+        if ($speciesName === null) {
+            throw new Exception("Invalid request. No species name given.");
+        }
+
+        // Call the function with the extracted speciesName
+        getSpeciesPhotos($speciesName);
     } catch (Exception $e) {
-        echo "Failed to get existing Calscape photos: " . $e->getMessage() . "{$newline}";
+        header('Content-Type: application/json');
+        echo json_encode(["error" => $e->getMessage()]);
     } finally {
         // Close the connection regardless of success or failure
         $dbManager->closeConnection();
     }
 }
-?>

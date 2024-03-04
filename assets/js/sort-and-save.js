@@ -154,22 +154,26 @@ function getSaveStatus(jsonResponse) {
 
 async function fetchExistingPhotos(speciesName) {
     try {
-        const response = await fetch("/includes/php/get_species_photos.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: speciesName,
-        });
+        const response = await fetch(`/includes/php/get_species_photos.php?speciesName=${encodeURIComponent(speciesName)}`);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const data = await response.json();
-        console.log(data);
-        populateCalscapePhotos(speciesName, data);
-        console.log("Calscape photo data: ", calscapePhotos);
+        // Log the response body
+        const responseBody = await response.text();
+        console.log("Response body:", responseBody);
+
+        // Attempt to parse the response body as JSON
+        const result = JSON.parse(responseBody);
+        console.log(result);
+        if (result.status === "success") {
+            populateCalscapePhotos(speciesName, result.data);
+            console.log("Calscape photo data: ", calscapePhotos);
+        }
+        else {
+            console.error("Error:", "Failed to retrieve Calscape photos for " + speciesName);
+        }
     } catch (error) {
         console.error("Error:", error);
     }
@@ -283,6 +287,10 @@ function saveCollection(collection) {
 }
 
 function populateCalscapePhotos(speciesName, results) {
+    if (!Array.isArray(results)) {
+        console.error("Calscape photo results not provided.", results);
+        return;
+    }
     results.forEach(result => {
         const plantID = result.ID;
         const photoOrder = result.plant_photo_order !== null ? result.plant_photo_order : result.plant_photo_calphotos_order;

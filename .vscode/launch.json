@@ -17,6 +17,17 @@
             "pathMappings": {
                 "/Users/kristybueche/Documents/calscape/photos/calscape-photo-import": "${workspaceFolder}"
             }
+        },
+        {
+            "name": "Remote Xdebug",
+            "type": "php",
+            "request": "launch",
+            "port": 9003,
+            "stopOnEntry": true,
+            "pathMappings": {
+                "/var/www/html/photomagic": "/Users/kristybueche/Documents/calscape/photos/calscape-photo-import",
+                "/Users/kristybueche/Documents/calscape/photos/calscape-photo-import": "${workspaceFolder}"
+            }
         }
     ]
 }
