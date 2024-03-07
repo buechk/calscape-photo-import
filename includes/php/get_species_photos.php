@@ -1,6 +1,75 @@
 <?php
 include_once('common.php');
 
+function getPlantPhotosParams($plantID)
+{
+    global $version;
+
+    if ($version === '1.0') {
+        return ['ii', $plantID, $plantID];
+
+    } else if ($version === '2.0') {
+        return ['i', $plantID];
+
+    } else {
+        throw new Exception("Unknown Calscape database version");
+    }
+}
+
+function getPlantPhotosQuery()
+{
+    global $version;
+
+    if ($version === '1.0') {
+        return "SELECT
+                    plants.ID,
+                    photo.ID AS photo_id,
+                    photo.FileName,
+                    photo.ImageDescription AS Copyright,
+                    photo.CopyrightNotice,
+                    photo.Artist as Artist,
+                    photo.CaptionTitle,
+                    photo.CaptionDescription,
+                    plant_photo.photo_order AS plant_photo_order,
+                    NULL AS plant_photo_calphotos_order
+                FROM plants
+                INNER JOIN plant_photo ON plants.ID = plant_photo.Plant_ID
+                INNER JOIN photo ON plant_photo.Photo_ID = photo.ID
+                WHERE plants.ID = ? AND plant_photo.deleted = 0 AND photo.FileName IS NOT null AND photo.FileName != ''
+                UNION ALL
+                SELECT
+                    plants.ID,
+                    plant_photo_calphotos.photo_id,
+                    plant_photo_calphotos.image AS FileName,
+                    plant_photo_calphotos.copyright AS Copyright,
+                    plant_photo_calphotos.copyright_full as ImageDescription,
+                    plant_photo_calphotos.author as Artist,
+                    null AS CaptionTitle,
+                    null AS CaptionDescription,
+                    NULL AS plant_photo_order,
+                    plant_photo_calphotos.photo_order AS plant_photo_calphotos_order
+                FROM plants
+                INNER JOIN plant_photo_calphotos ON plants.ID = plant_photo_calphotos.plant_id
+                WHERE plants.ID = ? AND plant_photo_calphotos.deleted = 0 AND plant_photo_calphotos.image IS NOT null AND plant_photo_calphotos.image != ''
+                ORDER BY COALESCE(plant_photo_order, plant_photo_calphotos_order)";
+    } else if ($version === '2.0') {
+        return "SELECT
+                    leg_plants.ID,
+                    plant_images.id, 
+                    plant_images.FileName,
+                    plant_images.ImageDescription,
+                    plant_images.CopyrightNotice as Copyright,
+                    plant_images.Artist,
+                    plant_images.plant_photo_order 
+                FROM plant_images
+                INNER JOIN leg_plants ON leg_plants.ID = plant_images.Plant_ID
+                WHERE leg_plants.ID = ? AND plant_images.FileName IS NOT null AND plant_images.FileName != ''
+                ORDER BY plant_images.plant_photo_order";
+    } else {
+        throw new Exception("Unknown Calscape database version");
+    }
+}
+
 function getSpeciesPhotos($jsonData)
 {
     global $dbManager;
@@ -15,7 +84,7 @@ function getSpeciesPhotos($jsonData)
         }
 
         // Perform the first query to get the ID from the plants table
-        $query = "SELECT ID FROM plants WHERE species = ?";
+        $query = "SELECT ID FROM " . TABLE_PLANTS . " WHERE species = ?";
         $params = ['s', $speciesName];
         $result = $dbManager->executeQuery($query, $params);
 
@@ -69,40 +138,8 @@ function getPhotos($plantID)
     global $dbManager;
 
     // Use a prepared statement to prevent SQL injection
-    $query = "SELECT
-            plants.ID,
-            photo.ID AS photo_id,
-            photo.FileName,
-            photo.ImageDescription AS Copyright,
-            photo.CopyrightNotice,
-            photo.Artist as Artist,
-            photo.CaptionTitle,
-            photo.CaptionDescription,
-            plant_photo.photo_order AS plant_photo_order,
-            NULL AS plant_photo_calphotos_order
-        FROM plants
-        INNER JOIN plant_photo ON plants.ID = plant_photo.Plant_ID
-        INNER JOIN photo ON plant_photo.Photo_ID = photo.ID
-        WHERE plants.ID = ? AND plant_photo.deleted = 0 AND photo.FileName IS NOT null AND photo.FileName != ''
-        UNION ALL
-        SELECT
-            plants.ID,
-            plant_photo_calphotos.photo_id,
-            plant_photo_calphotos.image AS FileName,
-            plant_photo_calphotos.copyright AS Copyright,
-            plant_photo_calphotos.copyright_full as ImageDescription,
-            plant_photo_calphotos.author as Artist,
-            null AS CaptionTitle,
-            null AS CaptionDescription,
-            NULL AS plant_photo_order,
-            plant_photo_calphotos.photo_order AS plant_photo_calphotos_order
-        FROM plants
-        INNER JOIN plant_photo_calphotos ON plants.ID = plant_photo_calphotos.plant_id
-        WHERE plants.ID = ? AND plant_photo_calphotos.deleted = 0 AND plant_photo_calphotos.image IS NOT null AND plant_photo_calphotos.image != ''
-        ORDER BY COALESCE(plant_photo_order, plant_photo_calphotos_order)";
-
-
-    $params = ['ii', $plantID, $plantID];
+    $query = getPlantPhotosQuery();
+    $params = getPlantPhotosParams($plantID);
 
     // Execute the query and fetch results
     $result = $dbManager->executeQuery($query, $params);

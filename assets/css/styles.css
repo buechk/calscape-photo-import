@@ -16,10 +16,11 @@ html {
 
 h2 {
     font-size: 16px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    /* margin-top: 10px; */
+    /* margin-bottom: 10px; */
     display: block;
     text-align: left;
+    margin: 10px;
 }
 
 h3 {
@@ -47,6 +48,7 @@ body {
     cursor: col-resize;
     /* Use a resizable cursor */
     background-color: #d9d8d8;
+    /* margin-left: 10px; */
 }
 
 .divider:hover {
@@ -78,14 +80,14 @@ body {
 .left-container {
     flex-grow: 1;
 }
-
+/*
 .source-photos-container,
 .collections-for-review-container,
 .calscape-photos-container,
 .collection-container {
     margin: 10px;
 }
-
+*/
 .thumbnail-scroll-container,
 .collections-scroll-container {
     height: 100%;
@@ -127,7 +129,6 @@ body {
     display: flex;
     flex-direction: column;
     /* Stack children vertically */
-    padding: 10px;
     min-width: 350px;
     max-width: calc(100% - 250px);
     /* Set initial width for panels */
@@ -419,8 +420,8 @@ header {
     width: 15%;
     min-width: 200px;
     margin-top: 60px;
+    margin-right: 10px;
     box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.3);
-    margin-top: 60px;
     position: relative;
     /* Add this to establish a positioning context for absolute positioning */
     z-index: 1;
@@ -754,58 +755,44 @@ th {
 } */
 
 #status-area {
-    position: absolute;
+    position: fixed;
     bottom: 10px;
-    margin-top: 20px;
-    width: 100%;
+    left: 10px; /* Adjust as needed */
     z-index: 2;
 }
 
 .status-message {
     position: relative;
-    /* Add this to make the close box position relative to the status-message */
-    border-radius: 0px;
+    border-radius: 5px;
     padding: 10px;
     min-height: 50px;
-    width: 200px;
+    width: 170px;
 }
 
 .status-message {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* Align children to the start (left) of the container */
     align-items: center;
-    padding: 10px;
-    /* Adjust the padding as needed */
-    border: 1px solid #ccc;
-    /* Optional: add a border for better separation */
+    padding-right: 30px; /* Adjust as needed to make space for the close icon */
 }
 
 #status-text {
     flex-grow: 1;
-    /* Allow the text to take up available space */
     margin-right: 10px;
-    /* Adjust the margin as needed */
 }
 
 /* Styles for success messages */
 .status-message.success {
-    background-color: #d4edda;
-    /* Green background */
+    background-color: #dceadf;
     color: #155724;
-    /* Dark green text color */
     border: 1px solid #3e734a;
-    /* Border color */
-
 }
 
 /* Styles for error messages */
 .status-message.error {
-    background-color: #e867719d;
-    /* Red background */
+    background-color: #dcb7ba9d;
     color: #721c24;
-    /* Dark red text color */
     border: 1px solid #721c24;
-    /* Border color */
 }
 
 #collectionTable {

@@ -1,13 +1,21 @@
 <?php
 include_once('common.php');
 
-function createNewPhotoRecord($mysqli, $photo, $response)
+function createNewPhotoRecord($mysqli, $photo, $response, $order)
 {
     global $newline;
+    global $version;
 
     // Create arrays to hold column names and values
     $columnNames = [];
     $columnValues = [];
+
+    // Check if the version is 2.0
+    if ($version === "2.0") {
+        // Add plant_photo_order column and value if version is 2.0
+        $columnNames[] = "`plant_photo_order`";
+        $columnValues[] = "'" . $mysqli->real_escape_string($order) . "'";
+    }
 
     // Loop through each key in the photo object
     foreach ($photo as $key => $value) {
@@ -40,8 +48,8 @@ function createNewPhotoRecord($mysqli, $photo, $response)
         $columnNamesString = implode(', ', $columnNames);
         $columnValuesString = implode(', ', $columnValues);
 
-        $insertPhotoQuery = "INSERT INTO photo 
-            ($columnNamesString) 
+        $insertPhotoQuery = "INSERT INTO " . TABLE_PHOTO .
+            "($columnNamesString) 
             VALUES 
             ($columnValuesString)";
 
@@ -85,11 +93,24 @@ function  movePhotoFile($sourceFilePath, $destinationDirectory, $filename)
 
 function copyPhotoFiles($photo, $response)
 {
+    global $version;
+
     try {
         // copy photo file from collection staging to Calscape photo directory
         $filename = $photo['FileName'];
         $sourceFilePath = COLLECTION_PHOTOS_DIR . $filename;
-        $destinationDirectory = BIG_IMAGES_DIR;
+
+        // destination directory depends on which version of Calscape
+        if ($version === "2.0") {
+            $destinationDirectory = BIG_IMAGES_DIR;
+        } elseif ($version === "1.0") {
+            $destinationDirectory = CALSCAPE2_ALL_IMAGES_DIR;
+        } else {
+            // unknown calscape version
+            $response["success"] = false;
+            $response["messages"][] = "Failed to copy file $sourceFilePath due to unknown Calscape version";
+            return false;
+        }
 
         if (copyFile($sourceFilePath, $destinationDirectory, $filename)) {
             $response["messages"][] = "File $sourceFilePath copied to $destinationDirectory";
@@ -99,17 +120,19 @@ function copyPhotoFiles($photo, $response)
             return false;
         }
 
-        // copy thumbnail file from collection staging to Calscape photo directory
-        $thumbnailFile = $photo['thumbnail'];
-        $th_sourceFilePath = COLLECTION_THUMBNAILS_DIR . $thumbnailFile;
-        $th_destinationDirectory = THUMBNAILS_DIR;
+        if ($version === "1.0") {
+            // copy thumbnail file from collection staging to Calscape photo directory
+            $thumbnailFile = $photo['thumbnail'];
+            $th_sourceFilePath = COLLECTION_THUMBNAILS_DIR . $thumbnailFile;
+            $th_destinationDirectory = THUMBNAILS_DIR;
 
-        if (copyFile($th_sourceFilePath, $th_destinationDirectory, $thumbnailFile)) {
-            $response["messages"][] = "Thumbnail file $sourceFilePath moved to $destinationDirectory";
-        } else {
-            $response["success"] = false;
-            $response["messages"][] = "Failed to copy file $sourceFilePath to $destinationDirectory";
-            return false;
+            if (copyFile($th_sourceFilePath, $th_destinationDirectory, $thumbnailFile)) {
+                $response["messages"][] = "Thumbnail file $sourceFilePath moved to $destinationDirectory";
+            } else {
+                $response["success"] = false;
+                $response["messages"][] = "Failed to copy file $sourceFilePath to $destinationDirectory";
+                return false;
+            }
         }
     } catch (Exception $e) {
         $response["success"] = false;
@@ -122,6 +145,8 @@ function copyPhotoFiles($photo, $response)
 
 function updateDatabase($jsonData, $dbConfig)
 {
+    global $version;
+
     $response =
         [
             "success" => true,
@@ -175,33 +200,49 @@ function updateDatabase($jsonData, $dbConfig)
 
             // Get the existing photo order if it's an existing photo
             if ($isNew) {
-                $newPhotoID = createNewPhotoRecord($mysqli, $photo, $response);
+                $newPhotoID = createNewPhotoRecord($mysqli, $photo, $response, $order);
                 if (!$newPhotoID) {
                     $response["messages"][] = "Failed to create a new photo record for photo with id $photoID";
                     $response["new_failed"][] = $photoID;
                     break;
                 }
 
-                // Create new plant_photo record to relate new photo with plant
-                $plantPhotoValuesArray = array($plantID, $newPhotoID, $order, $order, 1, $userID);
-                $plantPhotoValuesString = implode(', ', $plantPhotoValuesArray);
+                if ($version === "1.0") {
+                    // Create new plant_photo record to relate new photo with plant
+                    $insertPlantPhotoQuery = "INSERT INTO plant_photo 
+                        (Plant_ID, Photo_ID, photo_order, order_previous, user_id) 
+                        VALUES (?, ?, ?, ?, ?)";
 
-                // Create plant_photo record to relate plants record to photo record
-                $insertPlantPhotoQuery = "INSERT INTO plant_photo 
-                    (Plant_ID, Photo_ID, photo_order, order_previous, approved, user_id) 
-                    VALUES ($plantPhotoValuesString)";
+                    // Prepare the statement
+                    $stmt = $mysqli->prepare($insertPlantPhotoQuery);
 
-                $result = $mysqli->query($insertPlantPhotoQuery);
-                // Check if the query was successful
-                if ($result) {
-                    $response["messages"][] = "Plant_photo record inserted linking plant $plantID with photo $newPhotoID";
-                    copyPhotoFiles($photo, $response);
-                    $response["new_succeeded"][] = $photoID;
-                } else {
-                    $response["success"] = false;
-                    $response["messages"][] = "Error creating new plant_photo record for plant_ID $plantID, photo_ID $newPhotoID " . $mysqli->error;
-                    $response["new_failed"][] = $photoID;
-                    break;
+                    // Check if the preparation succeeded
+                    if ($stmt) {
+                        // Bind parameters
+                        $stmt->bind_param("iiiii", $plantID, $newPhotoID, $order, $order, $userID);
+
+                        // Execute the query
+                        $result = $stmt->execute();
+
+                        // Check if the query was successful
+                        if ($result) {
+                            $response["messages"][] = "Plant_photo record inserted linking plant $plantID with photo $newPhotoID";
+                            copyPhotoFiles($photo, $response);
+                            $response["new_succeeded"][] = $photoID;
+                        } else {
+                            $response["success"] = false;
+                            $response["messages"][] = "Error creating new plant_photo record for plant_ID $plantID, photo_ID $newPhotoID " . $mysqli->error;
+                            $response["new_failed"][] = $photoID;
+                            break;
+                        }
+
+                        // Close the statement
+                        $stmt->close();
+                    } else {
+                        // Handle the case where the statement preparation failed
+                        $response["success"] = false;
+                        $response["messages"][] = "Error preparing statement: " . $mysqli->error;
+                    }
                 }
             } else { // existing photo
                 // check if photo is from calphotos
@@ -218,26 +259,52 @@ function updateDatabase($jsonData, $dbConfig)
 
                         $types = "iiis";
                     } else {
-                        $updateQuery = "UPDATE plant_photo 
+                        if ($version === "1.0") {
+                            $updateQuery = "UPDATE plant_photo 
                             SET photo_order = ?, 
                                 order_previous = ? 
                             WHERE Plant_ID = ? AND Photo_ID = ?";
 
-                        $types = "iiii";
+                            $types = "iiii";
+
+                        } elseif ($version === "2.0") {
+                            $updateQuery = "UPDATE plant_images 
+                            SET plant_photo_order = ?
+                            WHERE id = ?";
+
+                            $types = "ii";
+                        }
+                        else {
+                            // unknown calscape version
+                            $response["success"] = false;
+                            $response["messages"][] = "Failed to update photo order due to unknown Calscape version";
+                            break;
+                        }
                     }
 
                     $stmt = $mysqli->prepare($updateQuery);
 
                     if ($stmt) {
                         // Bind parameters
-                        $stmt->bind_param($types, $order, $existingPhotoOrder, $plantID, $photoID);
+                        if ($version === "1.0") {
+                            $stmt->bind_param($types, $order, $existingPhotoOrder, $plantID, $photoID);
+                        }
+                        elseif ($version === "2.0") {
+                            $stmt->bind_param($types, $order, $photoID);                            
+                        }
+                        else {
+                            // unknown calscape version
+                            $response["success"] = false;
+                            $response["messages"][] = "Failed to update photo order due to unknown Calscape version";
+                            break;
+                        }
 
                         // Execute the query
                         if ($stmt->execute()) {
                             $response["messages"][] = $isCalphoto
                                 ? "plant_photo_calphotos record updated. plant_id: $plantID, photo_id: $photoID"
                                 : "plant_photo record updated. Plant_ID: $plantID, Photo_ID: $photoID";
-                                $response["update_succeeded"][] = $photoID;
+                            $response["update_succeeded"][] = $photoID;
                         } else {
                             $response["success"] = false;
                             $response["messages"][] = "Error: Prepare statement failed: " . $stmt->error;

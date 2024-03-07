@@ -1,8 +1,12 @@
 <?php
-// Calscape photo directories
+// Calscape 1.0 photo directories
 define('ALL_IMAGES_DIR', '../../public/ExtData/allimages/');
 define('BIG_IMAGES_DIR', ALL_IMAGES_DIR . '900/');
 define('THUMBNAILS_DIR', ALL_IMAGES_DIR . 'Photos/');
+
+// Calscape 2.0 photo directories
+define('CALSCAPE2_ALL_IMAGES_DIR', ALL_IMAGES_DIR . 'species_image/');
+define('CALSCAPE2_CALPHOTOS_DIR', CALSCAPE2_ALL_IMAGES_DIR . 'calphotos/image');
 
 
 // Kristy's calsca6_calscape_demo

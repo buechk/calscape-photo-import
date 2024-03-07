@@ -50,6 +50,13 @@ else if ($version === '2.0') {
     define('TABLE_PLANTS', 'leg_plants');
 }
 
+if ($version === '1.0') {
+    define('TABLE_PHOTO', 'photo');
+}
+else if ($version === '2.0') {
+    define('TABLE_PHOTO', 'plant_images');
+}
+
 $newline = (php_sapi_name() === 'cli') ? PHP_EOL : '<br>';
 
 function resizedCoor($imgWidth, $imgHeight, $targetWidth = THUMBNAIL_WIDTH, $targetHeight = THUMBNAIL_HEIGHT, $crop = false)
@@ -205,7 +212,7 @@ function getPlantID($species)
 
     try {
         // Get the ID for a species from the plants table
-        $query = "SELECT ID FROM plants WHERE species = ?";
+        $query = "SELECT ID FROM " . TABLE_PLANTS . " WHERE species = ?";
         $params = ['s', $species];
 
         $result = $dbManager->executeQuery($query, $params);

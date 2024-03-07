@@ -359,8 +359,8 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     const photo = speciesPhotos[photoID];
                     console.log(`Processing photo: ${photo.FileName}`);
                     const fileName = photo.FileName;
-                    const captionText = photo.CaptionTitle !== null ? `${photo.CaptionTitle}${photo.Copyright}` : `${photo.Copyright}`;
-                    const altText = photo.CaptionTitle !== null ? removeHtmlTags(`${photo.CaptionTitle}`) : `${photo.Copyright}`;
+                    const captionText = (photo.CaptionTitle !== undefined) &&  (photo.CaptionTitle !== null) ? `${photo.CaptionTitle}${photo.Copyright}` : `${photo.Copyright}`;
+                    const altText = (photo.CaptionTitle !== undefined) &&  (photo.CaptionTitle !== null) ? removeHtmlTags(`${photo.CaptionTitle}`) : removeHtmlTags(`${photo.Copyright}`);
                     const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
                     const tc = createThumbnailContainer(photoID, turl, captionText, altText);
                     tc.classList.add('calscape-existing');
