@@ -364,7 +364,7 @@ const importconfig2 = {
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
-                                    "required": true,
+                                    "required": false,
                                     "visible": true
                                 },
                                 "reviewer": {
@@ -375,31 +375,6 @@ const importconfig2 = {
                             }
                         }
                     },
-                    /*
-                    {
-                        "name": "CaptionDescription",
-                        "datasources": {
-                            "flickr": "photo.description._content",
-                            "jpeg": "EXIF.ImageDescription"
-                        },
-                        "userinterface": {
-                            "label": "Caption description",
-                            "default": "",
-                            "richtext": true,
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": true,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": true,
-                                    "visible": true
-                                }
-                            }
-                        }
-                    }, */
                     {
                         "name": "DateTimeOriginal",
                         "datasources": {
@@ -447,76 +422,6 @@ const importconfig2 = {
                             }
                         }
                     },
-                    /*
-                    {
-                        "name": "ImageDescription",
-                        "datasources": {
-                            "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
-                            "jpeg": "EXIF.Copyright"
-                        },
-                        "userinterface": {
-                            "label": "Copyright",
-                            "default": "",
-                            "placeholder": `Copyright owner year(s). Example: Copyright Ron Smith 2024`,
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": true,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": true,
-                                    "visible": true
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "name": "CopyrightCategory",
-                        "datasources": {
-                            "flickr": "photo.license",
-                            "jpeg": "EXIF.Copyright"
-                        },
-                        "multi_apply": true,
-                        "userinterface": {
-                            "label": "Copyright Category",
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": true,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": true,
-                                    "visible": true
-                                }
-                            }
-                        },
-                        "valuemap": {
-                            "0": "All Rights Reserved (ARR)",
-                            "1": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
-                            "2": "Attribution-NonCommercial (CC BY-NC)",
-                            "3": "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
-                            "4": "Attribution (CC BY)",
-                            "5": "Attribution-ShareAlike (CC BY-SA)",
-                            "6": "Attribution-NoDerivs (CC BY-ND)",
-                            "7": "Public Domain Dedication (CC0)",
-                            "8": "GNU Free Documentation License (GFDL)"
-                        },
-                        "picklist": [
-                            "All Rights Reserved (ARR)",
-                            "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
-                            "Attribution-NonCommercial (CC BY-NC)",
-                            "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
-                            "Attribution (CC BY)",
-                            "Attribution-ShareAlike (CC BY-SA)",
-                            "Attribution-NoDerivs (CC BY-ND)",
-                            "Public Domain Dedication (CC0)",
-                            "GNU Free Documentation License (GFDL)"
-                        ]
-                    },*/
                     {
                         "name": "CopyrightNotice",
                         "datasources": {
@@ -543,81 +448,6 @@ const importconfig2 = {
                             }
                         }
                     },
-                    /*
-                    {
-                        "name": "QualityRanking",
-                        "datasources": {
-                            "flickr": "photo.exif[tag='Rating'].raw._content",
-                            "jpeg": "EXIF.xmp.Rating"
-                        },
-                        "multi_apply": true,
-                        "userinterface": {
-                            "label": "Quality ranking - 0 (worst) to 5 (best)",
-                            "placeholder": "Enter 0 to 5",
-                            "default": "",
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "name": "LandscaperName",
-                        "datasources": {
-                            "flickr": "",
-                            "jpeg": ""
-                        },
-                        "multi_apply": true,
-                        "userinterface": {
-                            "label": "Landscaper name",
-                            "default": "",
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "name": "LandscapeDesigner",
-                        "datasources": {
-                            "flickr": "",
-                            "jpeg": ""
-                        },
-                        "multi_apply": true,
-                        "userinterface": {
-                            "label": "Landscaper designer",
-                            "default": "",
-                            "roles": {
-                                "contributor": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                },
-                                "reviewer": {
-                                    "readonly": false,
-                                    "required": false,
-                                    "visible": true
-                                }
-                            }
-                        }
-                    },
-                    */
                     {
                         "name": "Keywords",
                         "datasources": {
@@ -644,7 +474,7 @@ const importconfig2 = {
                         }
                     }
                 ]
-            } /*,
+            } ,
             {
                 "table": "plant_photo",
                 "columns": [
@@ -670,7 +500,7 @@ const importconfig2 = {
                         }
                     }
                 ]
-            } */
+            } 
         ]
     }
 }

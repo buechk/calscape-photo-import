@@ -55,14 +55,14 @@ function getPlantPhotosQuery()
     } else if ($version === '2.0') {
         return "SELECT
                     leg_plants.ID,
-                    plant_images.id, 
+                    plant_images.id as photo_id, 
                     plant_images.FileName,
                     plant_images.ImageDescription,
                     plant_images.CopyrightNotice as Copyright,
                     plant_images.Artist,
                     plant_images.plant_photo_order 
-                FROM plant_images
-                INNER JOIN leg_plants ON leg_plants.ID = plant_images.Plant_ID
+                FROM leg_plants
+                INNER JOIN plant_images ON leg_plants.ID = plant_images.Plant_ID
                 WHERE leg_plants.ID = ? AND plant_images.FileName IS NOT null AND plant_images.FileName != ''
                 ORDER BY plant_images.plant_photo_order";
     } else {
@@ -152,7 +152,7 @@ function getPhotos($plantID)
         // Log the error
         error_log("Failed to fetch data from query: $query");
 
-        // Return an empty array or throw an exception as per your requirements
+        // Return an empty array
         return [];
     }
 

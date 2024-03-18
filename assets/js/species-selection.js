@@ -115,32 +115,29 @@ export function initializeCollectionSpeciesInput() {
  */
 export function fetchSpeciesList() {
     if (specieslist.length === 0) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/includes/php/calscape_query.php", true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    try {
-                        var response = JSON.parse(xhr.responseText);
-                        if (response.error) {
-                            console.log(response.error);
-                        } else {
-                            specieslist = response.map((x) => x);
-                            console.log(specieslist);
-                        }
-                    } catch (error) {
-                        // Handle JSON parsing error
-                        console.error("Error parsing JSON response:", error);
-                        console.error("Response text:", xhr.responseText);
-                    }
-                } else {
-                    // Handle HTTP status error
-                    console.error("HTTP status error:", xhr.status);
-                    console.error("Response text:", xhr.responseText);
+        fetch("/includes/php/calscape_query.php")
+            .then(async response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            }
-        };
-        xhr.send();
+
+                // Log the response body
+                const responseText = await response.text();
+                console.log("species list:", responseText);
+                return JSON.parse(responseText);
+            })
+            .then(data => {
+                if (data.error) {
+                    console.log(data.error);
+                } else {
+                    specieslist = data.data; // Access the 'data' field
+                    console.log(specieslist);
+                }
+            })
+            .catch(error => {
+                // Handle fetch or parsing errors
+                console.error("Error fetching species list:", error);
+            });
     }
 }
 

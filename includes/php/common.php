@@ -57,6 +57,13 @@ else if ($version === '2.0') {
     define('TABLE_PHOTO', 'plant_images');
 }
 
+if ($version === '1.0') {
+    define('TABLE_USERS', 'user');
+}
+else if ($version === '2.0') {
+    define('TABLE_USERS', 'users');
+}
+
 $newline = (php_sapi_name() === 'cli') ? PHP_EOL : '<br>';
 
 function resizedCoor($imgWidth, $imgHeight, $targetWidth = THUMBNAIL_WIDTH, $targetHeight = THUMBNAIL_HEIGHT, $crop = false)
@@ -204,8 +211,6 @@ function createThumbnail(
 
 function getPlantID($species)
 {
-    include_once('config.php');
-
     $plantID = '';
 
     global $dbManager;

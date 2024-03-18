@@ -1,4 +1,6 @@
 <?php
+include_once('../../../includes/php/common.php');
+
 // Simulate JSON data for testing
 $testJsonDataPrunus = '{
     "collection-name": "Holly leaved cherry",
@@ -211,5 +213,5 @@ $testJsonData = '{
 
 // Include test subject PHP code and pass the JSON data as an argument
 include_once('../../../includes/php/save-to-db.php');
-updateDatabase($testJsonDataPrunus);
+updateDatabase($testJsonDataPrunus, $dbConfig);
 ?>

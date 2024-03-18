@@ -1,7 +1,7 @@
 <?php
 include_once('common.php');
 
-function createNewPhotoRecord($mysqli, $photo, $response, $order)
+function createNewPhotoRecord($mysqli, $photo, $response, $order, $plantID)
 {
     global $newline;
     global $version;
@@ -12,9 +12,12 @@ function createNewPhotoRecord($mysqli, $photo, $response, $order)
 
     // Check if the version is 2.0
     if ($version === "2.0") {
-        // Add plant_photo_order column and value if version is 2.0
+        // Add plant_photo_order and plant_id column and value if version is 2.0
         $columnNames[] = "`plant_photo_order`";
         $columnValues[] = "'" . $mysqli->real_escape_string($order) . "'";
+        
+        $columnNames[] = "`plant_id`";
+        $columnValues[] = "'" . $mysqli->real_escape_string($plantID) . "'";
     }
 
     // Loop through each key in the photo object
@@ -143,6 +146,64 @@ function copyPhotoFiles($photo, $response)
     return true;
 }
 
+function getStartingOrder($plantID) {
+    global $dbManager;
+    global $version;
+    $startingPhotoOrder = 1;
+    if ($plantID === '' || $plantID === null) {
+        return $startingPhotoOrder;
+    }
+
+    try {
+        if ($version === "1.0") {
+            $query = "SELECT
+            COALESCE(
+                (SELECT MIN(plant_photo.photo_order)
+                FROM plant_photo
+                WHERE plant_photo.Plant_ID = ?),
+                (SELECT MIN(plant_photo_calphotos.photo_order)
+                FROM plant_photo_calphotos
+                WHERE plant_photo_calphotos.plant_id = ?)
+                ) AS min_photo_order";
+
+            $params = ['ii', $plantID, $plantID];
+        }
+        else if ($version === "2.0") {
+            $query = "SELECT MIN(plant_images.plant_photo_order) AS min_photo_order from plant_images 
+            where plant_id = ?";
+
+            $params = ['i', $plantID];
+        }
+        else {
+            // assume 1
+            return $startingPhotoOrder;
+        }
+
+        $result = $dbManager->executeQuery($query, $params);
+
+        // Check if the query was successful
+        if ($result) {
+            $row = $result->fetch_assoc();
+
+            // Check if a row was found
+            if ($row) {
+                $startingPhotoOrder = $row["min_photo_order"];
+            } else {
+                // Handle the case where no photos are found for the plant
+            }
+        } else {
+            // Handle the case where the query failed
+            throw new Exception("Error in query: $query");
+        }
+    } catch (Exception $e) {
+        throw $e;
+    } finally {
+        $dbManager->closeConnection();
+    }
+
+    return $startingPhotoOrder;
+}
+
 function updateDatabase($jsonData, $dbConfig)
 {
     global $version;
@@ -200,11 +261,16 @@ function updateDatabase($jsonData, $dbConfig)
 
             // Get the existing photo order if it's an existing photo
             if ($isNew) {
-                $newPhotoID = createNewPhotoRecord($mysqli, $photo, $response, $order);
+                $newPhotoID = createNewPhotoRecord($mysqli, $photo, $response, $order, $plantID);
                 if (!$newPhotoID) {
                     $response["messages"][] = "Failed to create a new photo record for photo with id $photoID";
                     $response["new_failed"][] = $photoID;
                     break;
+                }
+                else {
+                    $response["messages"][] = "Plant_images record $newPhotoID created for $plantID";
+                    copyPhotoFiles($photo, $response);
+                    $response["new_succeeded"][] = $photoID;
                 }
 
                 if ($version === "1.0") {
@@ -246,7 +312,9 @@ function updateDatabase($jsonData, $dbConfig)
                 }
             } else { // existing photo
                 // check if photo is from calphotos
-                $isCalphoto = $photo['plant_photo_calphotos_order'] !== null;
+                $isCalphoto = isset($photo['plant_photo_calphotos_order']) && $photo['plant_photo_calphotos_order'] !== null;
+
+                // Get the existing photo order, considering if it's from CalPhotos or not
                 $existingPhotoOrder = $isCalphoto ? $photo['plant_photo_calphotos_order'] : $photo['plant_photo_order'];
 
                 if ($order !== $existingPhotoOrder) {

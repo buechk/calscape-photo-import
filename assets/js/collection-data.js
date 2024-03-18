@@ -225,132 +225,6 @@ export function processMutation(mutation) {
     });
 }
 
-/* Old implementation
-
-async function handleRemovedNodes(removedNodes) {
-    const removedNodesArray = Array.from(removedNodes);
-
-    for (const removedNode of removedNodesArray) {
-        console.log('Child element removed:', removedNode);
-        const id = removedNode.id;
-        const caption = removedNode.caption;
-        const imageObj = imageData[id];
-
-        if (imageObj) {
-            try {
-                await storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle);
-                console.log('Source photo stored: ', id, caption);
-            } catch (error) {
-                console.error('Error storing source photo:', error);
-            }
-        }
-    }
-
-    // Reset the processing flag
-    isProcessing = false;
-
-    // Check if there are more mutations in the queue
-    if (mutationQueue.length > 0) {
-        const nextMutation = mutationQueue.shift();
-        await processMutation(nextMutation);
-    }
-}
-
-async function processMutation(mutation) {
-    isProcessing = true;
-
-    const { addedNodes, removedNodes } = mutation;
-
-    for (const addedNode of addedNodes) {
-        try {
-            console.log('Child element added', addedNode);
-            await populateThumbnailProperties(addedNode.id);
-            console.log('Thumbnail properties populated successfully.');
-            await removeSourcePhoto(addedNode.id);
-        } catch (error) {
-            console.error('Error processing added node:', error);
-        }
-    }
-
-    if (removedNodes.length > 0) {
-        await handleRemovedNodes(removedNodes);
-    } else {
-        // Reset the processing flag
-        isProcessing = false;
-    }
-}
-*/
-
-/*
-// Function to set up the observer - uses DomNodeInserted and DomNodeRemoved events
-function setupMutationObserver(targetGrid, gridArray, callback,) {
-    // Listen for the DOMNodeInserted event to capture added nodes
-    targetGrid.addEventListener('DOMNodeInserted', handleNodeInserted);
- 
-    // Listen for the DOMNodeRemoved event to capture removed nodes
-    targetGrid.addEventListener('DOMNodeRemoved', handleNodeRemoved);
- 
-    // Function to handle added nodes
-    function handleNodeInserted(event) {
-        const addedNode = event.target;
-        console.log('Child element added', addedNode);
-        callback(addedNode, targetGrid, gridArray);
-        // Update the contents of the existing array with the current order of elements
-        updateGridArray();
-    }
- 
-    // Function to handle removed nodes
-    function handleNodeRemoved(event) {
-        const removedNode = event.target;
-        console.log('Child element removed:', removedNode);
-        // Process the removal and update the array
-        callback(removedNode, targetGrid, gridArray);
-        updateGridArray();
-    }
- 
-    // Function to update the contents of the array with the current order of elements
-    function updateGridArray() {
-        console.log("Sync'ing grid array with grid contents: ", targetGrid.querySelectorAll('.tcontainer'));
-        gridArray.length = 0; // Clear the existing array
-        gridArray.push(...Array.from(targetGrid.querySelectorAll('.tcontainer')));
-    }
-}
-*/
-
-/*
-// Function to set up the observer
-function setupMutationObserver(targetGrid, gridArray, callback,) {
-    const observer = new MutationObserver(async function (mutations) {
-        for (const mutation of mutations) {
-            console.log("Processing mutations to mutation target: ", mutation.target);
-            console.log("Added nodes:", mutation.addedNodes);
-            console.log("Removed nodes", mutation.removedNodes);
-            mutationQueue.push(mutation);
- 
-            if (!isProcessing) {
-                // Process the first mutation in the queue
-                await callback(mutationQueue.shift(), targetGrid, gridArray);
-            }
-        }
- 
-        // After processing mutations, update the contents of the existing array with the current order of elements
-        // Note: This is outside the for loop, so it's called after all mutations have been processed.
-        setTimeout(() => updateGridArray(targetGrid, gridArray), 500);
-    });
- 
-    const config = { childList: true };
-    observer.observe(targetGrid, config);
- 
-    // Function to update the contents of the array with the current order of elements
-    function updateGridArray(targetGrid, gridArray) {
-        console.log("Sync'ing grid array with grid contents: ", targetGrid.querySelectorAll('.tcontainer'));
-        gridArray.length = 0; // Clear the existing array
-        gridArray.push(...Array.from(targetGrid.querySelectorAll('.tcontainer')));
-    }
-}
- 
-*/
-
 /**
  * populate properties from the configured datasource for the given thumbnail
  * @param {*} id thumbnail-group-grid id
@@ -620,7 +494,7 @@ export async function setPhotoCollection(data, filename = null) {
             imageData[uniqueIdentifier] = { ...photo };
 
             const fileName = photo.FileName;
-            const captionText = `${photo.CaptionTitle}${photo.ImageDescription}`; // This is treated as a short copyright in Calscape
+            const captionText = (photo.CaptionTitle === null) || (photo.CaptionTitle === undefined) ? `${photo.ImageDescription}` : `${photo.CaptionTitle}${photo.ImageDescription}`; // ImageDescription is a short copyright in Calscape1
             const altText = removeHtmlTags(`${photo.CaptionTitle}`);
             const turl = `/includes/php/thumbnail.php?fileName=${fileName}&fileType=collection-photo`;
             const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText, altText);
@@ -847,7 +721,6 @@ export async function validatePhotoCollection() {
         displayStatusMessage(message, true);
         return false;
     }
-
 
     const requiredColumns = getRequiredColumnsForRole(importconfig, ROLE);
 

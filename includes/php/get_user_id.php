@@ -20,7 +20,7 @@ function getUserID($jsonData)
     }
 
     // Get the user's ID from their email
-    $query = "SELECT ID FROM user WHERE email = ?";
+    $query = "SELECT ID FROM " . TABLE_USERS . " WHERE email = ?";
     $params = ['s', $userEmail];
 
     $result = $dbManager->executeQuery($query, $params);
