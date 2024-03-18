@@ -291,7 +291,7 @@ const importconfig1 = {
                         "name": "Keywords",
                         "datasources": {
                             "flickr": "photo.tags.tag.raw",
-                            "jpeg": "EXIF.Copyright"
+                            "jpeg": "EXIF.xmp.Keywords"
                         },
                         "multi_apply": true,
                         "userinterface": {
@@ -433,7 +433,7 @@ const importconfig2 = {
                             "label": "Copyright Notice",
                             "default": "",
                             "richtext": true,
-                            "placeholder": "Optional extended copyright information",
+                            "placeholder": "Copyright information",
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -452,7 +452,7 @@ const importconfig2 = {
                         "name": "Keywords",
                         "datasources": {
                             "flickr": "photo.tags.tag.raw",
-                            "jpeg": "EXIF.Copyright"
+                            "jpeg": "EXIF.xmp.Keywords"
                         },
                         "multi_apply": true,
                         "userinterface": {
