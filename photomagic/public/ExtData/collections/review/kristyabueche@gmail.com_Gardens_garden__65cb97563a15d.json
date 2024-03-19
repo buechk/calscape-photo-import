@@ -1,0 +1,62 @@
+{
+  "collection-name": "Gardens",
+  "collection-type": "garden",
+  "user_id": "kristyabueche@gmail.com",
+  "photos": {
+    "0": {
+      "id": "52605937888",
+      "sourceImage": "https://farm66.staticflickr.com/65535/52605937888_8dea636a5f_b.jpg",
+      "thumbnail": "Arctostaphylos_'Arroyo_Cascade'_52605937888_8dea636a5f_q.jpg",
+      "CaptionTitle": "M arctostaphylos mixed",
+      "CaptionDescription": "<p>Mixed <em>Arctostaphylos</em> in a garden.</p>",
+      "DateTimeOriginal": "2023-01-01 15:36:02",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "CopyrightNotice": "",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [],
+      "selected-species": "Arctostaphylos 'Arroyo Cascade'",
+      "ImageDescription": "© Copyright Pete Veilleux 2024",
+      "FileName": "Arctostaphylos_'Arroyo_Cascade'_52605937888_8dea636a5f_b.jpg"
+    },
+    "1": {
+      "id": "52345766182",
+      "sourceImage": "https://farm66.staticflickr.com/65535/52345766182_b5166f6ba2_b.jpg",
+      "thumbnail": "Heuchera_'Canyon_Belle'_52345766182_b5166f6ba2_q.jpg",
+      "CaptionTitle": "This is the garden near the end of summer.",
+      "CaptionDescription": "<p>End of summer native garden.</p>",
+      "DateTimeOriginal": "2022-09-08 14:21:23",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "CopyrightNotice": "",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [],
+      "selected-species": "Heuchera 'Canyon Belle'",
+      "ImageDescription": "© Copyright Pete Veilleux 2024",
+      "FileName": "Heuchera_'Canyon_Belle'_52345766182_b5166f6ba2_b.jpg"
+    },
+    "2": {
+      "id": "48424238972",
+      "sourceImage": "https://farm66.staticflickr.com/65535/48424238972_e4e1074c9a_b.jpg",
+      "thumbnail": "Epilobium_anagallidifolium_48424238972_e4e1074c9a_q.jpg",
+      "CaptionTitle": "Native plants cascading over rocks.",
+      "CaptionDescription": "<p>Native plants cascading over rocks.</p>",
+      "DateTimeOriginal": "2019-07-30 11:39:22",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "CopyrightNotice": "",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [],
+      "selected-species": "Epilobium anagallidifolium",
+      "ImageDescription": "© Copyright Pete Veilleux 2024",
+      "FileName": "Epilobium_anagallidifolium_48424238972_e4e1074c9a_b.jpg"
+    }
+  },
+  "collection-species": ""
+}

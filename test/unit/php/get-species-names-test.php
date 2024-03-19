@@ -9,7 +9,7 @@ class PlantSpeciesTest extends \PHPUnit\Framework\TestCase
 
         // Capture the output of the script
         ob_start();
-        include('../../../includes/php/get_plant_species.php');
+        include('../../../photomagic/includes/php/get_plant_species.php');
         $output = ob_get_clean();
 
         // Assert that the output is in JSON format and contains the expected species

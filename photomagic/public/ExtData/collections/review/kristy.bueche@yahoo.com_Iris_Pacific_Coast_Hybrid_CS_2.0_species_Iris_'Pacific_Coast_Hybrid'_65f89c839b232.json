@@ -1,0 +1,62 @@
+{
+  "collection-name": "Iris Pacific Coast Hybrid CS 2.0",
+  "collection-type": "species",
+  "collection-species": "Iris 'Pacific Coast Hybrid'",
+  "user_id": "kristy.bueche@yahoo.com",
+  "filename": "kristy.bueche@yahoo.com_Iris_Pacific_Coast_Hybrid_CS_2.0_species_Iris_'Pacific_Coast_Hybrid'_65f89c839b232.json",
+  "photos": [
+    {
+      "id": "8701286076",
+      "sourceImage": "https://farm9.staticflickr.com/8277/8701286076_c4bf5c955a_b.jpg",
+      "thumbnail": "Iris_'Pacific_Coast_Hybrid'_8701286076_c4bf5c955a_q.jpg",
+      "ImageDescription": "<p>Pacific Coast Hybrid [PCH] Iris</p>",
+      "DateTimeOriginal": "2013-05-02 03:11:42",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p>",
+      "Keywords": [
+        "east bay wilds native plant nursery",
+        "garden goodies"
+      ],
+      "deleted": false,
+      "FileName": "Iris_'Pacific_Coast_Hybrid'_8701286076_c4bf5c955a_b.jpg"
+    },
+    {
+      "id": "8593510183",
+      "sourceImage": "https://farm9.staticflickr.com/8085/8593510183_afe05c975c_b.jpg",
+      "thumbnail": "Iris_'Pacific_Coast_Hybrid'_8593510183_afe05c975c_q.jpg",
+      "ImageDescription": "<p>Iris douglasiana or Pacific Coast Hybrid Iris</p>",
+      "DateTimeOriginal": "2013-03-25 03:52:58",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p>",
+      "Keywords": [],
+      "deleted": false,
+      "FileName": "Iris_'Pacific_Coast_Hybrid'_8593510183_afe05c975c_b.jpg"
+    },
+    {
+      "id": "17226407615",
+      "sourceImage": "https://farm9.staticflickr.com/8688/17226407615_2920597cea_b.jpg",
+      "thumbnail": "Iris_'Pacific_Coast_Hybrid'_17226407615_2920597cea_q.jpg",
+      "ImageDescription": "<p>Iris douglasiana - Douglas Iris</p>",
+      "DateTimeOriginal": "2015-04-19 12:11:36",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p>",
+      "Keywords": [],
+      "deleted": false,
+      "FileName": "Iris_'Pacific_Coast_Hybrid'_17226407615_2920597cea_b.jpg"
+    },
+    {
+      "id": "13348178455",
+      "sourceImage": "https://farm4.staticflickr.com/3833/13348178455_bd2ab9296f_b.jpg",
+      "thumbnail": "Iris_'Pacific_Coast_Hybrid'_13348178455_bd2ab9296f_q.jpg",
+      "ImageDescription": "<p>Pacific Coast Hybrid Irises</p>",
+      "DateTimeOriginal": "2014-03-23 04:42:37",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p>",
+      "Keywords": [],
+      "deleted": true,
+      "FileName": "Iris_'Pacific_Coast_Hybrid'_13348178455_bd2ab9296f_b.jpg"
+    }
+  ],
+  "status": "reviewed",
+  "reviewDate": "3/18/2024, 1:04:36 PM"
+}

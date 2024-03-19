@@ -1,0 +1,46 @@
+{
+  "collection-name": "Hazelnut",
+  "collection-species": "Corylus cornuta",
+  "collection-type": "species",
+  "user_id": "kristyabueche@gmail.com",
+  "photos": {
+    "0": {
+      "id": "2300892182",
+      "sourceImage": "https://farm4.staticflickr.com/3092/2300892182_38f21ee1bd_b.jpg",
+      "thumbnail": "Corylus_cornuta_2300892182_38f21ee1bd_q.jpg",
+      "CaptionTitle": "hazelnut 1 040",
+      "CaptionDescription": "<p>test</p>",
+      "DateTimeOriginal": "2008-02-19 22:45:08",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "CopyrightNotice": "",
+      "QualityRanking": "0",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [],
+      "selected-species": "",
+      "ImageDescription": "© Copyright Pete Veilleux 2024",
+      "FileName": "Corylus_cornuta_2300892182_38f21ee1bd_b.jpg"
+    },
+    "1": {
+      "id": "4025047237",
+      "sourceImage": "https://farm3.staticflickr.com/2534/4025047237_4551302738_b.jpg",
+      "thumbnail": "Corylus_cornuta_4025047237_4551302738_q.jpg",
+      "CaptionTitle": "Corylus cornuta ssp. californica - Western Hazelnut",
+      "CaptionDescription": "<p>Pt Reyes</p>",
+      "DateTimeOriginal": "2009-10-17 21:17:38",
+      "Artist": "pete veilleux",
+      "ImageDescription": "© Copyright Pete Veilleux 2024",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "CopyrightNotice": "",
+      "QualityRanking": "0",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [
+        "yearroundbeauty"
+      ],
+      "selected-species": "",
+      "FileName": "Corylus_cornuta_4025047237_4551302738_b.jpg"
+    }
+  }
+}

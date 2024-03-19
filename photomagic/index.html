@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="assets/css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/home-styles.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/lightbox.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+
+</head>
+
+<header>
+    <div class="banner">
+        <h1 id="title">Calscape Photo Magician</h1>
+    </div>
+</header>
+
+<body>
+    <div class="main-container">
+        <nav id="left-nav">
+            <ul>
+                <li id="welcome-link"><a data-page="home">Welcome</a></li>
+                <li><a href="#" id="select-photos" data-page="select-photos">Select photos</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-page="select-photos" id="selectFilesLink">Select files...</a></li>
+                        <li><a href="#" data-page="select-photos" id="selectFromFlickrLink">Select from Flickr...</a>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="#" data-page="create-collection">Create collection</a></li>
+                <li><a href="#" data-page="set-properties">Set properties</a></li>
+                <li><a href="#" data-page="submit-for-review">Submit</a></li>
+            </ul>
+        </nav>
+
+        <div id="status-area" style="display: none;" data-dismiss-on-nav=false>
+            <div class="status-message success">
+                <span id="status-text"></span>
+                <span id="close-status" class="close">&times;</span>
+            </div>
+        </div>
+
+        <div class="flex-container-column">
+            <div id="photo-actions-container" class="actions-container" style="display: block;">
+                <div id="selected-photos-count" class="selected-count">0 photos selected</div>
+                <div class="expand-wrapper">
+                    <button id="expand-button" class="expand-button">
+                        <i class="fa-solid fa-expand"></i>
+                        <span>Expand</span>
+                    </button>
+                    <span class="expand-text">Expand selected</span>
+                </div>
+            </div>
+
+            <main id="main-content">
+                <!-- The content area to be dynamically updated -->
+            </main>
+        </div>
+    </div>
+
+    <!-- Template for multivalue properties -->
+    <div id="multivalue-input-container" class="multivalue-input-container" style="display: none;">
+        <div class="multivalue-input-inner">
+        </div>
+        <div class="input-button-container">
+            <input type="text" class="multivalue-input" placeholder="Add new value"></input>
+            <button id="add-btn" class="add-btn">Add</button>
+        </div>
+    </div>
+
+    <!-- Modal for Importing Files -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fileModalClose">&times;</span>
+            <h2>Select Files</h2>
+            <input type="file" id="fileInput" multiple>
+        </div>
+    </div>
+
+    <!-- Modal for Importing from Flickr -->
+    <div id="flickrModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="flickrModalClose">&times;</span>
+            <h2>Enter a Flickr photostream or album URL:</h2>
+            <input type="text" id="flickrUrl">
+            <button id="importFromFlickr">Select</button>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsonata/jsonata.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="assets/js/lightbox.js"></script>
+    <script type="module" src="assets/js/photo-selection.js"></script>
+    <script type="module" src="assets/js/side-bar-nav.js"></script>
+    <script type="module" src="assets/js/thumbnails.js"></script>
+    <script type="module" src="assets/js/species-selection.js"></script>
+    <script type="module" src="assets/js/properties.js"></script>
+    <script type="module" src="assets/js/resizer.js"></script>
+    <script type="module" src="assets/js/submit-page.js"></script>
+    <script type="module" src="assets/js/submit.js"></script>
+    <script type="module" src="assets/js/main-content.js"></script>
+    <script type="module" src="assets/js/collection-data.js"></script>
+    <script type="module" src="assets/js/status.js"></script>
+    <script type="module" src="assets/js/sort-and-save.js"></script>
+
+</body>
+
+</html>

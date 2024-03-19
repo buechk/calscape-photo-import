@@ -1,0 +1,23 @@
+{
+  "collection-type": "species",
+  "user_id": "kristy.bueche@yahoo.com",
+  "filename": "kristy.bueche@yahoo.com_Coast_Buckwheat_2.0_species_Eriogonum_latifolium_65f8cb26baf0f.json",
+  "collection-name": "Coast Buckwheat Calscape 2.0",
+  "collection-species": "Eriogonum latifolium",
+  "photos": [
+    {
+      "id": "1710803698446-796",
+      "sourceImage": {},
+      "ImageDescription": "<p>test</p>",
+      "DateTimeOriginal": "",
+      "Artist": "",
+      "CopyrightNotice": "",
+      "Keywords": [],
+      "deleted": true,
+      "FileName": "Eriogonum_latifolium_65f8cb26a48a7.jpg",
+      "thumbnail": "thumbnail_Eriogonum_latifolium_65f8cb26a48a7.jpg"
+    }
+  ],
+  "status": "reviewed",
+  "reviewDate": "3/18/2024, 5:05:21 PM"
+}

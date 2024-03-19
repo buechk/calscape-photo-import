@@ -1,0 +1,64 @@
+{
+  "collection-name": "Pete's garden photos",
+  "collection-type": "garden",
+  "user_id": "kristyabueche@gmail.com",
+  "photos": {
+    "0": {
+      "id": "52346720066",
+      "sourceImage": "https://farm66.staticflickr.com/65535/52346720066_ec9f3603e5_b.jpg",
+      "thumbnail": "_52346720066_ec9f3603e5_q.jpg",
+      "CaptionTitle": "M - Arctostaphylos pajaroensis 'Warren Roberts'",
+      "CaptionDescription": "<p>test</p>",
+      "DateTimeOriginal": "2022-09-03 12:50:29",
+      "Artist": "pete veilleux",
+      "ImageDescription": "© Copyright Pete Veilleux 2024",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "CopyrightNotice": "",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [],
+      "selected-species": "",
+      "FileName": "_52346720066_ec9f3603e5_b.jpg"
+    },
+    "1": {
+      "id": "52605937888",
+      "sourceImage": "https://farm66.staticflickr.com/65535/52605937888_8dea636a5f_b.jpg",
+      "thumbnail": "_52605937888_8dea636a5f_q.jpg",
+      "CaptionTitle": "M arctostaphylos mixed",
+      "CaptionDescription": "<p>test</p>",
+      "DateTimeOriginal": "2023-01-01 15:36:02",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "CopyrightNotice": "",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [],
+      "selected-species": "",
+      "ImageDescription": "© Copyright Pete Veilleux 2024",
+      "FileName": "_52605937888_8dea636a5f_b.jpg"
+    },
+    "2": {
+      "id": "48424238972",
+      "sourceImage": "https://farm66.staticflickr.com/65535/48424238972_e4e1074c9a_b.jpg",
+      "thumbnail": "_48424238972_e4e1074c9a_q.jpg",
+      "CaptionTitle": "IMG_8502",
+      "CaptionDescription": "<p>test</p>",
+      "DateTimeOriginal": "2019-07-30 11:39:22",
+      "Artist": "pete veilleux",
+      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "CopyrightNotice": "",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [
+        "phgc"
+      ],
+      "selected-species": "",
+      "ImageDescription": "© Copyright Pete Veilleux 2024",
+      "FileName": "_48424238972_e4e1074c9a_b.jpg"
+    }
+  },
+  "collection-species": ""
+}

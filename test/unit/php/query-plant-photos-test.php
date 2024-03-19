@@ -1,6 +1,6 @@
 <?php
 // Include the PHP code you want to test
-include_once('../../../includes/php/get_species_photos.php');
+include_once('../../../photomagic/includes/php/get_species_photos.php');
 
 // Sample JSON data for testing
 $testJsonData = "Cornus sericea";

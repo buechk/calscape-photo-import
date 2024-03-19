@@ -1,0 +1,75 @@
+{
+  "collection-name": "Ribes from File",
+  "collection-type": "species",
+  "collection-species": "Ribes sanguineum",
+  "user_id": "kristyabueche@gmail.com",
+  "filename": "kristyabueche@gmail.com_Ribes_from_File_species_Ribes_sanguineum_65d4cd7392e5b.json",
+  "photos": [
+    {
+      "id": "1708444883749-40",
+      "sourceImage": {},
+      "CaptionTitle": "ribes flower2, reviewed",
+      "CaptionDescription": "<p><em>Ribes</em> sanguineum</p>",
+      "DateTimeOriginal": "",
+      "Artist": "",
+      "CopyrightCategory": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+      "CopyrightNotice": "<p>test</p>",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [
+        "test",
+        "eviewed"
+      ],
+      "deleted": false,
+      "ImageDescription": "© Copyright Kristy Bueche 2024",
+      "selected-species": "",
+      "FileName": "Ribes_sanguineum_65d4cd7388b5a.jpg",
+      "thumbnail": "thumbnail_Ribes_sanguineum_65d4cd7388b5a.jpg"
+    },
+    {
+      "id": "1708444883749-448",
+      "sourceImage": {},
+      "CaptionTitle": "Ribes branch",
+      "CaptionDescription": "<p><em>Ribes</em> sanguineum, reviewed</p>",
+      "DateTimeOriginal": "",
+      "ImageDescription": "© Copyright Kristy Bueche 2024",
+      "CopyrightCategory": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+      "CopyrightNotice": "",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [
+        "reviewed"
+      ],
+      "deleted": true,
+      "selected-species": "",
+      "FileName": "Ribes_sanguineum_65d4cd737bf75.jpg",
+      "thumbnail": "thumbnail_Ribes_sanguineum_65d4cd737bf75.jpg",
+      "Artist": ""
+    },
+    {
+      "id": "1708444883749-660",
+      "sourceImage": {},
+      "CaptionTitle": "Ribes sanguineum",
+      "CaptionDescription": "<p><em>Ribes</em> sanguineum</p>",
+      "DateTimeOriginal": "",
+      "Artist": "Kristy Reviewer",
+      "ImageDescription": "© Copyright Kristy Bueche 2024",
+      "CopyrightCategory": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+      "CopyrightNotice": "",
+      "QualityRanking": "",
+      "LandscaperName": "",
+      "LandscapeDesigner": "",
+      "Keywords": [
+        "eviewed"
+      ],
+      "deleted": true,
+      "selected-species": "",
+      "FileName": "Ribes_sanguineum_65d4cd7383b43.jpg",
+      "thumbnail": "thumbnail_Ribes_sanguineum_65d4cd7383b43.jpg"
+    }
+  ],
+  "status": "reviewed",
+  "reviewDate": "2/20/2024, 8:06:06 AM"
+}

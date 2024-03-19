@@ -1,0 +1,23 @@
+{
+  "collection-name": "Aster 2.0",
+  "collection-type": "species",
+  "collection-species": "Symphyotrichum chilense",
+  "user_id": "kristy.bueche@yahoo.com",
+  "filename": "kristy.bueche@yahoo.com_Aster_2.0_species_Symphyotrichum_chilense_65f8b2461d447.json",
+  "photos": [
+    {
+      "id": "1710797213511-839",
+      "sourceImage": {},
+      "ImageDescription": "<p>Testing photo import from file with Calscape 2.0</p>",
+      "DateTimeOriginal": "",
+      "Artist": "",
+      "CopyrightNotice": "",
+      "Keywords": [],
+      "deleted": true,
+      "FileName": "Symphyotrichum_chilense_65f8b245ef6d6.jpg",
+      "thumbnail": "thumbnail_Symphyotrichum_chilense_65f8b245ef6d6.jpg"
+    }
+  ],
+  "status": "reviewed",
+  "reviewDate": "3/18/2024, 2:31:26 PM"
+}

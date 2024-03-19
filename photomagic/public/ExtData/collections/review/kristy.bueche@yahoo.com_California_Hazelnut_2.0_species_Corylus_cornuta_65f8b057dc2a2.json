@@ -1,0 +1,80 @@
+{
+  "collection-name": "California Hazelnut 2.0",
+  "collection-type": "species",
+  "collection-species": "Corylus cornuta",
+  "user_id": "kristy.bueche@yahoo.com",
+  "filename": "kristy.bueche@yahoo.com_California_Hazelnut_2.0_species_Corylus_cornuta_65f8b057dc2a2.json",
+  "photos": [
+    {
+      "id": "52345765307",
+      "sourceImage": "https://farm66.staticflickr.com/65535/52345765307_33f3a31626_b.jpg",
+      "thumbnail": "Corylus_cornuta_52345765307_33f3a31626_q.jpg",
+      "ImageDescription": "<p>California Hazelnut espaliered on the wall.</p>",
+      "DateTimeOriginal": "2022-09-03 12:35:55",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p><p>All Rights Reserved</p>",
+      "Keywords": [],
+      "deleted": false,
+      "FileName": "Corylus_cornuta_52345765307_33f3a31626_b.jpg"
+    },
+    {
+      "id": "4025800682",
+      "sourceImage": "https://farm3.staticflickr.com/2794/4025800682_999eb15686_b.jpg",
+      "thumbnail": "Corylus_cornuta_4025800682_999eb15686_q.jpg",
+      "ImageDescription": "<p>Corylus cornuta ssp. californica - Western Hazelnut - under SODS victims</p>",
+      "DateTimeOriginal": "2009-10-17 21:18:13",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p><p>All Rights Reserved</p>",
+      "Keywords": [
+        "yearroundbeauty",
+        "PrimevalForestGroups",
+        "pfSpiderweb",
+        "snowwhitehuntsman"
+      ],
+      "deleted": false,
+      "FileName": "Corylus_cornuta_4025800682_999eb15686_b.jpg"
+    },
+    {
+      "id": "2300892182",
+      "sourceImage": "https://farm4.staticflickr.com/3092/2300892182_38f21ee1bd_b.jpg",
+      "thumbnail": "Corylus_cornuta_2300892182_38f21ee1bd_q.jpg",
+      "ImageDescription": "<p>hazelnut 1 040</p>",
+      "DateTimeOriginal": "2008-02-19 22:45:08",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p><p>All Rights Reserved</p>",
+      "Keywords": [],
+      "deleted": false,
+      "FileName": "Corylus_cornuta_2300892182_38f21ee1bd_b.jpg"
+    },
+    {
+      "id": "7105367887",
+      "sourceImage": "https://farm8.staticflickr.com/7094/7105367887_6c70971572_b.jpg",
+      "thumbnail": "Corylus_cornuta_7105367887_6c70971572_q.jpg",
+      "ImageDescription": "<p>Heuchera maxima - Giant Island Alumroot and Corylus cornuta var. californica - California Hazelnut</p>",
+      "DateTimeOriginal": "2012-04-21 21:28:58",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p><p>All Rights Reserved</p>",
+      "Keywords": [
+        "'website",
+        "possibility';",
+        "hillside"
+      ],
+      "deleted": true,
+      "FileName": "Corylus_cornuta_7105367887_6c70971572_b.jpg"
+    },
+    {
+      "id": "50674923596",
+      "sourceImage": "https://farm66.staticflickr.com/65535/50674923596_44b71625e5_b.jpg",
+      "thumbnail": "Corylus_cornuta_50674923596_44b71625e5_q.jpg",
+      "ImageDescription": "<p>Corylus cornuta var. californica - California Hazelnut</p>",
+      "DateTimeOriginal": "2020-11-24 11:52:03",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Veilleux 2024</p><p>All Rights Reserved</p>",
+      "Keywords": [],
+      "deleted": true,
+      "FileName": "Corylus_cornuta_50674923596_44b71625e5_b.jpg"
+    }
+  ],
+  "status": "reviewed",
+  "reviewDate": "3/18/2024, 2:23:26 PM"
+}

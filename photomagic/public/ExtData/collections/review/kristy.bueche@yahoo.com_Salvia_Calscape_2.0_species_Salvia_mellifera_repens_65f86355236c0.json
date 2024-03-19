@@ -1,0 +1,37 @@
+{
+  "collection-name": "Salvia Calscape 2.0",
+  "collection-type": "species",
+  "collection-species": "Salvia mellifera repens",
+  "user_id": "kristy.bueche@yahoo.com",
+  "filename": "kristy.bueche@yahoo.com_Salvia_Calscape_2.0_species_Salvia_mellifera_repens_65f86355236c0.json",
+  "photos": [
+    {
+      "id": "15493075478",
+      "sourceImage": "https://farm8.staticflickr.com/7501/15493075478_f0c3889704_b.jpg",
+      "thumbnail": "Salvia_mellifera_repens_15493075478_f0c3889704_q.jpg",
+      "ImageDescription": "<p>Salvia leucophylla 'Amethyst Bluff'</p>",
+      "DateTimeOriginal": "2014-04-03 03:19:48",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Vielleux 2024</p>",
+      "Keywords": [
+        "hillside"
+      ],
+      "deleted": false,
+      "FileName": "Salvia_mellifera_repens_15493075478_f0c3889704_b.jpg"
+    },
+    {
+      "id": "25259237406",
+      "sourceImage": "https://farm2.staticflickr.com/1458/25259237406_576ef5c0a8_b.jpg",
+      "thumbnail": "Salvia_mellifera_repens_25259237406_576ef5c0a8_q.jpg",
+      "ImageDescription": "<p>Salvia leucophylla 'Amethyst Bluff' - Amethyst Bluff Purple Sage</p>",
+      "DateTimeOriginal": "2016-02-26 02:18:14",
+      "Artist": "pete veilleux",
+      "CopyrightNotice": "<p>© Copyright Pete Vielleux 2024</p>",
+      "Keywords": [],
+      "deleted": true,
+      "FileName": "Salvia_mellifera_repens_25259237406_576ef5c0a8_b.jpg"
+    }
+  ],
+  "status": "reviewed",
+  "reviewDate": "3/18/2024, 11:59:24 AM"
+}
