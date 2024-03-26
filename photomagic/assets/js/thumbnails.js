@@ -5,7 +5,7 @@
 **/
 
 import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-photo-data.js";
-import { showMultiSelectedProperties } from './properties.js';
+import { showMultiSelectedProperties, getFullLightboxCaption } from './properties.js';
 import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum, getPhotoSizes } from './flickr-API.js';
 import { displayStatusMessage } from "./status.js";
 
@@ -122,7 +122,10 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
         selectedThumbnails.forEach(function (tcontainer, index) {
             const image = tcontainer.querySelector('.thumbnail');
             const imageUrl = image.src.replace('_q.jpg', '_b.jpg'); // Get full-size image URL
-            const caption = tcontainer.innerText;
+            let caption = getFullLightboxCaption(tcontainer.id);
+            if (!caption) {
+                caption = tcontainer.innerText;
+            }
 
             // Create anchor element
             const anchor = document.createElement('a');
@@ -359,7 +362,19 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     const photo = speciesPhotos[photoID];
                     console.log(`Processing photo: ${photo.FileName}`);
                     const fileName = photo.FileName;
-                    const captionText = (photo.CaptionTitle !== undefined) &&  (photo.CaptionTitle !== null) ? `${photo.CaptionTitle}${photo.Copyright}` : `${photo.Copyright}`;
+                    let captionText = '';
+
+                    if (photo.CaptionTitle) {
+                        captionText = `${photo.CaptionTitle}${photo.Copyright ? ' ' + photo.Copyright : ''}`;
+                    } else if (photo.ImageDescription) {
+                        captionText = `${photo.ImageDescription}${photo.Copyright ? ' ' + photo.Copyright : ''}`;
+                    } else {
+                        captionText = photo.Copyright || '';
+                    }
+                    
+                    // Filter out undefined or null values
+                    captionText = captionText.trim();
+                    
                     const altText = (photo.CaptionTitle !== undefined) &&  (photo.CaptionTitle !== null) ? removeHtmlTags(`${photo.CaptionTitle}`) : removeHtmlTags(`${photo.Copyright}`);
                     const turl = `/photomagic/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
                     const tc = createThumbnailContainer(photoID, turl, captionText, altText);

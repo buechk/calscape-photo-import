@@ -4,7 +4,7 @@
  */
 
 import { initMainContent } from "./main-content.js";
-import { clearPhotoCollection, getCollectionThumbnails, savePhotoCollection, validateLeavePage } from "./collection-data.js";
+import { clearPhotoCollection, getCollectionThumbnails, savePhotoCollection, validateLeavePage, validatePhotoCollection } from "./collection-data.js";
 import { saveSelectedProperties, initProperties } from "./properties.js"
 import { dismissStatusOnNavigation } from "./status.js";
 import { clearCalscapePhotos, getCalscapeThumbnails } from "./sort-and-save.js";
@@ -28,7 +28,7 @@ $(document).ready(async function () {
     }
 
     initProperties(window.calscapeVersion);
-    
+
     // Load default content on page load
     fetchContent('home');
 
@@ -86,9 +86,9 @@ export function initWelcome() {
     console.log("Welcome page initialized")
 }
 
-export function initNavigation() {
+export async function initNavigation() {
     // Attach click event listeners to the navigation items
-    $('#left-nav a').click(function (event) {
+    $('#left-nav a').click(async function (event) {
         event.preventDefault(); // Prevent the default link behavior
 
         // save current values before replacing page content
@@ -96,13 +96,21 @@ export function initNavigation() {
         saveSelectedProperties();
 
         // remove grid selections before navigating
-        clearSelections();  
+        clearSelections();
 
-        if (event.target.id === 'save' || event.target.id === 'submit')
+        if (event.target.id === 'save' || event.target.id === 'submit') {
             // Validate required fields before leaving
             if (!validateLeavePage()) {
                 return;
             }
+        
+            // Check if the event target is 'save' and apply additional validation
+            if (event.target.id === 'save') {
+                if (!await validatePhotoCollection()) {
+                    return;
+                }
+            }
+        }        
 
         // Add selected class to clicked menu item
         $('li a.selected').removeClass('selected'); // Remove the class from previously selected items
@@ -119,7 +127,7 @@ export function initNavigation() {
             openSelectionDialog(clickedId);
         }
     });
-};
+}
 
 function fetchContent(page, append = false) {
     // Use jQuery's AJAX function to get the content from the server
@@ -181,9 +189,9 @@ function updateNavigationBar(currentPage) {
 function updateSelectedPhotoActions(currentPage) {
     const photoActionsElem = document.getElementById('photo-actions-container');
     if (photoActionsElem !== null) {
-        if (currentPage === 'home' || 
-        currentPage === 'submit-for-review' || 
-        currentPage === 'select-collection') {
+        if (currentPage === 'home' ||
+            currentPage === 'submit-for-review' ||
+            currentPage === 'select-collection') {
             photoActionsElem.style.display = 'none';
         } else {
             photoActionsElem.style.display = 'block';

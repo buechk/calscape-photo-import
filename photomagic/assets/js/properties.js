@@ -18,11 +18,11 @@ const importconfig1 = {
                         "name": "CaptionTitle",
                         "datasources": {
                             "flickr": "photo.title._content",
-                            "jpeg": "EXIF.ImageDescription"
+                            "jpeg": "XMP:Title"
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Caption title",
+                            "label": "Title",
                             "default": "",
                             "richtext": true,
                             "roles": {
@@ -47,18 +47,18 @@ const importconfig1 = {
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Caption description",
+                            "label": "Description",
                             "default": "",
                             "richtext": true,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
-                                    "required": true,
+                                    "required": false,
                                     "visible": true
                                 },
                                 "reviewer": {
                                     "readonly": false,
-                                    "required": true,
+                                    "required": false,
                                     "visible": true
                                 }
                             }
@@ -140,11 +140,12 @@ const importconfig1 = {
                         "name": "CopyrightCategory",
                         "datasources": {
                             "flickr": "photo.license",
-                            "jpeg": "EXIF.Copyright"
+                            "jpeg": "EXIF:xmp:Rights"
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Copyright Category",
+                            "label": "License",
+                            "default": 1,
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -189,7 +190,7 @@ const importconfig1 = {
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Copyright Notice",
+                            "label": "Terms of use",
                             "default": "",
                             "richtext": true,
                             "placeholder": "Optional extended copyright information",
@@ -222,7 +223,7 @@ const importconfig1 = {
                             }
                         },
                         "userinterface": {
-                            "label": "Quality ranking - 0 (worst) to 5 (best)",
+                            "label": "Quality ranking (0 to 5)",
                             "placeholder": "Enter 0 to 5",
                             "default": "",
                             "roles": {
@@ -271,7 +272,31 @@ const importconfig1 = {
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Landscaper designer",
+                            "label": "Landscape designer",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Nursery",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Nursery",
                             "default": "",
                             "roles": {
                                 "contributor": {
@@ -426,14 +451,14 @@ const importconfig2 = {
                         "name": "CopyrightNotice",
                         "datasources": {
                             "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
-                            "jpeg": "EXIF.Copyright"
+                            "jpeg": "EXIF:xmp:UsageTerms"
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Copyright Notice",
+                            "label": "Usage terms",
                             "default": "",
                             "richtext": true,
-                            "placeholder": "Copyright information",
+                            "placeholder": "Usage terms",
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -463,7 +488,7 @@ const importconfig2 = {
                                 "contributor": {
                                     "readonly": false,
                                     "required": false,
-                                    "visible": true,
+                                    "visible": true
                                 },
                                 "reviewer": {
                                     "readonly": false,
@@ -474,7 +499,7 @@ const importconfig2 = {
                         }
                     }
                 ]
-            } ,
+            },
             {
                 "table": "plant_photo",
                 "columns": [
@@ -500,10 +525,28 @@ const importconfig2 = {
                         }
                     }
                 ]
-            } 
+            }
         ]
     }
 }
+
+const photoCaptionProperties1 = {
+    "title": { "properties": ["CaptionTitle"], "show_label": false, "styles": "photo-title" },
+    "description": { "properties": ["CaptionDescription"], "show_label": false, "styles": "photo-caption" },
+    "datetime": { "properties": ["DateTimeOriginal", "Artist"], "show_label": true, "styles": "photo-caption" },
+    "copyright": { "properties": ["ImageDescription", "CopyrightCategory", "CopyrightNotice"], "show_label": false, "styles": "photo-caption" },
+    "attribution": { "properties": ["LandscaperName", "LandscapeDesigner", "Nursery"], "show_label": true, "styles": "photo-caption" },
+    "keywords": { "properties": ["Keywords"], "show_label": true, "styles": "photo-caption" },
+    "quality": { "properties": ["QualityRanking"], "show_label": true, "styles": "photo-caption" }
+};
+
+const photoCaptionProperties2 = {
+    0: ["ImageDescription", "DateTimeOriginal", "Artist"],
+    1: ["CopyrightNotice"],
+    2: ["Keywords"]
+};
+
+let photoCaptionProperties = null;
 
 export let importconfig = null;
 
@@ -511,11 +554,71 @@ let multiApplyProperties = null;
 
 export function initProperties(version) {
     importconfig = version == '1.0' ? importconfig1 : importconfig2;
+    photoCaptionProperties = version == '1.0' ? photoCaptionProperties1 : photoCaptionProperties2;
     multiApplyProperties = getMultiApplyProperties();
 }
 
 // Create a Map to store Quill instances
 const quillInstances = new Map();
+
+export function getFullLightboxCaption(imageId) {
+    const imageObj = getImageData(imageId);
+
+    if (!imageObj) {
+        return false;
+    }
+
+    let html = "<div class='lb-caption'>";
+    let sectionIndex = 0;
+
+    for (const section in photoCaptionProperties) {
+        if (Object.prototype.hasOwnProperty.call(photoCaptionProperties, section)) {
+            const properties = photoCaptionProperties[section].properties;
+            const showLabel = photoCaptionProperties[section].show_label;
+            const style = photoCaptionProperties[section].styles;
+
+            // Add key-value pairs from current section to the HTML
+            properties.forEach(key => {
+                if (imageObj[key] !== undefined && imageObj[key] !== null && imageObj[key] !== '') {
+                    // Optionally include label based on show_label property
+                    const label = showLabel ? `<class='photo-caption-label'>${getColumnLabel(key) || key}:</> ` : '';
+
+                    // Check if the value is an array
+                    if (Array.isArray(imageObj[key])) {
+                        // Join array elements with space after comma
+                        const formattedArray = imageObj[key].join(', ');
+                        html += `<div class='${style}'>${label}${formattedArray}</div>`;
+                    } else {
+                        html += `<div class='${style}'>${label}${imageObj[key]}</div>`;
+                    }
+                }
+            });
+
+            // Add margin-bottom to create space between sections
+            if (sectionIndex < Object.keys(photoCaptionProperties).length - 1) {
+                html += `<p class='section-spacing'></p>`;
+            }
+
+            sectionIndex++;
+        }
+    }
+
+    html += '</div>';
+    return html;
+}
+
+function getColumnLabel(columnName) {
+    const tables = importconfig.photoimportconfig.tables;
+    for (const table of tables) {
+        const columns = table.columns;
+        for (const column of columns) {
+            if (column.name === columnName) {
+                return column.userinterface.label;
+            }
+        }
+    }
+    return null; // Return null if the column name is not found
+}
 
 // Auto Expand textarea according to length of text
 let autoExpand = (selector, direction) => {
@@ -698,8 +801,8 @@ function saveProperties(inputElement) {
                         if (quillInstance) {
                             if (quillInstance.root.contentEditable === "true") {
                                 // Get the content of the Quill editor
-                                const propertyValue = quillInstance.root.innerHTML !== '<p><br></p>' ? quillInstance.root.innerHTML : '';
-
+                                let propertyValue = quillInstance.root.innerHTML !== '<p><br></p>' ? quillInstance.root.innerHTML : '';
+                                //propertyValue = removeBlockTags(propertyValue);
                                 console.log(`Quill content for ${propertyName}: `, propertyValue);
                                 imageData[tcontainerId][propertyName] = propertyValue;
                             }
@@ -713,8 +816,8 @@ function saveProperties(inputElement) {
                     const propertyName = inputElement.parentElement.id.replace('-ql', '');
                     if (propertyName !== '') {
                         if (inputElement.contentEditable === "true") {
-                            const propertyValue = inputElement.innerHTML !== '<p><br></p>' ? inputElement.innerHTML : '';
-
+                            let propertyValue = inputElement.innerHTML !== '<p><br></p>' ? inputElement.innerHTML : '';
+                            //propertyValue = removeBlockTags(propertyValue);
                             console.log(`Quill content for ${propertyName}: `, propertyValue);
                             imageData[tcontainerId][propertyName] = propertyValue;
                         }
@@ -723,6 +826,16 @@ function saveProperties(inputElement) {
             });
         }
     }
+}
+
+function removeBlockTags(text) {
+    // Remove <p> tags
+    text = text.replace(/<p[^>]*>/g, '');
+    text = text.replace(/<\/p>/g, '');
+    // Remove <div> tags
+    text = text.replace(/<div[^>]*>/g, '');
+    text = text.replace(/<\/div>/g, '');
+    return text;
 }
 
 function showSelectedProperties(tcontainer) {
@@ -787,7 +900,7 @@ function displayPropertyInputField(property, propertyvalue, placeholder = '', di
                     }
 
                     // Find the input field inside the Quill editor
-                    const linkInput = document.querySelector('.ql-tooltip input[type="text"]');
+                    const linkInput = input.querySelector('.ql-tooltip input[type="text"]');
 
                     // Remove the disabled attribute
                     if (linkInput) {

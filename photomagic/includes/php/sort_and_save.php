@@ -5,7 +5,8 @@ define('CALSCAPE_PHOTOS', <<<HTML
     <div id='save-photos-header'>
         <h2>Calscape photos</h2>
         <div id="save-button-container">
-            <button type="button" class="button" id="save-button">Save</button>
+            <button type="button" class="button" id="save-to-csv-button">Download CSV</button>
+            <button type="button" class="button" id="save-button">Save to Calscape</button>
         </div>
     </div>
     <h3>Drag and drop collection photo thumbnails here to place 

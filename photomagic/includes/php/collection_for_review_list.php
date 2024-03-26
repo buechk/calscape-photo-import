@@ -3,7 +3,7 @@
 define('COLLECTIONS_FOR_REVIEW', <<<HTML
 <div id="collections_for_review-container" class="collections-for-review-container">
     <h2>Photo collections for review</h2>   
-    <!-- Add a text element to display the selected count -->
+    <!-- Text element to display the selected count -->
     <div class ="actions-container"> 
         <div id="selected-count" class="selected-count">0 collections selected</div>
         <button id="delete-button"><i class="fa-solid fa-trash-can"></i></button>

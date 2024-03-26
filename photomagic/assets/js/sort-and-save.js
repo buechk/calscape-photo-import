@@ -291,25 +291,29 @@ function saveCollection(collection) {
 }
 
 function populateCalscapePhotos(speciesName, results) {
+    if (!(speciesName in calscapePhotos)) {
+        calscapePhotos[speciesName] = {};
+        calscapePhotos[speciesName]["photos"] = {};
+    }
+    
     if (!Array.isArray(results)) {
         console.error("Calscape photo results not provided.", results);
         return;
     }
     results.forEach(result => {
         const plantID = result.ID;
+        if (!(calscapePhotos[speciesName] && "plantID" in calscapePhotos[speciesName])) {
+            calscapePhotos[speciesName]["plantID"] = plantID;
+        }
+        
         const photoOrder = result.plant_photo_order !== null ? result.plant_photo_order : result.plant_photo_calphotos_order;
         const photoID = result.photo_id;
-
-        if (!(speciesName in calscapePhotos)) {
-            calscapePhotos[speciesName] = {};
-            calscapePhotos[speciesName]["plantID"] = plantID;
-            calscapePhotos[speciesName]["photos"] = {};
-        }
 
         calscapePhotos[speciesName]["photos"][photoOrder] = {
             "id": photoID,
             "CaptionTitle": result.CaptionTitle,
             "Copyright": result.Copyright,
+            "ImageDescription": result.ImageDescription,
             "CopyrightNotice": result.CopyrightNotice,
             "Artist": result.Artist,
             "CaptionDescription": result.CaptionDescription,

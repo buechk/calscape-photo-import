@@ -481,9 +481,11 @@ export async function setPhotoCollection(data, filename = null) {
     collectionData["collection-species"] = data["collection-species"];
     collectionData["user_id"] = data["user_id"];
     collectionData["filename"] = filename;
+    collectionData["photos"] = data['photos'];
+
     imageData = {};
 
-    const photos = data['photos'];
+    const photos = collectionData["photos"];
 
     // Add thumbnails to group thumbnail grid
     // and populate imageData with photo data
@@ -708,16 +710,18 @@ export async function getUserIDfromEmail(email) {
 }
 
 export async function validatePhotoCollection() {
-    // Verify there is at least one photo in the collection
-    if (!collectionData.hasOwnProperty("photos") || Object.keys(collectionData.photos).length === 0) {
+    const collectionForValidation = getPhotoCollection();
+
+    // Verify there is at least one photo in the collection when contributing
+    if (((ROLE == Mode.CONTRIBUTE)) && ((!collectionForValidation.hasOwnProperty("photos") || Object.keys(collectionForValidation.photos).length === 0))) {
         console.log('Validation failure: Empty collection. There must be at least 1 photo in the collection');
         displayStatusMessage(`There must be at least 1 photo in the collection.`, true, -1, true);
         return false;
     }
 
     // validate user email
-    if (! await getUserIDfromEmail(collectionData["user_id"])) {
-        const message = `A Calscape user account with email ${collectionData["user_id"]} was not found.\n\nPlease create a user account in <a href="https://calscape.org/" target="_blank">https://calscape.org/</a> before continuing.`;
+    if (! await getUserIDfromEmail(collectionForValidation["user_id"])) {
+        const message = `A Calscape user account with email ${collectionForValidation["user_id"]} was not found.\n\nPlease create a user account in <a href="https://calscape.org/" target="_blank">https://calscape.org/</a> before continuing.`;
         displayStatusMessage(message, true);
         return false;
     }
@@ -727,7 +731,7 @@ export async function validatePhotoCollection() {
     console.log(`Required columns for ${ROLE}:`, requiredColumns);
 
     // validate collection properties
-    const missingRequiredData = checkRequiredData(collectionData, requiredColumns);
+    const missingRequiredData = checkRequiredData(collectionForValidation, requiredColumns);
 
     if (missingRequiredData.length > 0) {
         console.log('Missing required data:', missingRequiredData);
@@ -735,7 +739,7 @@ export async function validatePhotoCollection() {
         return false;
     }
 
-    const failedConfiguredValidation = runConfiguredValidation(collectionData.photos);
+    const failedConfiguredValidation = runConfiguredValidation(collectionForValidation.photos);
 
     if (failedConfiguredValidation.length > 0) {
         console.log('Failed configured validation:', failedConfiguredValidation);
