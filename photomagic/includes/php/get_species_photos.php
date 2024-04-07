@@ -7,10 +7,8 @@ function getPlantPhotosParams($plantID)
 
     if ($version === '1.0') {
         return ['ii', $plantID, $plantID];
-
     } else if ($version === '2.0') {
         return ['i', $plantID];
-
     } else {
         throw new Exception("Unknown Calscape database version");
     }
@@ -22,43 +20,57 @@ function getPlantPhotosQuery()
 
     if ($version === '1.0') {
         return "SELECT
-                    plants.ID,
-                    photo.ID AS photo_id,
-                    photo.FileName,
-                    photo.ImageDescription AS Copyright,
-                    photo.CopyrightNotice,
-                    photo.Artist as Artist,
-                    photo.CaptionTitle,
-                    photo.CaptionDescription,
-                    plant_photo.photo_order AS plant_photo_order,
-                    NULL AS plant_photo_calphotos_order
-                FROM plants
-                INNER JOIN plant_photo ON plants.ID = plant_photo.Plant_ID
-                INNER JOIN photo ON plant_photo.Photo_ID = photo.ID
-                WHERE plants.ID = ? AND plant_photo.deleted = 0 AND photo.FileName IS NOT null AND photo.FileName != ''
-                UNION ALL
-                SELECT
-                    plants.ID,
-                    plant_photo_calphotos.photo_id,
-                    plant_photo_calphotos.image AS FileName,
-                    plant_photo_calphotos.copyright AS Copyright,
-                    plant_photo_calphotos.copyright_full as ImageDescription,
-                    plant_photo_calphotos.author as Artist,
-                    null AS CaptionTitle,
-                    null AS CaptionDescription,
-                    NULL AS plant_photo_order,
-                    plant_photo_calphotos.photo_order AS plant_photo_calphotos_order
-                FROM plants
-                INNER JOIN plant_photo_calphotos ON plants.ID = plant_photo_calphotos.plant_id
-                WHERE plants.ID = ? AND plant_photo_calphotos.deleted = 0 AND plant_photo_calphotos.image IS NOT null AND plant_photo_calphotos.image != ''
-                ORDER BY COALESCE(plant_photo_order, plant_photo_calphotos_order)";
+        plants.ID,
+        photo.ID AS photo_id,
+        photo.FileName,
+        photo.ImageDescription,
+        photo.CopyrightNotice,
+        photo.UsageTerms,
+        photo.Artist,
+        photo.DateTimeOriginal,
+        photo.Title,
+        photo.Keywords,
+        photo.License,
+        photo.Rating,
+        photo.LandscaperName,
+        photo.LandscapeDesigner,
+        photo.Nursery,
+        plant_photo.photo_order AS plant_photo_order,
+        NULL AS plant_photo_calphotos_order
+    FROM plants
+    INNER JOIN plant_photo ON plants.ID = plant_photo.Plant_ID
+    INNER JOIN photo ON plant_photo.Photo_ID = photo.ID
+    WHERE plants.ID = ? AND plant_photo.deleted = 0 AND photo.FileName IS NOT null AND photo.FileName != ''
+    UNION ALL
+    SELECT
+        plants.ID,
+        plant_photo_calphotos.photo_id,
+        plant_photo_calphotos.image AS FileName,
+        NULL as ImageDescription,
+        plant_photo_calphotos.copyright AS CopyrightNotice,
+        plant_photo_calphotos.copyright_full as UsageTerms,
+        plant_photo_calphotos.author as Artist,
+        plant_photo_calphotos.date_source as DateTimeOriginal,
+        NULL AS Keywords,
+        NULL AS Title,
+        NULL AS License,
+        NULL AS Rating,
+        NULL AS LandscaperName,
+        NULL AS LandscapeDesigner,
+        NULL AS Nursery,
+        NULL AS plant_photo_order,
+        plant_photo_calphotos.photo_order AS plant_photo_calphotos_order
+    FROM plants
+    INNER JOIN plant_photo_calphotos ON plants.ID = plant_photo_calphotos.plant_id
+    WHERE plants.ID = ? AND plant_photo_calphotos.deleted = 0 AND plant_photo_calphotos.image IS NOT null AND plant_photo_calphotos.image != ''
+    ORDER BY COALESCE(plant_photo_order, plant_photo_calphotos_order)";
     } else if ($version === '2.0') {
         return "SELECT
                     leg_plants.ID,
                     plant_images.id as photo_id, 
                     plant_images.FileName,
                     plant_images.ImageDescription,
-                    plant_images.CopyrightNotice as Copyright,
+                    plant_images.CopyrightNotice,
                     plant_images.Artist,
                     plant_images.plant_photo_order 
                 FROM leg_plants

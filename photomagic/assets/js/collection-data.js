@@ -30,14 +30,13 @@ Example of collectionData
     "0": {
       "id": "263622339",
       "sourceImage": "https://farm1.staticflickr.com/79/263622339_70fb0695ee_b.jpg",
-      "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood",
-      "CaptionDescription": "",
+      "Title": "Cornus sericea - Redtwig or Creek Dogwood",
       "DateTimeOriginal": "2006-09-30 21:57:48",
       "ImageDescription": "",
       "LandscaperName": "",
       "LandscapeDesigner": "",
       "Artist": "pete veilleux",
-      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "License": "All Rights Reserved (ARR)",
       "Ranking": "0",
       "Keywords": [
         "'autumn",
@@ -48,14 +47,13 @@ Example of collectionData
     "1": {
       "id": "264780915",
       "sourceImage": "https://farm1.staticflickr.com/97/264780915_9cd3287e6e_b.jpg",
-      "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood and Populus tremuloides - Quaking Aspen",
-      "CaptionDescription": "",
+      "Title": "Cornus sericea - Redtwig or Creek Dogwood and Populus tremuloides - Quaking Aspen",
       "DateTimeOriginal": "2006-10-01 00:01:31",
       "ImageDescription": "",
       "LandscaperName": "",
       "LandscapeDesigner": "",
       "Artist": "pete veilleux",
-      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "License": "All Rights Reserved (ARR)",
       "Ranking": "0",
       "Keywords": [
         "'autumn",
@@ -71,14 +69,13 @@ Example of collectionData
     "2": {
       "id": "264781491",
       "sourceImage": "https://farm1.staticflickr.com/83/264781491_12abaf97e4_b.jpg",
-      "CaptionTitle": "Cornus sericea - Redtwig or Creek Dogwood",
-      "CaptionDescription": "",
+      "Title": "Cornus sericea - Redtwig or Creek Dogwood",
       "DateTimeOriginal": "2006-10-01 00:26:01",
       "ImageDescription": "",
       "LandscaperName": "",
       "LandscapeDesigner": "",
       "Artist": "pete veilleux",
-      "CopyrightCategory": "All Rights Reserved (ARR)",
+      "License": "All Rights Reserved (ARR)",
       "Ranking": "0",
       "Keywords": [
         "'autumn",
@@ -106,7 +103,7 @@ export let imageData = {};
         "ImageDescription": "Pathway with sedges",
         "Artist": "Kristy",
         "CopyrightNotice": "Copyright 2023 Kristy Bueche"
-        "CopyrightCategory": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)"
+        "License": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)"
         ...
     },
     "001": {
@@ -117,7 +114,7 @@ export let imageData = {};
         "ImageDescription": "Buckwheat cascading over wall",
         "Artist": "Ed",
         "CopyrightNotice": ""
-        "CopyrightCategory": "Attribution (CC BY)"
+        "License": "Attribution (CC BY)"
         ...
     }
     // More entries
@@ -187,8 +184,8 @@ async function handleRemovedNode(removedNode) {
         try {
             imageObj.deleted = true;
             if (ROLE == Mode.CONTRIBUTE) {
-                await storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.CaptionTitle);
-                console.log('Source photo stored: ', id, imageObj.CaptionTitle);
+                await storeSourcePhoto(imageObj.id, imageObj.sourceImage, imageObj.thumbnail, imageObj.Title);
+                console.log('Source photo stored: ', id, imageObj.Title);
             }
         } catch (error) {
             console.error('Error storing source photo:', error);
@@ -496,8 +493,17 @@ export async function setPhotoCollection(data, filename = null) {
             imageData[uniqueIdentifier] = { ...photo };
 
             const fileName = photo.FileName;
-            const captionText = (photo.CaptionTitle === null) || (photo.CaptionTitle === undefined) ? `${photo.ImageDescription}` : `${photo.CaptionTitle}${photo.ImageDescription}`; // ImageDescription is a short copyright in Calscape1
-            const altText = removeHtmlTags(`${photo.CaptionTitle}`);
+
+            let captionText = '';
+            if (photo.Title) {
+                captionText = `${photo.Title}${photo.CopyrightNotice ? ' ' + photo.CopyrightNotice : ''}`;
+            } else if (photo.ImageDescription) {
+                captionText = `${photo.ImageDescription}${photo.CopyrightNotice ? ' ' + photo.CopyrightNotice : ''}`;
+            } else {
+                captionText = photo.CopyrightNotice || '';
+            }
+            
+            const altText = removeHtmlTags(`${photo.ImageDescription}`);
             const turl = `/photomagic/includes/php/thumbnail.php?fileName=${fileName}&fileType=collection-photo`;
             const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText, altText);
             addCollectionThumbnail(tc);

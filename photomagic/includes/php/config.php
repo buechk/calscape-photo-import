@@ -1,12 +1,15 @@
 <?php
+// Application root
+define('APP_ROOT', '/Users/kristybueche/Documents/calscape/photos/calscape-photo-import/photomagic/');
+
 // Calscape 1.0 photo directories
-define('ALL_IMAGES_DIR', '../../public/ExtData/allimages/');
+define('ALL_IMAGES_DIR', APP_ROOT . 'public/ExtData/allimages/');
 define('BIG_IMAGES_DIR', ALL_IMAGES_DIR . '900/');
 define('THUMBNAILS_DIR', ALL_IMAGES_DIR . 'Photos/');
 
 // Calscape 2.0 photo directories
-define('CALSCAPE2_ALL_IMAGES_DIR', ALL_IMAGES_DIR . 'species_image/');
-define('CALSCAPE2_CALPHOTOS_DIR', CALSCAPE2_ALL_IMAGES_DIR . 'calphotos/image');
+define('CALSCAPE2_ALL_IMAGES_DIR', APP_ROOT . '/storage/app/species_image/');
+define('CALSCAPE2_CALPHOTOS_DIR', APP_ROOT . '/storage/app/calphotos/image');
 
 // Kristy's calsca6_calscape_demo
 $dbConfig = array(

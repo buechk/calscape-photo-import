@@ -17,7 +17,7 @@ let calscapeThumbnails = []; // Store calscape photo thumbnails as an array
         "plantID": 3082,
         "photos": {
             "1": {
-                "CaptionTitle": null,
+                "Title": null,
                 "FileName": "Prunus_ilicifolia_ssp_lyonii_image_5.jpg",
                 "photoID": "29202"
             },
@@ -40,6 +40,31 @@ export async function initPhotoSort() {
 
     displayCalscapePhotos();
 
+    // Download button handler
+    const downloadButton = document.getElementById('save-to-csv-button');
+    downloadButton.disabled = false;
+    downloadButton.addEventListener('click', async function (event) {
+        const delayDuration = 500; // milliseconds
+        // Wait for the autosave to complete (adjust the delay if needed)
+        setTimeout(async () => {
+            if (!await validatePhotoCollection()) {
+                return;
+            }
+
+            const saveData = await prepareSaveData();
+
+            // Count the number of new photos being added
+            let count = 0;
+
+            const message = `Starting photo package download...`;
+            displayStatusMessage(message);
+
+            const result = await download(saveData);
+
+        }, delayDuration);
+    });
+
+    // Save button handler
     const saveButton = document.getElementById('save-button');
     saveButton.disabled = false;
 
@@ -197,6 +222,7 @@ async function prepareSaveData() {
     updateReviewStatus(collection);
     saveCollection(collection);
 
+    saveData["collection-name"] = collection["collection-name"];
     saveData["species"] = collection["collection-type"] === 'species' ? collection["collection-species"] : '';
     saveData["collection-type"] = collection["collection-type"];
     saveData["user_id"] = await getUserIDfromEmail(collection["user_id"]);
@@ -258,6 +284,37 @@ async function save(saveData) {
     }
 }
 
+async function download(saveData) {
+    try {
+        const response = await fetch("/photomagic/includes/php/download_csv.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(saveData), // Automatically converts the object to JSON
+        });
+
+        const responseData = await response.json();
+
+        if (response.ok) {
+            if (responseData.success && responseData.download_url) {
+                // Initiate file download using the download URL
+                window.location.href = responseData.download_url;
+                return true; // Indicate successful download
+            } else {
+                console.error("Download package creation failed:", responseData.messages);
+                return false; // Download failure
+            }
+        } else {
+            console.error("HTTP error! Status:", response.status);
+            return false; // Download failure
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        return false; // Download failure
+    }
+}
+
 function saveCollection(collection) {
     // Convert the collection object to JSON
     const jsonData = JSON.stringify(collection, null, 2);
@@ -311,12 +368,16 @@ function populateCalscapePhotos(speciesName, results) {
 
         calscapePhotos[speciesName]["photos"][photoOrder] = {
             "id": photoID,
-            "CaptionTitle": result.CaptionTitle,
-            "Copyright": result.Copyright,
+            "Title": result.Title,
             "ImageDescription": result.ImageDescription,
             "CopyrightNotice": result.CopyrightNotice,
+            "UsageTerms": result.UsageTerms,
+            "License": result.License,
             "Artist": result.Artist,
-            "CaptionDescription": result.CaptionDescription,
+            "DateTimeOriginal": result.DateTimeOriginal,
+            "Landscaper": result.Landscaper,
+            "LandscapeDesigner": result.LandscapeDesigner,
+            "Nursery": result.Nursery,
             "FileName": result.FileName,
             "plant_photo_order": result.plant_photo_order,
             "plant_photo_calphotos_order": result.plant_photo_calphotos_order

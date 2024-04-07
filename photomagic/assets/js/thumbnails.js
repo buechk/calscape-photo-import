@@ -364,18 +364,18 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
                     const fileName = photo.FileName;
                     let captionText = '';
 
-                    if (photo.CaptionTitle) {
-                        captionText = `${photo.CaptionTitle}${photo.Copyright ? ' ' + photo.Copyright : ''}`;
+                    if (photo.Title) {
+                        captionText = `${photo.Title}${photo.CopyrightNotice ? ' ' + photo.CopyrightNotice : ''}`;
                     } else if (photo.ImageDescription) {
-                        captionText = `${photo.ImageDescription}${photo.Copyright ? ' ' + photo.Copyright : ''}`;
+                        captionText = `${photo.ImageDescription}${photo.CopyrightNotice ? ' ' + photo.CopyrightNotice : ''}`;
                     } else {
-                        captionText = photo.Copyright || '';
+                        captionText = photo.CopyrightNotice || '';
                     }
                     
                     // Filter out undefined or null values
                     captionText = captionText.trim();
                     
-                    const altText = (photo.CaptionTitle !== undefined) &&  (photo.CaptionTitle !== null) ? removeHtmlTags(`${photo.CaptionTitle}`) : removeHtmlTags(`${photo.Copyright}`);
+                    const altText = (photo.ImageDescription !== undefined) &&  (photo.ImageDescription !== null) ? removeHtmlTags(`${photo.ImageDescription}`) : removeHtmlTags(`${photo.Title}`);
                     const turl = `/photomagic/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
                     const tc = createThumbnailContainer(photoID, turl, captionText, altText);
                     tc.classList.add('calscape-existing');

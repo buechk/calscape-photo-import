@@ -25,10 +25,11 @@ function getCalscapeVersion()
 }
 
 // Collection directories
-define('COLLECTIONS_ROOT', '../../public/ExtData/collections/');
+define('COLLECTIONS_ROOT', APP_ROOT . 'public/ExtData/collections/');
 define('COLLECTIONS_REVIEW_DIR', COLLECTIONS_ROOT . 'review/');
 define('COLLECTION_PHOTOS_DIR', COLLECTIONS_ROOT . 'photos/');
 define('COLLECTION_THUMBNAILS_DIR', COLLECTIONS_ROOT . 'thumbnails/');
+define('COLLECTIONS_EXPORTS', COLLECTIONS_ROOT . 'exports/');
 
 // Thumbnail Dimension
 //define('THUMBNAIL_WIDTH', 90);

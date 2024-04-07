@@ -32,7 +32,7 @@ export async function initSubmitPage() {
 
         // Add cell for caption
         cell = document.createElement('td');
-        cell.innerHTML = escapeHtml(photo.CaptionTitle);
+        cell.innerHTML = escapeHtml(photo.Title);
         photoRow.appendChild(cell);
 
         // Add cell for date

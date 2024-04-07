@@ -15,7 +15,7 @@ const importconfig1 = {
                 "table": "photo",
                 "columns": [
                     {
-                        "name": "CaptionTitle",
+                        "name": "Title",
                         "datasources": {
                             "flickr": "photo.title._content",
                             "jpeg": "XMP:Title"
@@ -40,14 +40,14 @@ const importconfig1 = {
                         }
                     },
                     {
-                        "name": "CaptionDescription",
+                        "name": "ImageDescription",
                         "datasources": {
                             "flickr": "photo.description._content",
                             "jpeg": "EXIF.ImageDescription"
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Description",
+                            "label": "Image description",
                             "default": "",
                             "richtext": true,
                             "roles": {
@@ -95,7 +95,7 @@ const importconfig1 = {
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Artist",
+                            "label": "Photographer",
                             "default": "",
                             "roles": {
                                 "contributor": {
@@ -112,14 +112,14 @@ const importconfig1 = {
                         }
                     },
                     {
-                        "name": "ImageDescription",
+                        "name": "CopyrightNotice",
                         "datasources": {
                             "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
                             "jpeg": "EXIF.Copyright"
                         },
                         "multi_apply": true,
                         "userinterface": {
-                            "label": "Copyright",
+                            "label": "Copyright notice",
                             "default": "",
                             "placeholder": `Copyright owner year(s). Example: Copyright Ron Smith 2024`,
                             "roles": {
@@ -137,7 +137,7 @@ const importconfig1 = {
                         }
                     },
                     {
-                        "name": "CopyrightCategory",
+                        "name": "License",
                         "datasources": {
                             "flickr": "photo.license",
                             "jpeg": "EXIF:xmp:Rights"
@@ -183,17 +183,17 @@ const importconfig1 = {
                         ]
                     },
                     {
-                        "name": "CopyrightNotice",
+                        "name": "UsageTerms",
                         "datasources": {
-                            "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
-                            "jpeg": "EXIF.Copyright"
+                            "flickr": "photo.exif[tag='UsageTerms'].raw._content",
+                            "jpeg": "EXIF.xmp.UsageTerms"
                         },
                         "multi_apply": true,
                         "userinterface": {
                             "label": "Terms of use",
                             "default": "",
                             "richtext": true,
-                            "placeholder": "Optional extended copyright information",
+                            "placeholder": "Optional usage terms",
                             "roles": {
                                 "contributor": {
                                     "readonly": false,
@@ -209,7 +209,7 @@ const importconfig1 = {
                         }
                     },
                     {
-                        "name": "QualityRanking",
+                        "name": "Rating",
                         "datasources": {
                             "flickr": "photo.exif[tag='Rating'].raw._content",
                             "jpeg": "EXIF.xmp.Rating"
@@ -219,11 +219,11 @@ const importconfig1 = {
                             if (value >= 0 && value <= 5) {
                                 return true; // Validation passed
                             } else {
-                                return 'The Quality Ranking value must be between 0 and 5'; // Validation failed
+                                return 'The Quality rating value must be between 0 and 5'; // Validation failed
                             }
                         },
                         "userinterface": {
-                            "label": "Quality ranking (0 to 5)",
+                            "label": "Quality rating (0 to 5)",
                             "placeholder": "Enter 0 to 5",
                             "default": "",
                             "roles": {
@@ -451,7 +451,7 @@ const importconfig2 = {
                         "name": "CopyrightNotice",
                         "datasources": {
                             "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
-                            "jpeg": "EXIF:xmp:UsageTerms"
+                            "jpeg": "EXIF.Copyright"
                         },
                         "multi_apply": true,
                         "userinterface": {
@@ -531,13 +531,13 @@ const importconfig2 = {
 }
 
 const photoCaptionProperties1 = {
-    "title": { "properties": ["CaptionTitle"], "show_label": false, "styles": "photo-title" },
-    "description": { "properties": ["CaptionDescription"], "show_label": false, "styles": "photo-caption" },
+    "title": { "properties": ["Title"], "show_label": false, "styles": "photo-title" },
+    "description": { "properties": ["ImageDescription"], "show_label": false, "styles": "photo-caption" },
     "datetime": { "properties": ["DateTimeOriginal", "Artist"], "show_label": true, "styles": "photo-caption" },
-    "copyright": { "properties": ["ImageDescription", "CopyrightCategory", "CopyrightNotice"], "show_label": false, "styles": "photo-caption" },
+    "copyright": { "properties": ["CopyrightNotice", "License", "UsageTerms"], "show_label": false, "styles": "photo-caption" },
     "attribution": { "properties": ["LandscaperName", "LandscapeDesigner", "Nursery"], "show_label": true, "styles": "photo-caption" },
     "keywords": { "properties": ["Keywords"], "show_label": true, "styles": "photo-caption" },
-    "quality": { "properties": ["QualityRanking"], "show_label": true, "styles": "photo-caption" }
+    "quality": { "properties": ["Rating"], "show_label": true, "styles": "photo-caption" }
 };
 
 const photoCaptionProperties2 = {
