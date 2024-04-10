@@ -293,8 +293,6 @@ function updateDatabase($jsonData, $dbConfig)
                         // Check if the query was successful
                         if ($result) {
                             $response["messages"][] = "Plant_photo record inserted linking plant $plantID with photo $newPhotoID";
-                            copyPhotoFiles($photo, $response);
-                            $response["new_succeeded"][] = $photoID;
                         } else {
                             $response["success"] = false;
                             $response["messages"][] = "Error creating new plant_photo record for plant_ID $plantID, photo_ID $newPhotoID " . $mysqli->error;

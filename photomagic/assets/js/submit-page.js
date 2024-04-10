@@ -10,8 +10,8 @@ export async function initSubmitPage() {
     collectionNameElement.textContent = collectionData['collection-name'];
 
 
-     // Iterate over each photo and create a row
-     Object.values(collectionData.photos).forEach((photo, index) => {
+    // Iterate over each photo and create a row
+    Object.values(collectionData.photos).forEach((photo, index) => {
         const photoRow = document.createElement('tr');
 
         // Add a checkbox at the beginning of each photo row
@@ -32,7 +32,9 @@ export async function initSubmitPage() {
 
         // Add cell for caption
         cell = document.createElement('td');
-        cell.innerHTML = escapeHtml(photo.Title);
+        var tempElement = document.createElement('div');
+        tempElement.innerHTML = photo.Title;
+        cell.appendChild(tempElement);
         photoRow.appendChild(cell);
 
         // Add cell for date
@@ -45,7 +47,7 @@ export async function initSubmitPage() {
         // cell.textContent = escapeHtml(collectionData['collection-name']);
         // photoRow.appendChild(cell);
 
-        checkBox.addEventListener('change', function() {
+        checkBox.addEventListener('change', function () {
             collectionData.photos[photoId].isSelected = this.checked;
         });
 

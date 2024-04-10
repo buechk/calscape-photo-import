@@ -59,7 +59,22 @@ export async function initPhotoSort() {
             const message = `Starting photo package download...`;
             displayStatusMessage(message);
 
-            const result = await download(saveData);
+            // Call the download function
+            download(saveData)
+                .then(result => {
+                    let resultMessage = '';
+                    if (result["success"] && result["new_succeeded"].length === 0 && result["update_succeeded"].length === 0) {
+                        resultMessage = "There were no new or updated photos";
+                    }
+                    else {
+                        resultMessage = result["success"] ? "CSV download complete" : "Failed to download CSV";
+                    }
+                    displayStatusMessage(`${resultMessage}`, false, -1, true);
+                })
+                .catch(error => {
+                    console.error("Error occurred during download:", error);
+                    displayStatusMessage("Error occurred during download", false, -1, true);
+                });
 
         }, delayDuration);
     });
@@ -96,7 +111,6 @@ export async function initPhotoSort() {
                 clearPhotoCollection();
                 clearCalscapePhotos();
                 displayCalscapePhotos(true);
-                saveButton.disabled = true;
             }
             else if (result && !result.success) {
                 result.messages.forEach(message => {
@@ -298,20 +312,26 @@ async function download(saveData) {
 
         if (response.ok) {
             if (responseData.success && responseData.download_url) {
-                // Initiate file download using the download URL
-                window.location.href = responseData.download_url;
-                return true; // Indicate successful download
+                // Create a hidden iframe
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+
+                // Set the iframe source to initiate the download
+                iframe.src = responseData.download_url;
+
+                return responseData; // Indicate successful download initiation
             } else {
                 console.error("Download package creation failed:", responseData.messages);
-                return false; // Download failure
+                return responseData; // Download failure
             }
         } else {
             console.error("HTTP error! Status:", response.status);
-            return false; // Download failure
+            return { success: false, message: `HTTP error! Status: ${response.status}` }; // HTTP error
         }
     } catch (error) {
         console.error("Error:", error);
-        return false; // Download failure
+        return { success: false, message: "Error occurred while downloading" }; // Download failure due to error
     }
 }
 
@@ -352,7 +372,7 @@ function populateCalscapePhotos(speciesName, results) {
         calscapePhotos[speciesName] = {};
         calscapePhotos[speciesName]["photos"] = {};
     }
-    
+
     if (!Array.isArray(results)) {
         console.error("Calscape photo results not provided.", results);
         return;
@@ -362,7 +382,7 @@ function populateCalscapePhotos(speciesName, results) {
         if (!(calscapePhotos[speciesName] && "plantID" in calscapePhotos[speciesName])) {
             calscapePhotos[speciesName]["plantID"] = plantID;
         }
-        
+
         const photoOrder = result.plant_photo_order !== null ? result.plant_photo_order : result.plant_photo_calphotos_order;
         const photoID = result.photo_id;
 

@@ -1,10 +1,14 @@
 <?php
 include_once('common.php');
 
+// Define global flags to track header status
+$isNewHeaderWritten = false;
+$isUpdateHeaderWritten = false;
+
 function createPackageDir($name)
 {
 
-    $packageDir = COLLECTIONS_EXPORTS . $name . "/";
+    $packageDir = COLLECTIONS_EXPORT_DIR . $name . "/";
     if (!file_exists($packageDir)) {
         if (!mkdir($packageDir, 0777, true)) {
             $response["success"] = false;
@@ -47,7 +51,7 @@ function getFileHandle($filePath)
     return $fileHandle;
 }
 
-function addNewCSVRow($exportPath, $fileName, $photo, $order, $plantID, $userID, $response)
+function addNewCSVRow($exportPath, $fileName, $photo, $order, $plantID, $userID, $response, &$isNewHeaderWritten)
 {
     global $version;
 
@@ -102,14 +106,16 @@ function addNewCSVRow($exportPath, $fileName, $photo, $order, $plantID, $userID,
         }
     }
 
-    // Write the column names as the header row if the CSV file is empty
-    if (filesize($csvFile) === 0) {
+    // Write the column names as the header row if the CSV file is empty or header not written
+    if (!$isNewHeaderWritten) {
         if (!fputcsv($fileHandle, $columnNames)) {
             $response["success"] = false;
             $response["messages"][] = "Error: Failed to write column names to _new CSV file.";
             fclose($fileHandle);
             return false;
         }
+        // Set flag to indicate header is written
+        $isNewHeaderWritten = true;
     }
 
     // Write the column values as a new row in the CSV file
@@ -128,7 +134,7 @@ function addNewCSVRow($exportPath, $fileName, $photo, $order, $plantID, $userID,
     return true;
 }
 
-function updateExistingCSVRow($exportPath, $fileName, $plantID, $photo_id, $order, $order_previous, $isCalphoto, $response)
+function updateExistingCSVRow($exportPath, $fileName, $plantID, $photo_id, $order, $order_previous, $isCalphoto, $response, &$isUpdateHeaderWritten)
 {
     global $version;
 
@@ -142,18 +148,22 @@ function updateExistingCSVRow($exportPath, $fileName, $plantID, $photo_id, $orde
     $columnValues = [];
 
     if ($version === "1.0") {
+        $columnNames[] = "photo_id";
+        $columnValues[] = $isCalphoto ? $photo_id : '';
 
-        // Add plant_photo_order and plant_id column and value if version is 1.0
+        $columnNames[] = "Photo_ID";
+        $columnValues[] = $isCalphoto ? '' : $photo_id;
+
+        $columnNames[] = "plant_id";
+        $columnValues[] = $isCalphoto ? $plantID : '';
+
+        $columnNames[] = "Plant_ID";
+        $columnValues[] = $isCalphoto ? '' : $plantID;
+
         $columnNames[] = "photo_order";
         $columnValues[] = $order;
 
-        $columnNames[] = $isCalphoto ? "photo_id"  : "Photo_ID";
-        $columnValues[] = $photo_id;
-
-        $columnNames[] = $isCalphoto ? "plant_id"  : "Plant_ID";
-        $columnValues[] = $plantID;
-
-        $collectionName[] = "order_previous";
+        $columnNames[] = "order_previous";
         $columnValues[] = $order_previous;
 
     } elseif ($version === "2.0") {
@@ -168,14 +178,16 @@ function updateExistingCSVRow($exportPath, $fileName, $plantID, $photo_id, $orde
         $columnValues[] = $plantID;
     }
 
-    // Write the column names as the header row if the CSV file is empty
-    if (filesize($csvFile) === 0) {
+    // Write the column names as the header row if the CSV file is empty or header not written
+    if (!$isUpdateHeaderWritten) {
         if (!fputcsv($fileHandle, $columnNames)) {
             $response["success"] = false;
-            $response["messages"][] = "Error: Failed to write column names to _new CSV file.";
+            $response["messages"][] = "Error: Failed to write column names to _update CSV file.";
             fclose($fileHandle);
             return false;
         }
+        // Set flag to indicate header is written
+        $isUpdateHeaderWritten = true;
     }
 
     // Write the column values as a new row in the CSV file
@@ -354,7 +366,7 @@ function createPhotoZipPackage($jsonData)
             $isNew = isset($photo['sourceImage']);
 
             if ($isNew) {
-                if (!addNewCSVRow($packageDir, $filenameRoot, $photo, $order, $plantID, $userID, $response)) {
+                if (!addNewCSVRow($packageDir, $filenameRoot, $photo, $order, $plantID, $userID, $response, $isNewHeaderWritten)) {
                     $response["messages"][] = "Failed to write a csv row for photo with id $photoID";
                     $response["new_failed"][] = $photoID;
                     throw new Exception();
@@ -370,7 +382,7 @@ function createPhotoZipPackage($jsonData)
                 $existingPhotoOrder = $isCalphoto ? $photo['plant_photo_calphotos_order'] : $photo['plant_photo_order'];
 
                 if ($order !== $existingPhotoOrder) {
-                    if (updateExistingCSVRow($packageDir, $filenameRoot, $plantID, $photoID, $order, $existingPhotoOrder, $isCalphoto, $response)) {
+                    if (updateExistingCSVRow($packageDir, $filenameRoot, $plantID, $photoID, $order, $existingPhotoOrder, $isCalphoto, $response, $isUpdateHeaderWritten)) {
                     } else {
                         $response["success"] = false;
                         $response["update_failed"][] = $photoID;
@@ -385,7 +397,7 @@ function createPhotoZipPackage($jsonData)
         // Send JSON response with file download relative URL or success status
         if ($zipFilePath) {
             $zipFileName = basename($zipFilePath);
-            $response["download_url"] = COLLECTIONS_EXPORTS . $zipFileName; 
+            $response["download_url"] = COLLECTIONS_DOWNLOAD_DIR . $zipFileName;
             $response["success"] = true;
             $response["messages"][] = "Download package created!";
         } else {
@@ -394,7 +406,6 @@ function createPhotoZipPackage($jsonData)
         }
 
         return $response;
-
     } catch (Exception $e) {
         $response["success"] = false;
         $response["messages"][] = "Download package creation failed: " . $e->getMessage();

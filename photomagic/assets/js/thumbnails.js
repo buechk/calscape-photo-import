@@ -320,11 +320,23 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText, alt
     thumbnail.alt = alttext; // Set alt text for accessibility
     tcontainer.appendChild(thumbnail);
 
-    // Create a div for the caption
+    // Create caption div
     const caption = document.createElement('div');
     caption.classList.add('caption');
-    caption.innerHTML = captionText;
-    tcontainer.appendChild(caption);
+
+    // Create short-text span for displaying short caption
+    const shortText = document.createElement('span');
+    shortText.classList.add('short-text');
+    // Display first 100 characters with ellipsis if captionText is longer than 100 characters
+    shortText.innerHTML = captionText.length > 100 ? captionText.substring(0, 100) + '...' : captionText;
+
+    caption.appendChild(shortText);
+
+    // Create full-text span for displaying full caption
+    const fullText = document.createElement('span');
+    fullText.classList.add('full-text');
+    fullText.innerHTML = captionText; // Full caption text
+    caption.appendChild(fullText);
 
     if (width !== undefined && height != undefined) {
         const size = document.createElement('div');
@@ -333,6 +345,21 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText, alt
         tcontainer.appendChild(size);
     }
 
+    tcontainer.appendChild(caption);
+
+    /*
+        const caption = document.createElement('div');
+        caption.classList.add('caption');
+        caption.innerHTML = captionText;
+        tcontainer.appendChild(caption);
+    
+        if (width !== undefined && height != undefined) {
+            const size = document.createElement('div');
+            size.classList.add('caption');
+            size.innerHTML = `Size: ${width}x${height}`;
+            tcontainer.appendChild(size);
+        }
+    */
     tcontainer.id = uniqueIdentifier;
 
     return tcontainer;
@@ -366,16 +393,19 @@ export function displayThumbnailsFromCalscape(calscapePhotos) {
 
                     if (photo.Title) {
                         captionText = `${photo.Title}${photo.CopyrightNotice ? ' ' + photo.CopyrightNotice : ''}`;
-                    } else if (photo.ImageDescription) {
-                        captionText = `${photo.ImageDescription}${photo.CopyrightNotice ? ' ' + photo.CopyrightNotice : ''}`;
                     } else {
-                        captionText = photo.CopyrightNotice || '';
+                        captionText = photo.ImageDescription || ''; // Initialize captionText with ImageDescription
+
+                        // Check if CopyrightNotice is different from ImageDescription
+                        if (photo.CopyrightNotice && photo.CopyrightNotice !== photo.ImageDescription) {
+                            captionText += ` ${photo.CopyrightNotice}`;
+                        }
                     }
-                    
+
                     // Filter out undefined or null values
                     captionText = captionText.trim();
-                    
-                    const altText = (photo.ImageDescription !== undefined) &&  (photo.ImageDescription !== null) ? removeHtmlTags(`${photo.ImageDescription}`) : removeHtmlTags(`${photo.Title}`);
+
+                    const altText = (photo.ImageDescription !== undefined) && (photo.ImageDescription !== null) ? removeHtmlTags(`${photo.ImageDescription}`) : removeHtmlTags(`${photo.Title}`);
                     const turl = `/photomagic/includes/php/thumbnail.php?fileName=${fileName}&fileType=calscape-photo`;
                     const tc = createThumbnailContainer(photoID, turl, captionText, altText);
                     tc.classList.add('calscape-existing');
@@ -477,7 +507,7 @@ function toggleSelection(event) {
                 gridName = 'calscape';
             }
             else {
-                console.error("Thumbnail clicked in unkown grid",tcontainer.parentNode);
+                console.error("Thumbnail clicked in unkown grid", tcontainer.parentNode);
             }
 
             if (event.ctrlKey || event.metaKey) {
@@ -565,7 +595,7 @@ export function removeHtmlTags(html) {
 }
 
 // Update the selected count text
-function updateSelectedCount(selectedCount =  0) {
+function updateSelectedCount(selectedCount = 0) {
     const selectedCountElement = document.getElementById('selected-photos-count');
     selectedCountElement.textContent = `${selectedCount} photo${selectedCount !== 1 ? 's' : ''} selected`;
 
