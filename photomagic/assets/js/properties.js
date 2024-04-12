@@ -541,9 +541,10 @@ const photoCaptionProperties1 = {
 };
 
 const photoCaptionProperties2 = {
-    0: ["ImageDescription", "DateTimeOriginal", "Artist"],
-    1: ["CopyrightNotice"],
-    2: ["Keywords"]
+    "description": { "properties": ["ImageDescription"], "show_label": false, "styles": "photo-caption" },
+    "datetime": { "properties": ["DateTimeOriginal", "Artist"], "show_label": true, "styles": "photo-caption" },
+    "copyright": { "properties": ["CopyrightNotice"], "show_label": false, "styles": "photo-caption" },
+    "keywords": { "properties": ["Keywords"], "show_label": true, "styles": "photo-caption" }
 };
 
 let photoCaptionProperties = null;

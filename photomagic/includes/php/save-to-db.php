@@ -104,9 +104,9 @@ function copyPhotoFiles($photo, $response)
         $sourceFilePath = COLLECTION_PHOTOS_DIR . $filename;
 
         // destination directory depends on which version of Calscape
-        if ($version === "2.0") {
+        if ($version === "1.0") {
             $destinationDirectory = BIG_IMAGES_DIR;
-        } elseif ($version === "1.0") {
+        } elseif ($version === "2.0") {
             $destinationDirectory = CALSCAPE2_ALL_IMAGES_DIR;
         } else {
             // unknown calscape version
