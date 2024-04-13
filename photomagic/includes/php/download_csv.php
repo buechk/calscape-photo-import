@@ -165,7 +165,6 @@ function updateExistingCSVRow($exportPath, $fileName, $plantID, $photo_id, $orde
 
         $columnNames[] = "order_previous";
         $columnValues[] = $order_previous;
-
     } elseif ($version === "2.0") {
         // Add plant_photo_order and plant_id column and value if version is 2.0
         $columnNames[] = "plant_photo_order";
@@ -225,21 +224,20 @@ function addPhotoToPackage($packageDir, $photo, $response)
             return false;
         }
 
-        if ($version === "1.0") {
-            // copy thumbnail file from collection staging to thumbnail directory
-            $th_destinationDirectory = $packageDir . "thumbnails/";
+        // copy thumbnail file from collection staging to thumbnail directory
+        $th_destinationDirectory = $packageDir . "thumbnails/";
 
-            $thumbnailFile = $photo['thumbnail'];
-            $th_sourceFilePath = COLLECTION_THUMBNAILS_DIR . $thumbnailFile;
+        $thumbnailFile = $photo['thumbnail'];
+        $th_sourceFilePath = COLLECTION_THUMBNAILS_DIR . $thumbnailFile;
 
-            if (copyFile($th_sourceFilePath, $th_destinationDirectory, $thumbnailFile)) {
-                $response["messages"][] = "Thumbnail file $sourceFilePath moved to $destinationDirectory";
-            } else {
-                $response["success"] = false;
-                $response["messages"][] = "Failed to copy file $sourceFilePath to $destinationDirectory";
-                return false;
-            }
+        if (copyFile($th_sourceFilePath, $th_destinationDirectory, $thumbnailFile)) {
+            $response["messages"][] = "Thumbnail file $sourceFilePath moved to $destinationDirectory";
+        } else {
+            $response["success"] = false;
+            $response["messages"][] = "Failed to copy file $sourceFilePath to $destinationDirectory";
+            return false;
         }
+        
     } catch (Exception $e) {
         $response["success"] = false;
         $response["messages"][] = "Failed to copy files: $e.getMessage()";
