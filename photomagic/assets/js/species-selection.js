@@ -3,6 +3,8 @@
  * Enable user to select plant species in which to assign photos
  */
 import { getSelectedThumbnailCount } from "./thumbnails.js";
+import { updateCollectionSpecies } from "./sort-and-save.js";
+import { getCollectionSpecies } from "./collection-data.js";
 
 let specieslist = [];
 
@@ -88,8 +90,20 @@ export function initializeCollectionSpeciesInput() {
         if (event.target.tagName === 'LI') {
             collectionSpeciesInput.value = event.target.textContent;
             collectionSpeciesSuggestions.innerHTML = ''; // Clear the suggestions
+
+            if (collectionSpeciesInput.value !== getCollectionSpecies()) {
+                updateCollectionSpecies(collectionSpeciesInput.value);
+            }
         }
     }
+
+    // Function to handle blur event
+    collectionSpeciesInput.addEventListener('blur', function (event) {
+        // Update the grid field when the input field loses focus
+        if (collectionSpeciesInput.value !== getCollectionSpecies()) {
+            updateCollectionSpecies(collectionSpeciesInput.value);
+        }
+    });
 
     // Add an event listener to close the suggestions list when clicking outside
     document.addEventListener('click', function (event) {
@@ -107,6 +121,7 @@ export function initializeCollectionSpeciesInput() {
             //hideTargetElement(collectionSpeciesSuggestions);
         }
     });
+
 }
 
 /**

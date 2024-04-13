@@ -23,14 +23,6 @@ define('COLLECTION_PHOTOS_DIR', COLLECTIONS_ROOT . 'photos/');
 define('COLLECTION_THUMBNAILS_DIR', COLLECTIONS_ROOT . 'thumbnails/');
 define('COLLECTIONS_EXPORT_DIR', COLLECTIONS_ROOT . 'exports/');
 
-// Kristy's calsca6_calscape_demo
-$dbConfig = array(
-    'hostname' => "localhost:3306",
-    'username' => "root",
-    'password' => "Edw8rdpm!",
-    'database' => "calsca6_demo"
-);
-
 /*
 // Kristy's calsca6_calscape
 $dbConfig = array(
@@ -71,7 +63,6 @@ $dbConfig = array(
 );
 */
 
-/*
 // Photo Test Calscape 2 SSH Tunnel through EC2
 $dbConfig = array(
     'hostname' => "127.0.0.1:3336",
@@ -79,4 +70,3 @@ $dbConfig = array(
     'password' => "calscapephoto",
     'database' => "calscape"
 );
-*/

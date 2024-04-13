@@ -502,7 +502,7 @@ export async function setPhotoCollection(data, filename = null) {
             } else {
                 captionText = photo.CopyrightNotice || '';
             }
-            
+
             const altText = removeHtmlTags(`${photo.ImageDescription}`);
             const turl = `/photomagic/includes/php/thumbnail.php?fileName=${fileName}&fileType=collection-photo`;
             const tc = createThumbnailContainer(uniqueIdentifier, turl, captionText, altText);
@@ -726,10 +726,21 @@ export async function validatePhotoCollection() {
     }
 
     // validate user email
-    if (! await getUserIDfromEmail(collectionForValidation["user_id"])) {
-        const message = `A Calscape user account with email ${collectionForValidation["user_id"]} was not found.\n\nPlease create a user account in <a href="https://calscape.org/" target="_blank">https://calscape.org/</a> before continuing.`;
-        displayStatusMessage(message, true);
-        return false;
+    if (ROLE == Mode.CONTRIBUTE) {
+        if (! await getUserIDfromEmail(collectionForValidation["user_id"])) {
+            const message = `A Calscape user account with email ${collectionForValidation["user_id"]} was not found.\n\nPlease create a user account in <a href="https://calscape.org/" target="_blank">https://calscape.org/</a> before continuing.`;
+            displayStatusMessage(message, true);
+            return false;
+        }
+    }
+
+    if (ROLE == Mode.REVIEW) {
+        // validate user email
+        if (! await getUserIDfromEmail(collectionForValidation["reviewer_id"])) {
+            const message = `A Calscape user account with email ${collectionForValidation["reviewer_id"]} was not found.\n\nPlease create a user account in <a href="https://calscape.org/" target="_blank">https://calscape.org/</a> before continuing.`;
+            displayStatusMessage(message, true);
+            return false;
+        }
     }
 
     const requiredColumns = getRequiredColumnsForRole(importconfig, ROLE);
@@ -749,7 +760,7 @@ export async function validatePhotoCollection() {
 
     if (failedConfiguredValidation.length > 0) {
         console.log('Failed configured validation:', failedConfiguredValidation);
-        const errorMessages = failedConfiguredValidation.map(({ photoIndex, propertyName, errorMessage }) => 
+        const errorMessages = failedConfiguredValidation.map(({ photoIndex, propertyName, errorMessage }) =>
             `Photo ${photoIndex}: ${propertyName} - ${errorMessage}`
         );
         displayStatusMessage(`The following fields have invalid values:<br>${errorMessages.join('<br>')}`, true, -1, false);
@@ -845,6 +856,14 @@ function showRadioPropertyValue(fieldset, propertyValue) {
     }
 
     updateSpeciesChoice();
+}
+
+export function setCollectionSpecies (species) {
+    collectionData["collection-species"] = species;
+}
+
+export function getCollectionSpecies (species) {
+    return collectionData["collection-species"];
 }
 
 /* EVENT LISTENERS */

@@ -1,7 +1,7 @@
 <?php
 include_once('common.php');
 
-define('VERSION', '1.0.0.0002');
+define('VERSION', '1.0.0.0005');
 
 $response = array(
     'photo_magician_version' => VERSION,

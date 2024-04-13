@@ -376,6 +376,384 @@ const importconfig2 = {
                 "table": "plant_images",
                 "columns": [
                     {
+                        "name": "Title",
+                        "datasources": {
+                            "flickr": "photo.title._content",
+                            "jpeg": "XMP:Title"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Title",
+                            "default": "",
+                            "richtext": true,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "ImageDescription",
+                        "datasources": {
+                            "flickr": "photo.description._content",
+                            "jpeg": "EXIF.ImageDescription"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Image description",
+                            "default": "",
+                            "richtext": true,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "DateTimeOriginal",
+                        "datasources": {
+                            "flickr": "photo.dates.taken",
+                            "jpeg": "EXIF.DateTimeOriginal"
+                        },
+                        "userinterface": {
+                            "label": "Photo date",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Artist",
+                        "datasources": {
+                            "flickr": ["photo.exif.[tag='Artist'].raw._content", "photo.owner.realname"],
+                            "jpeg": "EXIF.Artist"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Photographer",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "CopyrightNotice",
+                        "datasources": {
+                            "flickr": "photo.exif[tag='CopyrightNotice'].raw._content",
+                            "jpeg": "EXIF.Copyright"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Copyright notice",
+                            "default": "",
+                            "placeholder": `Copyright owner year(s). Example: Copyright Ron Smith 2024`,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "License",
+                        "datasources": {
+                            "flickr": "photo.license",
+                            "jpeg": "EXIF:xmp:Rights"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "License",
+                            "default": 1,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        },
+                        "valuemap": {
+                            "0": "All Rights Reserved (ARR)",
+                            "1": "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+                            "2": "Attribution-NonCommercial (CC BY-NC)",
+                            "3": "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
+                            "4": "Attribution (CC BY)",
+                            "5": "Attribution-ShareAlike (CC BY-SA)",
+                            "6": "Attribution-NoDerivs (CC BY-ND)",
+                            "7": "Public Domain Dedication (CC0)",
+                            "8": "GNU Free Documentation License (GFDL)"
+                        },
+                        "picklist": [
+                            "All Rights Reserved (ARR)",
+                            "Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)",
+                            "Attribution-NonCommercial (CC BY-NC)",
+                            "Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)",
+                            "Attribution (CC BY)",
+                            "Attribution-ShareAlike (CC BY-SA)",
+                            "Attribution-NoDerivs (CC BY-ND)",
+                            "Public Domain Dedication (CC0)",
+                            "GNU Free Documentation License (GFDL)"
+                        ]
+                    },
+                    {
+                        "name": "UsageTerms",
+                        "datasources": {
+                            "flickr": "photo.exif[tag='UsageTerms'].raw._content",
+                            "jpeg": "EXIF.xmp.UsageTerms"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Terms of use",
+                            "default": "",
+                            "richtext": true,
+                            "placeholder": "Optional usage terms",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Rating",
+                        "datasources": {
+                            "flickr": "photo.exif[tag='Rating'].raw._content",
+                            "jpeg": "EXIF.xmp.Rating"
+                        },
+                        "multi_apply": true,
+                        "validation": function(value) {
+                            if (value >= 0 && value <= 5) {
+                                return true; // Validation passed
+                            } else {
+                                return 'The Quality rating value must be between 0 and 5'; // Validation failed
+                            }
+                        },
+                        "userinterface": {
+                            "label": "Quality rating (0 to 5)",
+                            "placeholder": "Enter 0 to 5",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "LandscaperName",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Landscaper name",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "LandscapeDesigner",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Landscape designer",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Nursery",
+                        "datasources": {
+                            "flickr": "",
+                            "jpeg": ""
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Nursery",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "Keywords",
+                        "datasources": {
+                            "flickr": "photo.tags.tag.raw",
+                            "jpeg": "EXIF.xmp.Keywords"
+                        },
+                        "multi_apply": true,
+                        "userinterface": {
+                            "label": "Keywords",
+                            "default": "",
+                            "multivalue": true,
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true,
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "datasources": {},
+                        "applies_to": "collection",
+                        "userinterface": {
+                            "label": "Contributor email",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                },
+                                "reviewer": {
+                                    "readonly": true,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "reviewer_id",
+                        "datasources": {},
+                        "applies_to": "collection",
+                        "userinterface": {
+                            "label": "Reviewer email",
+                            "default": "",
+                            "roles": {
+                                "contributor": {
+                                    "readonly": false,
+                                    "required": false,
+                                    "visible": false
+                                },
+                                "reviewer": {
+                                    "readonly": false,
+                                    "required": true,
+                                    "visible": true
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+/*
+const importconfig2 = {
+    "photoimportconfig": {
+        "tables": [
+            {
+                "table": "plant_images",
+                "columns": [
+                    {
                         "name": "ImageDescription",
                         "datasources": {
                             "flickr": "photo.title._content",
@@ -529,6 +907,7 @@ const importconfig2 = {
         ]
     }
 }
+*/
 
 const photoCaptionProperties1 = {
     "title": { "properties": ["Title"], "show_label": false, "styles": "photo-title" },
@@ -541,11 +920,23 @@ const photoCaptionProperties1 = {
 };
 
 const photoCaptionProperties2 = {
+    "title": { "properties": ["Title"], "show_label": false, "styles": "photo-title" },
+    "description": { "properties": ["ImageDescription"], "show_label": false, "styles": "photo-caption" },
+    "datetime": { "properties": ["DateTimeOriginal", "Artist"], "show_label": true, "styles": "photo-caption" },
+    "copyright": { "properties": ["CopyrightNotice", "License", "UsageTerms"], "show_label": false, "styles": "photo-caption" },
+    "attribution": { "properties": ["LandscaperName", "LandscapeDesigner", "Nursery"], "show_label": true, "styles": "photo-caption" },
+    "keywords": { "properties": ["Keywords"], "show_label": true, "styles": "photo-caption" },
+    "quality": { "properties": ["Rating"], "show_label": true, "styles": "photo-caption" }
+};
+
+/*
+const photoCaptionProperties2 = {
     "description": { "properties": ["ImageDescription"], "show_label": false, "styles": "photo-caption" },
     "datetime": { "properties": ["DateTimeOriginal", "Artist"], "show_label": true, "styles": "photo-caption" },
     "copyright": { "properties": ["CopyrightNotice"], "show_label": false, "styles": "photo-caption" },
     "keywords": { "properties": ["Keywords"], "show_label": true, "styles": "photo-caption" }
 };
+*/
 
 let photoCaptionProperties = null;
 
@@ -1163,6 +1554,10 @@ export function createPropertiesFields() {
             const hasPicklist = column.hasOwnProperty('picklist') ? true : false;
             const isCollectionProp = column.applies_to == "collection" ? true : false;
 
+            if (!uiconfig.visible) {
+                return;
+            }
+            
             if (!isCollectionProp && form === null) {
                 // The selected properties container is not shown and property applies to a 
                 // collection so ignore properties that apply to the selected image

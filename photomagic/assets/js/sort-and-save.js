@@ -3,7 +3,7 @@
  * 
  * Sort collection photos into existing Calscape photos
  */
-import { clearPhotoCollection, getImageData, getPhotoCollection, getUserIDfromEmail, validatePhotoCollection } from "./collection-data.js";
+import { clearPhotoCollection, getImageData, getPhotoCollection, getUserIDfromEmail, setCollectionSpecies, validatePhotoCollection } from "./collection-data.js";
 import { displayThumbnailsFromCalscape, initializeSortableGrid, setupMutationObserver } from "./thumbnails.js";
 import { displayStatusMessage } from "./status.js";
 let calscapePhotos = {};
@@ -123,6 +123,16 @@ export async function initPhotoSort() {
             }
         }, delayDuration);
     });
+}
+
+export async function updateCollectionSpecies(species) {
+    clearCalscapePhotos();
+    setCollectionSpecies (species);
+
+    const calscapePhotoGrid = document.getElementById('thumbnail-calscape-grid');
+    if (calscapePhotoGrid !== null && calscapePhotoGrid !== undefined) {
+        displayCalscapePhotos(true); // refresh the Calscape photos with new species
+    }
 }
 
 async function displayCalscapePhotos(refresh = false) {
