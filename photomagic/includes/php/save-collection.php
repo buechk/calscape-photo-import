@@ -30,8 +30,8 @@ $filename = isset($_GET['fileName']) ? $_GET['fileName'] : null;
 if (!$filename) {
     // Generate a unique filename based on property values
     $filename = str_replace(
-        ' ',
-        '_',
+        array(' ', "'"), // Replace spaces and single quotes
+        array('_', ''), // Replace with underscore and empty string
         sprintf(
             '%s_%s_%s_%s_%s.json',
             $decodedData['user_id'],

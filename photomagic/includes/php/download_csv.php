@@ -237,7 +237,6 @@ function addPhotoToPackage($packageDir, $photo, $response)
             $response["messages"][] = "Failed to copy file $sourceFilePath to $destinationDirectory";
             return false;
         }
-        
     } catch (Exception $e) {
         $response["success"] = false;
         $response["messages"][] = "Failed to copy files: $e.getMessage()";
@@ -332,8 +331,8 @@ function createPhotoZipPackage($jsonData)
 
         // Generate a unique filename based on property values
         $filenameRoot = str_replace(
-            ' ',
-            '_',
+            array(' ', "'"), // Replace spaces and single quotes
+            array('_', ''), // Replace with underscore and empty string
             sprintf(
                 '%s_%s_%sn',
                 $userID,

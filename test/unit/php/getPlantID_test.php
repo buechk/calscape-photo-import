@@ -1,20 +1,23 @@
 <?php
 
-class PlantSpeciesTest extends \PHPUnit\Framework\TestCase
+class getPlantID_test extends \PHPUnit\Framework\TestCase
 {
     public function testGetPlantSpecies(): void
     {
         // Include the script to be tested
-        include_once('get_plant_species.php');
+        include('../../../photomagic/includes/php/common.php');
 
         // Capture the output of the script
         ob_start();
-        include('../../../photomagic/includes/php/get_plant_species.php');
+
         $output = ob_get_clean();
+
+        // Call the method and assert the result
+        $output = getPlantID('Ribes sanguineum');
 
         // Assert that the output is in JSON format and contains the expected species
         $this->assertJson($output);
         $decodedOutput = json_decode($output, true);
-        $this->assertNotEmpty($decodedOutput); // Assuming the output is not empty
+        $this->assertEquals("3238", $decodedOutput);
     }
 }

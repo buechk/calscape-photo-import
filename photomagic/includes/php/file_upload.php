@@ -41,7 +41,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
     $rootname = $_POST['rootname'];
     $path_parts = pathinfo($_FILES['file']['name']);
     $fileExtension = $path_parts['extension'];
-    $filename = str_replace(' ', '_', $rootname) . '_' . uniqid() . '.' . $fileExtension;
+    $filename = str_replace(array(' ', "'"), array('_', ''), $rootname) . '_' . uniqid() . '.' . $fileExtension;
     $targetPath = COLLECTION_PHOTOS_DIR . $filename;
     $thumbnailFile = 'thumbnail_' . $filename;
     $thumbnailPath = COLLECTION_THUMBNAILS_DIR . $thumbnailFile; // Adjust thumbnail prefix as needed

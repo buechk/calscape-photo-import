@@ -2,4 +2,5 @@ photomagic/public/ExtData/allimages/*
 photomagic/public/ExtData/collections/*
 test/photos/*
 photomagic/storage/*
+vendor/*
 **/.DS_Store
