@@ -8,6 +8,7 @@ import { getSourcePhotos, clearSourcePhotos, storeSourcePhoto } from "./source-p
 import { showMultiSelectedProperties, getFullLightboxCaption } from './properties.js';
 import { extractUsernameFromFlickrUrl, extractAlbumFromFlickrUrl, searchPhotosByUsername, searchPhotosByAlbum, getPhotoSizes } from './flickr-API.js';
 import { displayStatusMessage } from "./status.js";
+import { showCalscapePhotos } from "./sort-and-save.js";
 
 const flickrUrl = document.getElementById('flickrUrl');
 
@@ -97,8 +98,30 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
 
     // Prevent the default behavior for dragover events
     dropTarget.addEventListener('dragover', function (event) {
-        event.preventDefault();
+  //      event.preventDefault();
+        // Get the current mouse position
+        var mouseY = event.clientY;
+
+        // Get the position and dimensions of the grid relative to the document
+        var gridTop = dropTarget.offsetTop;
+        var gridHeight = dropTarget.offsetHeight;
+
+        // Define scroll threshold (e.g., 50 pixels from the top/bottom edge)
+        var scrollThreshold = 50;
+
+        // Check if dragging near the top edge of the grid
+        if (mouseY < gridTop + scrollThreshold) {
+            // Scroll up by a certain amount (e.g., 20 pixels)
+            dropTarget.scrollBy(0, -20);
+        }
+
+        // Check if dragging near the bottom edge of the grid
+        if (mouseY > gridTop + gridHeight - scrollThreshold) {
+            // Scroll down by a certain amount (e.g., 20 pixels)
+            dropTarget.scrollBy(0, 20);
+        }
     });
+
 
     // Handle the drop event
     dropTarget.addEventListener('drop', function (event) {
@@ -581,6 +604,7 @@ function toggleSelection(event) {
     updateSelectedCount(selectedThumbnails.length);
 
     showMultiSelectedProperties(event);
+    //showCalscapePhotos(event);
 }
 
 export function removeHtmlTags(html) {

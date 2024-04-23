@@ -4,8 +4,9 @@
  * Sort collection photos into existing Calscape photos
  */
 import { clearPhotoCollection, getImageData, getPhotoCollection, getUserIDfromEmail, setCollectionSpecies, validatePhotoCollection } from "./collection-data.js";
-import { displayThumbnailsFromCalscape, initializeSortableGrid, setupMutationObserver } from "./thumbnails.js";
+import { displayThumbnailsFromCalscape, initializeSortableGrid, setupMutationObserver, getSelectedThumbnails } from "./thumbnails.js";
 import { displayStatusMessage } from "./status.js";
+
 let calscapePhotos = {};
 
 let calscapeThumbnails = []; // Store calscape photo thumbnails as an array
@@ -31,7 +32,7 @@ let calscapeThumbnails = []; // Store calscape photo thumbnails as an array
 export async function initPhotoSort() {
     // initialize message to be displayed when grid is empty
     const dropMessage = document.getElementById('drag-and-drop-message');
-    dropMessage.innerText = "The selected photos have been added to Calscape...Thank you"
+    dropMessage.innerText = "Finished sorting and saving photos...Thank you"
 
     initializeSortableGrid('thumbnail-calscape-grid', 'calscape-drag-and-drop-message', Object.entries(calscapePhotos), false);
 
@@ -503,6 +504,51 @@ export async function clearCalscapePhotos() {
     }
     calscapeThumbnails.length = 0;
     calscapePhotos = {};
+}
+
+export function showCalscapePhotos() {
+    if (document.querySelector('#thumbnail-calscape-grid')) {
+        // Check if the user has selected multiple thumbnails
+        const selectedThumbnails = getSelectedThumbnails();
+        const properties = {};
+
+        saveSelectedProperties(); // save previously selected properties before clearing
+        clearPropertiesFields();
+        const heading = document.getElementById('properties-for-selected-heading');
+
+        // set selected id
+        saveSelectedThumbnailIds(selectedThumbnails);
+
+        if (selectedThumbnails.length > 1) {
+            if (heading != null) {
+                heading.textContent = 'Properties apply to multiple selected photos'
+            }
+            // Iterate over the selected thumbnails and get their properties
+            selectedThumbnails.forEach(tcontainer => {
+                // Extract the properties of each selected thumbnail
+                const imageObj = getImageData(tcontainer.id);
+                if (imageObj !== null && imageObj !== undefined) {
+                    properties[tcontainer.id] = imageObj;
+                }
+            });
+
+            // Display the common properties that can be modified for all selected thumbnails
+            showCommonProperties(properties);
+
+        } else if (selectedThumbnails.length === 1) {
+            if (heading != null) {
+                heading.textContent = 'Properties apply to the selected photo'
+            }
+
+            // Handle the case when only one thumbnail is selected
+            showSelectedProperties(selectedThumbnails[0]);
+        }
+
+        else {
+            // no thumbnails are selected
+            return;
+        }
+    }
 }
 
 
