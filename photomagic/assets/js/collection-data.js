@@ -477,6 +477,7 @@ export async function setPhotoCollection(data, filename = null) {
     collectionData["collection-type"] = data["collection-type"];
     collectionData["collection-species"] = data["collection-species"];
     collectionData["user_id"] = data["user_id"];
+    collectionData["reviewer_id"] = data["reviewer_id"];
     collectionData["filename"] = filename;
     collectionData["photos"] = data['photos'];
 

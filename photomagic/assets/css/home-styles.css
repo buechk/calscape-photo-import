@@ -29,39 +29,68 @@
 }
 
 #welcome-container {
-    width: 80ch;
-    margin: auto;
-    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center items horizontally */
+    /* width: 80%; */
+    margin: 0 auto; /* Center horizontally */
+    padding: 10px;
     overflow-wrap: break-word;
 }
+
 #to-do-container{
     padding-left:20px;
 }
 
 #container {
-    display:flex;
-    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+}
+
+#tabs {
+    display: flex;
+    /* justify-content: space-around; */
+    /* margin-bottom: 10px; */
+}
+
+.tablinks {
+    padding: 10px 15px;
+    border: none;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.tabcontent {
+    display: none;
+    padding: 16px;
+}
+
+.button-container {
+    text-align: center;
+}
+
+/* Show the active tab */
+.active {
+    background-color: #ccc;
+}
+
+/* Hide scrollbar */
+.tabcontent {
+    overflow: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.tabcontent::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
 }
 
 #contribute-container,
 #review-container {
-    width: 48%;
-    margin: 10px;
-    padding: 10px;
     border: 1px solid #ddd;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
-/*
-#contribute-container,
-#review-container {
-    width: 48%;
-    float: left;
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-}
-*/
 
 p{
     font-size: 16px;
@@ -71,16 +100,8 @@ p{
     text-align: center;
 }
 
-.button-container {
-    text-align: center; /* Center the content within each container */
-    margin-top: 10px; /* Add some top margin to the button container */
-    bottom: 10px;
-    left: 0;
-    right: 0;
-}
-
 @media screen and (max-width: 768px) {
-    #left-nav-home {
+    #breadcrumb-home {
         width: 100%; /* Full width for smaller screens */
         height: auto; /* Adjust height */
         position: relative; /* Change position */

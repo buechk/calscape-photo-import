@@ -38,9 +38,12 @@ body {
     height: 100vh;
 }
 
-.main-container {
+#main-content {
     display: flex;
     border: none;
+    width: 100%;
+    height: 80vh; /* Adjust height to fit remaining viewport height */
+    box-sizing: border-box;
 }
 
 .divider {
@@ -62,10 +65,8 @@ body {
 
 #main-content {
     display: flex;
-    /* Use flex container */
     width: 100%;
     height: 100vh;
-    padding: 10px 0px;
     box-sizing: border-box;
 }
 
@@ -80,23 +81,15 @@ body {
 .left-container {
     flex-grow: 1;
 }
-/*
-.source-photos-container,
-.collections-for-review-container,
-.calscape-photos-container,
-.collection-container {
-    margin: 10px;
-}
-*/
+
 .thumbnail-scroll-container,
-.collections-scroll-container {
-    height: 100%;
-    /* Takes the full height of the source-photos-container */
-    max-height: 800px;
+.collections-scroll-container,
+.group-thumbnail-scroll-container {
     overflow-y: auto;
     padding: 10px;
     background-color: #f2f2f2;
     box-sizing: border-box;
+    max-height: 800px;
 }
 
 /* styles for next and previous buttons */
@@ -112,46 +105,32 @@ body {
     font-weight: bold;
   }
 
-/* Style for the grid */
-#thumbnail-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-    padding: 20px;
-    background-color: #f2f2f2;
-;
-    min-height: 250px;
-    height: 100%;
-    /* Takes the full height of the thumbnail-scroll-container */
-    box-sizing: border-box;
-}
-
 .right-container {
     display: flex;
     flex-direction: column;
     /* Stack children vertically */
-    min-width: 350px;
-    max-width: calc(100% - 250px);
+    /* min-width: 350px; */
+    /* max-width: calc(100% - 250px); */
     /* Set initial width for panels */
     width: calc(60% - 5px);
+}
+
+.collection-container,
+.calscape-photos-container,
+.source-photos-container {
+    max-height: 800px;
 }
 
 .collection-container {
     display: flex;
     flex-direction: column;
+    height: 1600px;
 }
 
 .group-properties-container,
 .properties-scroll-container {
     padding: 10px;
     background-color: #f2f2f2;
-}
-
-.group-thumbnail-scroll-container {
-    max-height: 800px;
-    overflow-y: auto;
-    /* Enable vertical scrolling */
-    padding: 10px;
 }
 
 .thumbnail-grid {
@@ -475,83 +454,10 @@ body {
 header {
     background-color: #224762;
     text-align: center;
-    justify-content: center;
+    /* justify-content: center; */
     padding: 10px;
     margin: 20px;
-}
-
-/* Styling for the navigation bar */
-#left-nav {
-    background-color: rgba(64, 124, 168, 0.5);
-    display: inline-block;
-    height: 100%;
-    width: 15%;
-    min-width: 200px;
-    margin-top: 60px;
-    margin-right: 10px;
-    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.3);
-    position: relative;
-    /* Add this to establish a positioning context for absolute positioning */
-    z-index: 1;
-}
-
-#left-nav ul {
-    list-style-type: none;
-    padding: 10px;
-    margin: 0;
-}
-
-#left-nav ul li {
-    padding: 5px;
-}
-
-#left-nav ul li a {
-    text-decoration: none;
-    color: black;
-    display: block;
-    padding: 5px 5px;
-    text-align: left;
-}
-
-#left-nav ul li ul.submenu {
-    display: none;
-    color: black;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-#left-nav ul li:hover ul.submenu {
-    display: block;
-    background-color: rgba(64, 124, 168, 0.5);
-}
-
-#left-nav ul li a:hover {
-    color: black;
-    background-color: rgba(64, 124, 168, 0.5);
-}
-
-#left-nav ul li a.selected {
-    color: #eee;
-    background-color: rgba(64, 124, 168, 0.5);
-}
-
-/* Specific styles when on the home page */
-#left-nav.nav-home ul li:not(#welcome-link) {
-    display: none;
-    /* Hide all li elements except welcome link */
-}
-
-#left-nav.nav-home ul li#welcome-link {
-    display: block;
-    /* Ensure welcome link is displayed */
-}
-
-/* Hide submenu on the home page */
-#left-nav.nav-home ul li ul.submenu {
-    display: none;
-}
-
-#left-nav.nav-home ul li:hover ul.submenu {
-    display: none;
+    /* position: relative; */
 }
 
 #menu {
@@ -924,14 +830,20 @@ th {
     order: -1; /* This will make photo-actions-container appear above main-content */
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin: 10 px;
+    align-items: bottom;
+    margin-top: 10px;
 }
 
 .flex-container-column {
     display: flex;
     flex-direction: column;
     width: 100%; /* Take full width available */
+    height: 100vh;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.collections-for-review-container {
+    margin: 20;
 }
 
 .expand-button {
@@ -997,16 +909,30 @@ th {
 }
 
 footer {
-    background-color: #f0f0f0; /* Subtle background color */
-    padding: 10px; /* Add padding for spacing */
+    background-color: #f0f0f0;
+    padding: 10px;
     text-align: center;
+    /* position: fixed; */
+    bottom: 0;
+    width: 100%;
 }
+/*
+footer {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+*/
 
 .version-info {
-    font-family: Arial, sans-serif; 
+    font-family: Arial, sans-serif;
     color: #333; /* Dark text color */
     font-size: 14px; /* Adjust font size */
     text-align: left;
+    /* box-sizing: inherit; */
 }
 
 .version-info span {
@@ -1016,4 +942,52 @@ footer {
 
 .copyright {
     margin-top: 10px; /* Adjust as needed */
+}
+
+#breadcrumb ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#breadcrumb ul li {
+    display: inline;
+}
+
+#breadcrumb ul li:not(:last-child):after {
+    content: ">";
+    margin: 0 5px;
+    display: none; /* Initially hide the ">" for all list items */
+}
+
+#breadcrumb ul li.visible:not(:last-child):after {
+    content: ">";
+    margin: 0 5px;
+    display: inline; /* Display the ">" only for list items with the 'visible' class */
+}
+
+#breadcrumb ul li a {
+    text-decoration: none;
+    color: #007bff; 
+}
+
+#breadcrumb ul li a:hover {
+    text-decoration: underline;
+}
+
+#breadcrumb ul li a.selected {
+    font-weight: bold; /* For example, bold text */
+    color: #2b2b2c; /* Change color to red */
+}
+
+#select-photo-source {
+    list-style: none; /* Remove default list-style */
+    padding: 10px;
+}
+
+#select-photo-source li {
+    /* Add any additional styling for the list items if needed */
+    text-align: center;
+    margin: 5; /* Remove default padding */
+    margin-bottom: 5px; /* Add vertical space between list items */
 }

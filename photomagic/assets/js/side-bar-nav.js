@@ -22,7 +22,7 @@ $(document).ready(async function () {
         const response = await fetch('/photomagic/includes/php/version.php');
         const data = await response.json();
         window.calscapeVersion = data.calscape_version;
-        window.photoMagicianVersion = data.photo_magician_version;
+        window.photoCompanionVersion = data.photo_Companion_version;
     } catch (error) {
         console.error('Error fetching version:', error);
     }
@@ -83,12 +83,18 @@ $(document).ready(async function () {
 export let ROLE = Mode.UNSPECIFIED;
 
 export function initWelcome() {
+    // Trigger a click on the "Contribute" tab when the page loads
+    $('#contribute-container-tab').click();
+    
+    const actionsContainer = document.getElementById("photo-actions-container");
+    actionsContainer.display = "none";
+
     console.log("Welcome page initialized")
 }
 
 export async function initNavigation() {
     // Attach click event listeners to the navigation items
-    $('#left-nav a').click(async function (event) {
+    $('#breadcrumb a').click(async function (event) {
         event.preventDefault(); // Prevent the default link behavior
 
         // save current values before replacing page content
@@ -113,19 +119,12 @@ export async function initNavigation() {
         }        
 
         // Add selected class to clicked menu item
-        $('li a.selected').removeClass('selected'); // Remove the class from previously selected items
+        $('#breadcrumb li a.selected').removeClass('selected'); // Remove the class from previously selected items
         $(this).addClass('selected'); // Add the class to the clicked item
 
         // If it's not a submenu, fetch and append the content to the main content area
         var targetPage = $(this).data('page');
         fetchContent(targetPage);
-
-        // Check if this is a submenu that should open a modal based on specific IDs
-        var clickedId = event.target.id;
-        if (clickedId === 'selectFilesLink' || clickedId === 'selectFromFlickrLink') {
-            // Call the existing event handler to open the modal
-            openSelectionDialog(clickedId);
-        }
     });
 }
 
@@ -160,7 +159,7 @@ function fetchMenu(menu, navigate, append = false) {
         dataType: 'html',
         success: function (data) {
             // Replace the main content with the fetched data
-            $('#left-nav').html(data);
+            $('#breadcrumb').html(data);
 
             initNavigation()
 
@@ -177,11 +176,16 @@ function fetchMenu(menu, navigate, append = false) {
 function updateNavigationBar(currentPage) {
     if (currentPage === 'home') {
         // Hide all nav items except 'Welcome' when on the home page
-        $('#left-nav a:not(#welcome-link a)').hide();
+        $('#breadcrumb a:not(#welcome-link a)').hide();
     } else {
         // Show all nav items on other pages
-        $('#left-nav a').show();
+        $('#breadcrumb a').show();
     }
+
+    // Add a class to visible list items
+    $('#breadcrumb li').removeClass('visible').filter(function() {
+        return $(this).find('a').css('display') !== 'none';
+    }).addClass('visible');
 
     dismissStatusOnNavigation();
 }
@@ -196,14 +200,5 @@ function updateSelectedPhotoActions(currentPage) {
         } else {
             photoActionsElem.style.display = 'block';
         }
-    }
-}
-
-function openSelectionDialog(id) {
-    if (id === 'selectFilesLink') {
-        fileModal.style.display = 'block';
-    }
-    else if (id === 'selectFromFlickrLink') {
-        flickrModal.style.display = 'block';
     }
 }

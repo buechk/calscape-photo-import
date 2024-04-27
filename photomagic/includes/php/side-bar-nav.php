@@ -16,13 +16,9 @@ $nav = isset($_GET['nav']) ? $_GET['nav'] : 'home';
 //comment this code to show full navigation bar on the home page. line 86 of side-bar-nav.js will also need to be commented
 function generateNavBar($nav)
 {
-    //hide submenu styles on home page
-    // $navClass = ($nav === 'home') ? 'nav-home' : 'nav-other';
-    // echo '<nav id="left-nav" class="' . $navClass . '">';
-
     //Only show the full navigation bar if not on the home page
     if ($nav !== 'home') {
-        echo '<nav id="left-nav">';
+        echo '<nav id="breadcrumb">';
         echo '<ul>';
         // Add other navigation items here
         echo '<li><a id="select-photos" href="?nav=select-photos">Select Photos</a></li>';

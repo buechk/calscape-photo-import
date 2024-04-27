@@ -1,10 +1,10 @@
 <?php
 include_once('common.php');
 
-define('VERSION', '1.0.0.0005');
+define('VERSION', '1.0.0.0006');
 
 $response = array(
-    'photo_magician_version' => VERSION,
+    'photo_Companion_version' => VERSION,
     'calscape_version' => getCalscapeVersion()
 );
 

@@ -37,11 +37,20 @@ export function getSelectedThumbnailCount() {
 
 // Enable drag-and-drop reordering of thumbnails
 export function initializeSortableGrid(gridId, messageId, gridContentsArr, allowDragOut = true) {
+    const actionsContainer = document.getElementById("photo-actions-container");
+    actionsContainer.display = "block";
+
     const dropTarget = document.getElementById(gridId);
 
     // Enable drag-and-drop reordering of thumbnails
     const sortableGridOptions = {
-        // Other options...
+        // autoscroll options
+        /*   scroll: true, // Enable the plugin. Can be HTMLElement.
+           scrollSensitivity: 50, // px, how near the mouse must be to an edge to start scrolling.
+           scrollSpeed: 10, // px, speed of the scrolling
+           bubbleScroll: true, // apply autoscroll to all parent elements, allowing for easier movement
+           */
+        // Other options
         group: 'shared-group',
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
@@ -95,33 +104,95 @@ export function initializeSortableGrid(gridId, messageId, gridContentsArr, allow
             }
         }, 300); // Adjust the delay as needed
     });
+    /*
+        // Prevent the default behavior for dragover events
+        dropTarget.addEventListener('dragover', function (event) {
+            event.preventDefault();
+    
+            // Get the current mouse position
+            var mouseY = event.clientY;
+    
+            // Define scroll threshold (e.g., 50 pixels from the top/bottom edge)
+            var scrollThreshold = 50;
+    
+            // Get the viewport's top position relative to the document
+            var viewportTop = window.scrollY || window.pageYOffset;
+    
+            // Check if dragging near the top edge of the viewport
+            if (mouseY < viewportTop + scrollThreshold) {
+                // Scroll up by 20 pixels
+                window.scrollBy(0, -20);
+            }
+    
+            // Get the position and dimensions of the grid relative to the document
+            var gridTop = dropTarget.offsetTop;
+            var gridHeight = dropTarget.offsetHeight;
+    
+            // Check if dragging near the top edge of the grid
+            if (mouseY < gridTop + scrollThreshold) {
+                // Scroll up by 20 pixels
+                dropTarget.scrollBy(0, -20);
+            }
+    
+            // Check if dragging near the bottom edge of the viewport
+            if (mouseY > window.innerHeight - scrollThreshold) {
+                // Scroll down by 20 pixels
+                window.scrollBy(0, 20);
+            }
+    
+            // Get the position of the bottom edge of the grid relative to the viewport
+            var gridBottomViewport = gridTop + gridHeight;
+    
+            // Check if dragging near the bottom edge of the grid
+            if (mouseY > gridBottomViewport - scrollThreshold) {
+                // Scroll down by 20 pixels
+                dropTarget.scrollBy(0, 20);
+            }
+    
+            const status = `scrollThreshold: ${scrollThreshold},
+                    mouseY: ${mouseY},
+                    viewportTop: ${viewportTop},
+                    gridTop: ${gridTop},
+                    gridTop: ${gridHeight},
+                    gridBottomViewport: ${gridBottomViewport}`;
+    
+            displayStatusMessage(status, false,);
+    
+        });
+    */
+    // Variable to track whether the user is currently dragging
+    var isDragging = false;
 
-    // Prevent the default behavior for dragover events
-    dropTarget.addEventListener('dragover', function (event) {
-  //      event.preventDefault();
-        // Get the current mouse position
-        var mouseY = event.clientY;
+    // Function to handle the dragover event
+    function handleDragOver(event) {
+        event.preventDefault();
+    }
 
-        // Get the position and dimensions of the grid relative to the document
-        var gridTop = dropTarget.offsetTop;
-        var gridHeight = dropTarget.offsetHeight;
+    // Function to handle the mousemove event
+    function handleMouseMove(event) {
+        if (isDragging) {
+            // Get the current mouse position
+            var mouseY = event.clientY;
 
-        // Define scroll threshold (e.g., 50 pixels from the top/bottom edge)
-        var scrollThreshold = 50;
+            // Calculate the scroll amount based on the mouse position
+            var scrollSpeed = 0.1; // Adjust this value to control the scroll speed
+            var scrollAmount = (mouseY - window.innerHeight / 2) * scrollSpeed;
 
-        // Check if dragging near the top edge of the grid
-        if (mouseY < gridTop + scrollThreshold) {
-            // Scroll up by a certain amount (e.g., 20 pixels)
-            dropTarget.scrollBy(0, -20);
+            // Scroll the grid by the calculated amount
+            dropTarget.scrollBy(0, scrollAmount);
         }
+    }
 
-        // Check if dragging near the bottom edge of the grid
-        if (mouseY > gridTop + gridHeight - scrollThreshold) {
-            // Scroll down by a certain amount (e.g., 20 pixels)
-            dropTarget.scrollBy(0, 20);
-        }
-    });
+    // Function to handle the scroll event
+    function handleScroll(event) {
+        // Update the dragging status based on whether the scrollbar is being dragged
+        isDragging = (event.target === document.documentElement);
+    }
 
+    // Event listeners for the dragover, mousemove, and scroll events
+    dropTarget.addEventListener('dragover', handleDragOver);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', handleScroll);
 
     // Handle the drop event
     dropTarget.addEventListener('drop', function (event) {

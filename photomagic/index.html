@@ -18,28 +18,21 @@
 
 <header>
     <div class="banner">
-        <h1 id="title">Calscape Photo Magician</h1>
+        <h1 id="title">Calscape Photo Companion</h1>
     </div>
 </header>
 
 <body>
+    <nav id="breadcrumb">
+        <ul>
+            <li id="welcome-link"><a data-page="home">Welcome</a></li>
+            <li><a href="#" id="select-photos" data-page="select-photos">Select photos</a></li>
+            <li><a href="#" data-page="create-collection">Create collection</a></li>
+            <li><a href="#" data-page="set-properties">Set properties</a></li>
+            <li><a href="#" data-page="submit-for-review">Submit</a></li>
+        </ul>
+    </nav>
     <div class="main-container">
-        <nav id="left-nav">
-            <ul>
-                <li id="welcome-link"><a data-page="home">Welcome</a></li>
-                <li><a href="#" id="select-photos" data-page="select-photos">Select photos</a>
-                    <ul class="submenu">
-                        <li><a href="#" data-page="select-photos" id="selectFilesLink">Select files...</a></li>
-                        <li><a href="#" data-page="select-photos" id="selectFromFlickrLink">Select from Flickr...</a>
-                        </li>
-                    </ul>
-                </li>
-                <li><a href="#" data-page="create-collection">Create collection</a></li>
-                <li><a href="#" data-page="set-properties">Set properties</a></li>
-                <li><a href="#" data-page="submit-for-review">Submit</a></li>
-            </ul>
-        </nav>
-
         <div id="status-area" style="display: none;" data-dismiss-on-nav=false>
             <div class="status-message success">
                 <span id="status-text"></span>
@@ -48,7 +41,7 @@
         </div>
 
         <div class="flex-container-column">
-            <div id="photo-actions-container" class="actions-container" style="display: block;">
+            <div id="photo-actions-container" class="actions-container" style="display: none;">
                 <div id="selected-photos-count" class="selected-count">0 photos selected</div>
                 <div class="expand-wrapper">
                     <button id="expand-button" class="expand-button">
