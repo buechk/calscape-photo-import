@@ -17,15 +17,15 @@ export function initPhotoSelection() {
     // EVENT LISTENERS
     const fileModal = document.getElementById('fileModal');
     const flickrModal = document.getElementById('flickrModal');
-    
+
     // Get the close buttons for the modals
     const fileModalClose = document.getElementById('fileModalClose');
     const flickrModalClose = document.getElementById('flickrModalClose');
-    
+
     // Get references to the menu links
     const selectFilesLink = document.getElementById('selectFilesLink');
     const selectFromFlickrLink = document.getElementById('selectFromFlickrLink');
-    
+
     const fileInput = document.getElementById('fileInput');
     const flickrUrl = document.getElementById('flickrUrl');
 
@@ -42,6 +42,10 @@ export function initPhotoSelection() {
 
     // Add an event listener for the "change" event on the file input
     fileInput.addEventListener('change', function (event) {
+
+        //trigger a click on the Create Collection breadcrumb link
+        $('#create-collection').click();
+
         // Handle the selected files from the file input here
         // store files with a unique identifier for later upload
         // Display thumbnails
@@ -63,6 +67,10 @@ export function initPhotoSelection() {
 
     // Open the Flickr import modal
     flickrUrl.addEventListener('change', () => {
+
+        //trigger a click on the Create Collection breadcrumb link
+        $('#create-collection').click();
+
         displayThumbnails(flickrUrl.value);
         flickrModal.style.display = 'none';
     });

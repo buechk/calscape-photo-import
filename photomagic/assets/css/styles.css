@@ -175,6 +175,7 @@ body {
 }
 
 .tcontainer {
+    position: relative; /* Ensure position relative for child positioning */
     box-sizing: border-box; /* Include padding and borders in the element's dimensions */
     border: 1px solid #ccc;
     display: flex;
@@ -976,8 +977,8 @@ footer {
 }
 
 #breadcrumb ul li a.selected {
-    font-weight: bold; /* For example, bold text */
-    color: #2b2b2c; /* Change color to red */
+    font-weight: bold; 
+    color: #2b2b2c;
 }
 
 #select-photo-source {
@@ -991,3 +992,44 @@ footer {
     margin: 5; /* Remove default padding */
     margin-bottom: 5px; /* Add vertical space between list items */
 }
+
+.photo-checkbox {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    top: 0px;
+    left: 0px;
+    opacity: 0; /* Initially hide the checkbox */
+    /* fill: transparent; */
+    transition: opacity 0.3s ease; /* Smooth transition for opacity */
+}
+
+.tcontainer:hover .photo-checkbox,
+.photo-checkbox[aria-checked="true"] {
+    opacity: 1; /* Show the checkbox when hovering over tcontainer or when checked */
+}
+
+.checkbox-circle,
+.checkbox-checkmark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-75%, -75%); /* Center the elements */
+}
+   
+.checkbox-circle {
+    fill: #C0C0FF;
+    stroke: none;
+}
+
+.tcontainer .photo-checkbox[aria-checked="true"] .checkbox-circle {
+    fill: rgb(11, 87, 208);
+    fill-opacity: 1;
+}
+/*
+.tcontainer .photo-checkbox[aria-checked="true"] .checkbox-checkmark {
+    stroke: #FFFFFF;
+    fill-opacity: 1;
+}
+*/

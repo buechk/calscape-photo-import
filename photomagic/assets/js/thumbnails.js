@@ -414,6 +414,19 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText, alt
     thumbnail.alt = alttext; // Set alt text for accessibility
     tcontainer.appendChild(thumbnail);
 
+    // Add a checkbox for selection
+    const cbtemplate = document.getElementById('photo-checkbox');
+    const cbclone = cbtemplate.cloneNode(true); // Pass true to clone its children
+    cbclone.id = "cb-" + uniqueIdentifier;
+    // Add click event listener to toggle checkbox state
+    cbclone.addEventListener('click', function (event) {
+        const checkbox = event.currentTarget; // Use currentTarget instead of target
+        const isChecked = checkbox.getAttribute('aria-checked') === 'true';
+        checkbox.setAttribute('aria-checked', !isChecked);
+    });
+
+    tcontainer.append(cbclone)
+
     // Create caption div
     const caption = document.createElement('div');
     caption.classList.add('caption');
@@ -441,19 +454,6 @@ export function createThumbnailContainer(uniqueIdentifier, url, captionText, alt
 
     tcontainer.appendChild(caption);
 
-    /*
-        const caption = document.createElement('div');
-        caption.classList.add('caption');
-        caption.innerHTML = captionText;
-        tcontainer.appendChild(caption);
-    
-        if (width !== undefined && height != undefined) {
-            const size = document.createElement('div');
-            size.classList.add('caption');
-            size.innerHTML = `Size: ${width}x${height}`;
-            tcontainer.appendChild(size);
-        }
-    */
     tcontainer.id = uniqueIdentifier;
 
     return tcontainer;
@@ -706,4 +706,4 @@ export function getSelectedThumbnails() {
 }
 
 const mainContentArea = document.getElementById('main-content');
-mainContentArea.addEventListener('click', toggleSelection);
+//mainContentArea.addEventListener('click', toggleSelection);

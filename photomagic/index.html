@@ -26,10 +26,6 @@
     <nav id="breadcrumb">
         <ul>
             <li id="welcome-link"><a data-page="home">Welcome</a></li>
-            <li><a href="#" id="select-photos" data-page="select-photos">Select photos</a></li>
-            <li><a href="#" data-page="create-collection">Create collection</a></li>
-            <li><a href="#" data-page="set-properties">Set properties</a></li>
-            <li><a href="#" data-page="submit-for-review">Submit</a></li>
         </ul>
     </nav>
     <div class="main-container">
@@ -67,6 +63,25 @@
             <button id="add-btn" class="add-btn">Add</button>
         </div>
     </div>
+
+    <!-- Template for checkbox on thumbnails 
+    <div id = "photo-checkbox" class="photo-checkbox">
+        <svg class="checkbox-circle" viewBox="0 0 24 24">
+        </svg>
+        <svg class="checkbox-checkmark" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+        </svg>
+    </div> -->
+
+    <!-- Template for checkbox on thumbnails -->
+    <div id="photo-checkbox" class="photo-checkbox">
+        <svg class="checkbox-circle" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+        </svg>
+        <svg class="checkbox-checkmark" viewBox="0 0 24 24">
+            <path d="M20 6L9 17l-5-5" fill="none" stroke="#FFFFFF" stroke-width="2"></path>
+        </svg>
+    </div> 
 
     <!-- Modal for Importing Files -->
     <div id="fileModal" class="modal">
